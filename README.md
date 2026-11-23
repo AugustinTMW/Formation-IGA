@@ -192,6 +192,15 @@ textes de ces messages se trouvent dans la constante `MSG` au début du script d
 
 ## 5. Accessibilité et ergonomie
 
+- **Tracer une flèche à la souris :** attraper le point rond « + » sous un bloc et le glisser
+  - sur un autre bloc : il s'entoure de vert (connexion valide) ou de rouge (refusée, avec la raison) ;
+    au relâchement, un petit menu demande *Manual operation* ou *Automatic operation* ;
+  - dans le vide : même menu, puis la fenêtre de création d'action, la nouvelle action étant placée à cet endroit.
+- **Rebrancher une flèche :** attraper le bout de la flèche (petit rond qui apparaît au survol) et le
+  déposer sur un autre bloc. Le type de transition est conservé.
+- Un simple clic sur le point « + » ouvre toujours la fenêtre « Add a connection » ; la fenêtre d'une
+  flèche (clic sur son étiquette) permet aussi de changer sa cible (« Connected to »), utile au clavier.
+
 - Navigation complète au clavier : <kbd>Tab</kbd> pour sélectionner un bloc, flèches pour le
   déplacer (<kbd>Maj</kbd> pour aller plus vite), <kbd>Entrée</kbd> pour le modifier, <kbd>Suppr</kbd>
   pour le supprimer.

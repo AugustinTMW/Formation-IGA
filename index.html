@@ -357,6 +357,57 @@ span.edge-badge { cursor: default; }
 /* Handles under nodes */
 .handle { position: absolute; left: 50%; top: 100%; transform: translateX(-50%); display: flex; gap: 6px; align-items: center; margin-top: 14px; z-index: 4; }
 .handle--round { margin-top: 0; transform: translate(-50%, -50%); }
+/* Drag-to-connect port (bottom centre of every block that can have a next step) */
+.port-btn {
+  position: absolute; left: 50%; top: 100%; transform: translate(-50%, -50%); z-index: 5;
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; padding: 0;
+  background: var(--surface); color: var(--primary); border: 2px solid var(--primary); cursor: crosshair;
+  box-shadow: var(--shadow-sm); transition: background-color .15s, color .15s, transform .15s; touch-action: none;
+}
+.port-btn .ico { width: 14px; height: 14px; }
+.port-btn:hover, .port-btn.is-active { background: var(--primary); color: #fff; transform: translate(-50%, -50%) scale(1.15); }
+.node--action .handle:not(.handle--round):not(.handle--side) { margin-top: 22px; }
+.node--start .handle { margin-top: 22px; }
+/* Drop target feedback while drawing an arrow */
+.node.is-drop-ok .card, .node--fixed.is-drop-ok { box-shadow: 0 0 0 4px #86efac, var(--shadow); }
+.node.is-drop-ok .card { border-color: #22a355; }
+.node.is-drop-bad .card, .node--fixed.is-drop-bad { box-shadow: 0 0 0 4px #fca5a5, var(--shadow); }
+.node.is-drop-bad .card { border-color: var(--danger); }
+.link-preview { fill: none; stroke: var(--primary); stroke-width: 2.4; stroke-dasharray: 7 6; }
+.link-preview.is-bad { stroke: var(--danger); }
+.canvas.is-linking, .canvas.is-linking .node, .canvas.is-linking .node--action { cursor: crosshair; }
+.canvas.is-linking .edge-badge, .canvas.is-linking .handle, .canvas.is-linking .edge-end { pointer-events: none; }
+.link-tip {
+  position: absolute; z-index: 20; pointer-events: none; transform: translate(14px, 14px);
+  background: var(--ink); color: #fff; font-size: 12px; font-weight: 600; padding: 5px 9px; border-radius: 8px;
+  white-space: nowrap; box-shadow: var(--shadow);
+}
+.link-tip.is-bad { background: #7f1414; }
+.link-tip.is-ok { background: #0f5a2b; }
+/* Movable end of an existing arrow */
+.edge-end {
+  position: absolute; width: 16px; height: 16px; transform: translate(-50%, -50%); z-index: 4; border-radius: 50%;
+  cursor: grab; background: #fff; border: 2px solid currentColor; opacity: 0; transition: opacity .15s; touch-action: none;
+}
+.edge-end--manual { color: var(--manual); }
+.edge-end--automatic { color: var(--auto); }
+.edge-end--unknown { color: #8f8aa3; }
+.edge-end:hover, .canvas:not(.is-linking) .world:hover .edge-end { opacity: .9; }
+.edges path.edge.is-hidden { display: none; }
+/* Transition picker shown when an arrow is released */
+.trans-pop {
+  position: absolute; z-index: 30; background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: var(--shadow-lg); padding: 10px; width: 250px; display: grid; gap: 6px;
+}
+.trans-pop-head { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--ink); padding: 0 2px 2px; }
+.trans-pop-head .icon-btn { margin-left: auto; width: 26px; height: 26px; }
+.trans-pop-sub { font-size: 12px; color: var(--muted); padding: 0 2px 4px; }
+.trans-opt {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border-radius: 10px; cursor: pointer;
+  background: #fff; border: 1.5px solid var(--line-2); font-weight: 600; font-size: 14px; text-align: left;
+}
+.trans-opt--manual:hover, .trans-opt--manual:focus-visible { border-color: var(--manual); background: var(--manual-bg); }
+.trans-opt--automatic:hover, .trans-opt--automatic:focus-visible { border-color: var(--auto); background: var(--auto-bg); }
 .handle--side { left: 100%; top: 50%; transform: translateY(-50%); margin: 0 0 0 16px; flex-direction: column; align-items: flex-start; gap: 6px; }
 .pill {
   display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px 0 10px; border-radius: 999px;
@@ -743,7 +794,7 @@ function saveState() {
   try { localStorage.setItem(PART.storageKey, JSON.stringify(S)); } catch (e) { /* storage unavailable: keep working in memory */ }
 }
 let S = null;   // state of the current part (set when the part is opened)
-const UI = { mode: 'mine', correction: null, tipsOpen: false };
+const UI = { mode: 'mine', correction: null, tipsOpen: false, relinkEdge: null };
 
 /* =====================================================================
    4. CATALOG HELPERS
@@ -1204,7 +1255,9 @@ function openActionModal(opts) {
             toast('Action updated.', 'success');
           } else {
             const id = newId('a');
-            const p = placeNew(parent || null);
+            const p = opts.at && parent === parentId
+              ? { x: snap(opts.at.x - DEFAULT_SIZE.action.w / 2), y: snap(opts.at.y) }   // released in empty space
+              : placeNew(parent || null);
             S.nodes[id] = { id, type: 'action', x: p.x, y: p.y, name, doer, app };
             if (parent) S.edges.push({ id: newId('e'), from: parent, to: id, type: tr });
             commit('node:' + id);
@@ -1315,23 +1368,35 @@ async function openEdgeModal(edgeId) {
   const e = S.edges.find(x => x.id === edgeId);
   if (!e) return;
   const a = S.nodes[e.from], b = S.nodes[e.to];
-  let action = null;
+  let action = null, newTarget = null;
   await openDialog({
     title: 'Edit connection', icon: 'link',
     body: '<p class="context-line">' + icon('workflow') + '<span><strong>' + esc(nodeLabel(a)) + '</strong> → <strong>' + esc(nodeLabel(b)) + '</strong></span></p>' +
       '<fieldset class="field"><legend>Transition type</legend>' + transitionChoices('etrans', e.type) + '</fieldset>' +
+      (e.locked ? '' : '<div class="field"><label for="e-target">Connected to</label><select class="select" id="e-target" data-field="etarget" aria-describedby="help-etarget err-etarget">' +
+        Object.values(S.nodes).filter(n => n.id === e.to || canConnect(e.from, n.id, e.id).ok).sort((p, q) => p.y - q.y || p.x - q.x)
+          .map(n => '<option value="' + esc(n.id) + '"' + (n.id === e.to ? ' selected' : '') + '>' + esc(n.type === 'action' ? nodeLabel(n) : nodeLabel(n) + ' node') + '</option>').join('') +
+        '</select><p class="help" id="help-etarget">Tip: you can also drag the end of the arrow onto another step.</p>' + errorSlot('etarget') + '</div>') +
       (e.locked ? '<p class="help">This connection starts the workflow: its type can be changed but it cannot be deleted.</p>' : ''),
     actions: [
       { label: 'Delete connection', variant: 'ghost', icon: 'trash', left: true, disabled: !!e.locked, onClick() { action = 'delete'; } },
       { label: 'Cancel', value: null },
-      { label: 'Save changes', variant: 'primary', submit: true, icon: 'check', onClick(root) { action = ($('input[name="etrans"]:checked', root) || {}).value || e.type; } }
+      { label: 'Save changes', variant: 'primary', submit: true, icon: 'check', onClick(root) {
+        action = ($('input[name="etrans"]:checked', root) || {}).value || e.type || 'keep';
+        const sel = $('#e-target', root);
+        if (sel && sel.value !== e.to) { const r = canConnect(e.from, sel.value, e.id); if (!r.ok) { setError(root, 'etarget', r.reason); return false; } newTarget = sel.value; }
+      } }
     ]
   });
   if (!action) return;
   if (action === 'delete') {
     S.edges = S.edges.filter(x => x !== e);
     commit(); toast('Connection deleted.');
-  } else { e.type = action; clearIssues(e.to); commit(); }
+  } else {
+    if (action !== 'keep') e.type = action;
+    if (newTarget) { clearIssues(e.to); e.to = newTarget; }
+    clearIssues(e.to); commit();
+  }
 }
 async function deleteAction(id) {
   const n = S.nodes[id];
@@ -1585,7 +1650,7 @@ function mountExercise() {
           '<div id="notices"></div>' +
           '<div class="canvas" id="canvas" aria-label="Workflow canvas. Use Tab to move between steps, arrow keys to move a step, Enter to edit and Delete to remove an action.">' +
             '<div class="world" id="world">' +
-              '<svg class="edges" id="edges" aria-hidden="true"><defs>' + markerDefs() + '</defs><g id="edge-paths"></g></svg>' +
+              '<svg class="edges" id="edges" aria-hidden="true"><defs>' + markerDefs() + '</defs><g id="edge-paths"></g><g id="link-layer"></g></svg>' +
               '<div id="nodes"></div><div id="badges"></div>' +
             '</div>' +
             '<div class="canvas-controls" role="toolbar" aria-label="View controls">' +
@@ -1695,7 +1760,8 @@ function renderPanel() {
       '<ul class="checklist">' + st.items.map(i => '<li class="' + (i.ok ? 'is-ok' : '') + '">' + icon(i.ok ? 'circleCheck' : 'circle') + '<span><span class="sr-only">' + (i.ok ? 'Done: ' : 'To do: ') + '</span>' + esc(i.label) + '</span></li>').join('') + '</ul></section>' +
     '<section class="panel-card"><details class="tips" id="tips"' + (tipsOpen ? ' open' : '') + '><summary>' + icon('lightbulb') + 'How it works' + icon('chevronDown', 'chev') + '</summary><ul>' +
       '<li>Click <strong>Add an action</strong> under a step to create the next one.</li>' +
-      '<li>Use the <strong>+</strong> button under a connected step to add another connection, to a new or an existing step.</li>' +
+      '<li><strong>Drag the round + port</strong> under a step onto another step to draw an arrow, then choose Manual or Automatic. Release it in empty space to create a new action there.</li>' +
+      '<li><strong>Drag the end of an arrow</strong> onto another step to reconnect it.</li>' +
       '<li>Hover or focus a card to <strong>edit</strong> or <strong>delete</strong> it.</li>' +
       '<li>Click the label on an arrow to change its transition type.</li>' +
       '<li>Drag cards to organise the workflow, or use <strong>Tidy up</strong>.</li>' +
@@ -1744,10 +1810,11 @@ function nodeHTML(n, g, fromStart) {
       ports = '<div class="ports ports--bottom"><span class="port' + (outs ? ' is-used' : '') + '" style="left:50%"></span></div>';
     }
     let handle = '';
-    if (!ro && n.type === 'start' && !outs) handle = '<div class="handle"><button type="button" class="pill" data-act="add-after" data-id="start" data-key="add:start">' + icon('plus') + 'Add an action</button></div>';
+    if (!ro && (n.type === 'and' || (n.type === 'start' && !outs))) handle += portHTML(n, label);
+    if (!ro && n.type === 'start' && !outs) handle += '<div class="handle"><button type="button" class="pill" data-act="add-after" data-id="start" data-key="add:start">' + icon('plus') + 'Add an action</button></div>';
     if (!ro && n.type === 'and') {
       const full = outs >= MAX_BRANCHES;
-      handle = '<div class="handle handle--side"><div class="handle-row">' +
+      handle += '<div class="handle handle--side"><div class="handle-row">' +
         '<button type="button" class="pill" data-act="add-after" data-id="and" data-key="add:and"' + (full ? ' aria-disabled="true"' : '') + ' aria-label="Add a parallel branch, ' + outs + ' of 3 used">' + icon('plus') + 'Add a branch <span class="pill-count">' + outs + '/3</span></button>' +
         '<button type="button" class="link-btn" data-act="connect" data-id="and" data-key="link:and" aria-label="Connect the AND node to an existing step" title="Connect to an existing step">' + icon('link') + '</button></div>' +
         '<span class="and-hint">' + icon('info') + 'Add 1 to 3 parallel actions</span></div>';
@@ -1782,10 +1849,9 @@ function nodeHTML(n, g, fromStart) {
   }
   let handle = '';
   if (!ro) {
-    handle = outs ?
-      '<div class="handle handle--round"><button type="button" class="round-btn" data-act="connect" data-id="' + esc(n.id) + '" data-key="link:' + esc(n.id) + '" aria-label="Add a connection from ' + esc(name) + '" title="Add a connection">' + icon('plus') + '</button></div>' :
+    handle = portHTML(n, name) + (outs ? '' :
       '<div class="handle"><button type="button" class="pill" data-act="add-after" data-id="' + esc(n.id) + '" data-key="add:' + esc(n.id) + '" aria-label="Add an action after ' + esc(name) + '">' + icon('plus') + 'Add an action</button>' +
-      '<button type="button" class="link-btn" data-act="connect" data-id="' + esc(n.id) + '" data-key="link:' + esc(n.id) + '" aria-label="Connect ' + esc(name) + ' to an existing step or choose a transition" title="Connect to an existing step (e.g. END)">' + icon('link') + '</button></div>';
+      '<button type="button" class="link-btn" data-act="connect" data-id="' + esc(n.id) + '" data-key="link:' + esc(n.id) + '" aria-label="Connect ' + esc(name) + ' to an existing step or choose a transition" title="Connect to an existing step (e.g. END)">' + icon('link') + '</button></div>');
   }
   const aria = 'Action: ' + name + '. Doer: ' + (doer ? doer.label : 'not set') + '. Application: ' + (app ? app.label : (n.app || 'not set')) + '. ' +
     (ins.length && inType !== 'unknown' ? 'Incoming transition: ' + transLabel(inType) + '. ' : ins.length ? '' : 'Not connected. ') + (issues.length ? 'To review: ' + issues.join(' ') : '');
@@ -1798,6 +1864,13 @@ function nodeHTML(n, g, fromStart) {
     '</ul>' + footer + '</div>' + handle + '</div>';
 }
 
+/* Connection port: drag it onto another step (or into empty space) to draw an arrow,
+   or click / press Enter to open the connection dialog. */
+function portHTML(n, name) {
+  return '<button type="button" class="port-btn" data-act="connect" data-port="' + esc(n.id) + '" data-id="' + esc(n.id) + '" data-key="port:' + esc(n.id) + '"' +
+    ' aria-label="Add a connection from ' + esc(name) + '. Drag onto another step, or press Enter to choose"' +
+    ' title="Drag to another step to draw an arrow (or into empty space to create a new action). Click to choose from a list.">' + icon('plus') + '</button>';
+}
 function edgeGeometry(e, g) {
   const a = g.nodes[e.from], b = g.nodes[e.to];
   if (!a || !b) return null;
@@ -1824,7 +1897,7 @@ function edgeGeometry(e, g) {
     d = 'M' + sx + ',' + sy + ' L' + sx + ',' + y1 + ' L' + ox + ',' + y1 + ' L' + ox + ',' + y2 + ' L' + tx + ',' + y2 + ' L' + tx + ',' + ty;
     mid = { x: ox, y: (y1 + y2) / 2 };
   }
-  return { d, mid };
+  return { d, mid, sx, sy, tx, ty };
 }
 function renderEdges() {
   const g = currentGraph();
@@ -1833,6 +1906,8 @@ function renderEdges() {
     const geo = edgeGeometry(e, g);
     if (!geo) return;
     const t = e.type || 'unknown';
+    if (!g.readonly && UI.relinkEdge === e.id) return;   // being re-attached: drawn by the preview
+    if (!g.readonly && !e.locked) badges += '<span class="edge-end edge-end--' + t + '" data-edge-end="' + esc(e.id) + '" style="left:' + geo.tx + 'px;top:' + (geo.ty - 4) + 'px" title="Drag to connect this arrow to another step" aria-hidden="true"></span>';
     const label = e.type ? transLabel(e.type) : 'Transition not specified';
     const desc = label + ': ' + nodeLabel(g.nodes[e.from]) + ' to ' + nodeLabel(g.nodes[e.to]);
     paths += '<path class="edge edge--' + t + '" d="' + geo.d + '" marker-end="url(#arrow-' + t + ')"><title>' + esc(desc) + '</title></path>';
@@ -1918,9 +1993,20 @@ function bindCanvas() {
   let drag = null;
   canvasEl.addEventListener('pointerdown', ev => {
     if (ev.button !== 0) return;
+    if (ev.target.closest('.trans-pop')) return;
+    const g = currentGraph();
+    // Draw a new arrow from a port, or re-attach the end of an existing arrow.
+    const port = ev.target.closest('[data-port]'), endH = ev.target.closest('[data-edge-end]');
+    if ((port || endH) && !g.readonly) {
+      ev.preventDefault();
+      closeTransPop();
+      if (port) drag = { kind: 'link', from: port.dataset.port, el: port, sx: ev.clientX, sy: ev.clientY, moved: false };
+      else { const e = S.edges.find(x => x.id === endH.dataset.edgeEnd); drag = { kind: 'relink', edge: e, from: e.from, sx: ev.clientX, sy: ev.clientY, moved: false }; }
+      canvasEl.setPointerCapture(ev.pointerId);
+      return;
+    }
     if (ev.target.closest('button, a, input, select, .canvas-controls, .canvas-hint')) return;
     const nodeEl = ev.target.closest('.node');
-    const g = currentGraph();
     if (nodeEl && !g.readonly) {
       const n = S.nodes[nodeEl.dataset.id];
       drag = { kind: 'node', id: n.id, el: nodeEl, sx: ev.clientX, sy: ev.clientY, ox: n.x, oy: n.y, moved: false };
@@ -1934,7 +2020,9 @@ function bindCanvas() {
     if (!drag) return;
     const dx = ev.clientX - drag.sx, dy = ev.clientY - drag.sy;
     if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 4) return;
+    if (!drag.moved && (drag.kind === 'link' || drag.kind === 'relink')) startLink(drag);
     drag.moved = true;
+    if (drag.kind === 'link' || drag.kind === 'relink') { updateLink(drag, ev); return; }
     if (drag.kind === 'pan') { applyView({ z: view.z, x: drag.ox + dx, y: drag.oy + dy }); return; }
     const n = S.nodes[drag.id];
     n.x = snap(drag.ox + dx / view.z); n.y = snap(drag.oy + dy / view.z);
@@ -1944,6 +2032,16 @@ function bindCanvas() {
   });
   const end = ev => {
     if (!drag) return;
+    if (drag.kind === 'link' || drag.kind === 'relink') {
+      const d = drag; drag = null;
+      try { canvasEl.releasePointerCapture(ev.pointerId); } catch (e) { /* ignore */ }
+      if (!d.moved) {   // simple click
+        if (d.kind === 'link') openConnectModal(d.from); else openEdgeModal(d.edge.id);
+        return;
+      }
+      finishLink(d, ev.type === 'pointercancel' ? null : ev);
+      return;
+    }
     if (drag.kind === 'node') {
       drag.el.classList.remove('is-dragging');
       if (drag.moved) saveState(); else drag.el.focus({ preventScroll: true });
@@ -1974,12 +2072,163 @@ function bindCanvas() {
     } else if (ev.key === 'Enter' && n.type === 'action') { ev.preventDefault(); openActionModal({ mode: 'edit', nodeId: n.id }); }
     else if ((ev.key === 'Delete' || ev.key === 'Backspace') && n.type === 'action') { ev.preventDefault(); deleteAction(n.id); }
   });
+  document.addEventListener('keydown', ev => {
+    if (ev.key !== 'Escape') return;
+    if (drag && (drag.kind === 'link' || drag.kind === 'relink')) { const d = drag; drag = null; cancelLink(d); }
+    else if (transPop) { ev.preventDefault(); closeTransPop(true); }
+  });
+  document.addEventListener('pointerdown', ev => { if (transPop && !ev.target.closest('.trans-pop')) closeTransPop(true); }, true);
   edgesEl.addEventListener('click', ev => { const p = ev.target.closest('[data-edge-id]'); if (p) openEdgeModal(p.dataset.edgeId); });
   window.addEventListener('resize', () => { if (inExercise() && canvasEl.isConnected) applyView(); });
 }
+/* ---------- Drawing arrows with the mouse ---------- */
+let transPop = null;
+function toWorld(ev) {
+  const r = canvasEl.getBoundingClientRect();
+  return { x: (ev.clientX - r.left - view.x) / view.z, y: (ev.clientY - r.top - view.y) / view.z, cx: ev.clientX - r.left, cy: ev.clientY - r.top };
+}
+/** Why the source cannot get one more outgoing arrow (null if it can). */
+function outgoingBlocked(from) {
+  const n = S.nodes[from];
+  if (n.type === 'end') return MSG.fromEnd;
+  if (n.type === 'and' && outEdges('and').length >= MAX_BRANCHES) return MSG.maxBranches;
+  if (n.type === 'start' && outEdges('start').length) return MSG.startOnce;
+  return null;
+}
+function linkSource(d) {
+  if (d.kind === 'relink') { const geo = edgeGeometry(d.edge, currentGraph()); return { x: geo.sx, y: geo.sy }; }
+  const n = S.nodes[d.from], sz = sizeOf(n);
+  return { x: n.x + sz.w / 2, y: n.y + sz.h };
+}
+function startLink(d) {
+  canvasEl.classList.add('is-linking');
+  if (d.el) d.el.classList.add('is-active');
+  if (d.kind === 'relink') { UI.relinkEdge = d.edge.id; renderEdges(); }
+  d.tip = document.createElement('div');
+  d.tip.className = 'link-tip';
+  canvasEl.appendChild(d.tip);
+}
+function linkTarget(d, ev) {
+  const el = document.elementFromPoint(ev.clientX, ev.clientY);
+  const nodeEl = el && el.closest ? el.closest('.node') : null;
+  if (!nodeEl || !canvasEl.contains(nodeEl)) return { nodeEl: null };
+  const id = nodeEl.dataset.id;
+  if (d.kind === 'relink' && id === d.edge.to) return { nodeEl, id, same: true, check: { ok: true } };
+  return { nodeEl, id, check: canConnect(d.from, id, d.kind === 'relink' ? d.edge.id : null) };
+}
+function updateLink(d, ev) {
+  const p = toWorld(ev), s0 = linkSource(d);
+  const t = linkTarget(d, ev);
+  if (d.hover && d.hover !== t.nodeEl) d.hover.classList.remove('is-drop-ok', 'is-drop-bad');
+  d.hover = t.nodeEl;
+  let tip, cls = '';
+  if (t.nodeEl) {
+    t.nodeEl.classList.toggle('is-drop-ok', t.check.ok);
+    t.nodeEl.classList.toggle('is-drop-bad', !t.check.ok);
+    tip = t.check.ok ? (t.same ? 'Release to keep this connection' : 'Release to connect to ' + nodeLabel(S.nodes[t.id])) : t.check.reason;
+    cls = t.check.ok ? 'is-ok' : 'is-bad';
+  } else if (d.kind === 'relink') {
+    tip = 'Release on a step to move this arrow';
+  } else {
+    const blocked = outgoingBlocked(d.from);
+    tip = blocked || 'Release to create a new action here';
+    cls = blocked ? 'is-bad' : '';
+  }
+  d.tip.textContent = tip;
+  d.tip.className = 'link-tip ' + cls;
+  d.tip.style.left = p.cx + 'px'; d.tip.style.top = p.cy + 'px';
+  const dy = Math.max(30, Math.abs(p.y - s0.y) / 2);
+  $('#link-layer').innerHTML = '<path class="link-preview' + (cls === 'is-bad' ? ' is-bad' : '') + '" d="M' + s0.x + ',' + s0.y + ' C' + s0.x + ',' + (s0.y + dy) + ' ' + p.x + ',' + (p.y - dy) + ' ' + p.x + ',' + p.y + '"/>';
+}
+function clearLinkVisuals(d, keepPreview) {
+  canvasEl.classList.remove('is-linking');
+  if (d.el) d.el.classList.remove('is-active');
+  if (d.hover) d.hover.classList.remove('is-drop-ok', 'is-drop-bad');
+  if (d.tip) d.tip.remove();
+  if (!keepPreview) $('#link-layer').innerHTML = '';
+}
+function cancelLink(d) {
+  clearLinkVisuals(d);
+  if (d.kind === 'relink') { UI.relinkEdge = null; renderEdges(); }
+}
+function finishLink(d, ev) {
+  if (!ev) return cancelLink(d);
+  const t = linkTarget(d, ev);
+  if (d.kind === 'relink') {
+    UI.relinkEdge = null;
+    clearLinkVisuals(d);
+    if (t.nodeEl && t.check.ok && !t.same) {
+      clearIssues(d.edge.to);
+      d.edge.to = t.id;
+      clearIssues(t.id);
+      commit();
+      toast('Arrow connected to ' + nodeLabel(S.nodes[t.id]) + '.', 'success');
+    } else {
+      if (t.nodeEl && !t.check.ok) toast(t.check.reason, 'error');
+      renderEdges();
+    }
+    return;
+  }
+  if (t.nodeEl) {
+    if (!t.check.ok) { clearLinkVisuals(d); toast(t.check.reason, 'error'); return; }
+    clearLinkVisuals(d, true);
+    openTransPop(ev, 'Connect to ' + nodeLabel(S.nodes[t.id]), type => {
+      if (!type) return;
+      const r = canConnect(d.from, t.id);
+      if (!r.ok) { toast(r.reason, 'error'); return; }
+      S.edges.push({ id: newId('e'), from: d.from, to: t.id, type });
+      clearIssues(t.id);
+      commit();
+      toast('Connection added: ' + transLabel(type).toLowerCase() + '.', 'success');
+    });
+    return;
+  }
+  const blocked = outgoingBlocked(d.from);
+  if (blocked) { clearLinkVisuals(d); toast(blocked, 'error'); return; }
+  const at = toWorld(ev);
+  clearLinkVisuals(d, true);
+  openTransPop(ev, 'New action here', type => {
+    if (type) openActionModal({ mode: 'create', parentId: d.from, transition: type, at: { x: at.x, y: at.y } });
+  });
+}
+/** Small popover asking for the transition type; cb(type | null). */
+function openTransPop(ev, title, cb) {
+  closeTransPop(true);
+  const r = canvasEl.getBoundingClientRect();
+  const pop = document.createElement('div');
+  pop.className = 'trans-pop';
+  pop.setAttribute('role', 'dialog');
+  pop.setAttribute('aria-label', 'Choose the transition type');
+  pop.innerHTML = '<div class="trans-pop-head">' + icon('link') + '<span>' + esc(title) + '</span>' +
+      '<button type="button" class="icon-btn" data-pop="cancel" aria-label="Cancel">' + icon('x') + '</button></div>' +
+    '<div class="trans-pop-sub">Choose the transition type</div>' +
+    CFG.transitions.map(t => '<button type="button" class="trans-opt trans-opt--' + esc(t.id) + '" data-pop="' + esc(t.id) + '">' + arrowSample(t.id) + esc(t.label) + '</button>').join('');
+  canvasEl.appendChild(pop);
+  const x = clamp(ev.clientX - r.left + 12, 8, r.width - pop.offsetWidth - 8);
+  const y = clamp(ev.clientY - r.top + 12, 8, r.height - pop.offsetHeight - 8);
+  pop.style.left = x + 'px'; pop.style.top = y + 'px';
+  transPop = { el: pop, cb };
+  pop.addEventListener('click', e => {
+    const b = e.target.closest('[data-pop]');
+    if (!b) return;
+    const v = b.dataset.pop === 'cancel' ? null : b.dataset.pop;
+    closeTransPop(false);
+    $('#link-layer').innerHTML = '';
+    cb(v);
+  });
+  const first = $('.trans-opt', pop); if (first) first.focus();
+}
+function closeTransPop(cancel) {
+  if (!transPop) return;
+  const p = transPop; transPop = null;
+  p.el.remove();
+  if (cancel) { $('#link-layer').innerHTML = ''; p.cb(null); }
+}
+
 async function onExerciseClick(ev) {
   const b = ev.target.closest('[data-act]');
   if (!b || b.disabled) return;
+  if (b.dataset.port && ev.detail > 0) return;   // mouse click on a port: handled on pointerup
   const act = b.dataset.act, id = b.dataset.id;
   switch (act) {
     case 'add-after': addAfter(id); break;
