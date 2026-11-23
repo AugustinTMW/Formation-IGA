@@ -860,8 +860,6 @@ function structuralStatus() {
   const startOk = outEdges('start').length > 0;
   const fieldsOk = actions.every(a => (a.name || '').trim() && a.doer && a.app);
   const connectedOk = actions.every(a => fromStart.has(a.id) && outEdges(a.id).length > 0);
-  const bypass = reachable('start', new Set(['and']));
-  const andOk = fromStart.has('and') && !bypass.has('end');
   const nb = outEdges('and').length;
   const branchesOk = nb >= 1 && nb <= MAX_BRANCHES;
   const fromAnd = reachable('and');
@@ -869,7 +867,6 @@ function structuralStatus() {
   const items = [
     { ok: startOk, label: startLabel() + ' is connected to the first action' },
     { ok: fieldsOk && actions.length > 0, label: 'Every action has a name, a doer and an application' },
-    { ok: andOk, label: 'The main actions are chained up to the AND node' },
     { ok: branchesOk, label: 'The AND node has 1 to 3 parallel branches' },
     { ok: endOk, label: 'Every branch is connected to the END node' },
     { ok: connectedOk, label: 'No action is isolated or left without a next step' }
