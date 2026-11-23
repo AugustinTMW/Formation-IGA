@@ -115,10 +115,10 @@ button, input, select { font: inherit; color: inherit; }
 }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; border-radius: 8px; }
 .brand-mark {
-  width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-800) 100%); color: #fff;
+  width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex: none;
+  background: #fff; border: 2px solid #451dc7; overflow: hidden;
 }
-.brand-mark .ico { width: 19px; height: 19px; }
+.brand-mark img { width: 32px; height: auto; display: block; }
 .brand-name { font-weight: 700; font-size: 16px; letter-spacing: .01em; }
 .brand-sub { font-size: 12px; color: var(--muted); display: block; line-height: 1.2; }
 .appbar-crumb { margin-left: auto; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
@@ -561,7 +561,7 @@ fieldset.field > legend { margin-bottom: 6px; }
 <a class="skip-link" href="#main">Skip to main content</a>
 <header class="appbar">
   <a class="brand" href="#/" data-key="brand" aria-label="Cyber AcaDimy – home">
-    <span class="brand-mark" id="brand-mark"></span>
+    <span class="brand-mark"><img src="assets/wavestone-symbol.svg" alt="" width="32" height="24"></span>
     <span><span class="brand-name">Cyber AcaDimy</span><span class="brand-sub">Identity Governance &amp; Administration</span></span>
   </a>
   <div class="appbar-crumb" id="crumb"></div>
@@ -708,8 +708,27 @@ function initialState() {
     solved: false,
     feedback: null,
     view: null,
-    seq: 2
+    seq: 2,
+    firstActionCfg: Object.assign({}, fa)
   };
+}
+/* A trainer may update the pre-filled action in config.js after participants
+   have started. Saved progress must not hide that update: every field that is
+   still empty, or still equal to the previous configuration, takes the new
+   configured value. Fields the participant changed themselves are kept. */
+function syncFirstAction(s, part) {
+  const cfg = part.firstAction || {};
+  const old = s.firstActionCfg || {};
+  const a1 = Object.values(s.nodes).find(n => n.required);
+  if (a1) {
+    [['name', 'name'], ['doer', 'doer'], ['app', 'application']].forEach(([f, c]) => {
+      if (cfg[c] && (!a1[f] || a1[f] === old[c])) a1[f] = cfg[c];
+    });
+    const e = s.edges.find(x => x.from === 'start' && x.to === a1.id);
+    if (e && cfg.transition && (!e.type || e.type === old.transition)) e.type = cfg.transition;
+  }
+  s.firstActionCfg = Object.assign({}, cfg);
+  return s;
 }
 function loadState(part) {
   try {
@@ -717,7 +736,7 @@ function loadState(part) {
     if (!raw) return null;
     const s = JSON.parse(raw);
     if (!s || s.version !== 1 || !s.nodes || !s.nodes.start || !s.nodes.and || !s.nodes.end || !Array.isArray(s.edges)) return null;
-    return s;
+    return syncFirstAction(s, part || PART);
   } catch (e) { return null; }
 }
 function saveState() {
@@ -1996,7 +2015,6 @@ async function onExerciseClick(ev) {
 /* =====================================================================
    17. BOOT
    ===================================================================== */
-$('#brand-mark').innerHTML = icon('shield');
 if (!CFG) {
   main.innerHTML = '<div class="fatal"><h1>Configuration missing</h1><p>The file <code>config.js</code> could not be loaded. Make sure it is located next to <code>index.html</code>.</p></div>';
   return;
