@@ -1,0 +1,1930 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Cyber Academy – IGA Workshops</title>
+<style>
+/* =====================================================================
+   DESIGN TOKENS
+   ===================================================================== */
+:root {
+  --primary: #5221b5;
+  --primary-600: #47199f;
+  --primary-700: #3a1585;
+  --primary-800: #2b0f63;
+  --primary-50: #f5f0fe;
+  --primary-100: #ebe1fc;
+  --primary-200: #d6c4f7;
+  --ink: #1d1630;
+  --ink-2: #3b3550;
+  --muted: #5d5873;
+  --line: #e4e1ec;
+  --line-2: #d3cfdf;
+  --bg: #f6f5fa;
+  --surface: #ffffff;
+  --manual: #1d4ed8;
+  --manual-bg: #e8efff;
+  --auto: #c81e1e;
+  --auto-bg: #fdecec;
+  --success: #157f3c;
+  --success-bg: #e7f6ec;
+  --warning: #9a4a05;
+  --warning-bg: #fff4e0;
+  --warning-line: #f0b25a;
+  --danger: #b91c1c;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(29, 22, 48, .06);
+  --shadow: 0 1px 2px rgba(29, 22, 48, .06), 0 6px 16px rgba(29, 22, 48, .07);
+  --shadow-lg: 0 10px 40px rgba(29, 22, 48, .18);
+  --focus: 0 0 0 3px #fff, 0 0 0 5px var(--primary);
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --appbar-h: 60px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p { margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+.ico { width: 18px; height: 18px; flex: none; display: inline-block; vertical-align: middle; }
+.sr-only {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+:focus-visible { outline: none; box-shadow: var(--focus); }
+.skip-link {
+  position: absolute; left: 12px; top: -48px; z-index: 100;
+  background: var(--primary); color: #fff; padding: 8px 14px; border-radius: var(--radius-sm);
+  text-decoration: none; font-weight: 600;
+}
+.skip-link:focus { top: 10px; }
+
+/* =====================================================================
+   BUTTONS
+   ===================================================================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 40px; padding: 8px 16px; border-radius: 10px;
+  border: 1px solid transparent; font-weight: 600; font-size: 14px; cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s, transform .05s;
+  white-space: nowrap; text-decoration: none;
+}
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled, .btn[aria-disabled="true"] { cursor: not-allowed; }
+.btn--primary { background: var(--primary); color: #fff; }
+.btn--primary:hover:not(:disabled) { background: var(--primary-600); }
+.btn--primary:active:not(:disabled) { background: var(--primary-700); }
+.btn--primary:disabled { background: #cbc6d8; color: #4a4560; }
+.btn--secondary { background: var(--surface); color: var(--ink); border-color: var(--line-2); }
+.btn--secondary:hover:not(:disabled) { background: var(--primary-50); border-color: var(--primary-200); color: var(--primary-700); }
+.btn--secondary:active:not(:disabled) { background: var(--primary-100); }
+.btn--secondary:disabled { color: #8a8599; background: #f3f2f6; }
+.btn--ghost { background: transparent; color: var(--ink-2); }
+.btn--ghost:hover:not(:disabled) { background: var(--primary-50); color: var(--primary-700); }
+.btn--danger { background: var(--danger); color: #fff; }
+.btn--danger:hover:not(:disabled) { background: #991b1b; }
+.btn--success { background: var(--success); color: #fff; }
+.btn--success:hover:not(:disabled) { background: #106430; }
+.btn--sm { min-height: 32px; padding: 4px 10px; font-size: 13px; border-radius: 8px; }
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid transparent;
+  background: transparent; color: var(--ink-2); cursor: pointer; padding: 0;
+  transition: background-color .15s, color .15s;
+}
+.icon-btn:hover:not(:disabled) { background: var(--primary-50); color: var(--primary-700); }
+.icon-btn:disabled { opacity: .45; cursor: not-allowed; }
+.icon-btn--danger:hover:not(:disabled) { background: #fdecec; color: var(--danger); }
+
+/* =====================================================================
+   APP BAR
+   ===================================================================== */
+.appbar {
+  height: var(--appbar-h); background: var(--surface); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 16px; padding: 0 24px; position: sticky; top: 0; z-index: 30;
+}
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; border-radius: 8px; }
+.brand-mark {
+  width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-800) 100%); color: #fff;
+}
+.brand-mark .ico { width: 19px; height: 19px; }
+.brand-name { font-weight: 700; font-size: 16px; letter-spacing: .01em; }
+.brand-sub { font-size: 12px; color: var(--muted); display: block; line-height: 1.2; }
+.appbar-crumb { margin-left: auto; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.appbar-crumb strong { color: var(--ink); font-weight: 600; }
+
+/* =====================================================================
+   HOME
+   ===================================================================== */
+.home { max-width: 1120px; margin: 0 auto; padding: 48px 24px 64px; }
+.home-hero {
+  background: linear-gradient(120deg, var(--primary-800) 0%, var(--primary) 70%, #6d3ad6 100%);
+  color: #fff; border-radius: var(--radius-lg); padding: 40px 44px; position: relative; overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.home-hero::after {
+  content: ""; position: absolute; right: -60px; top: -60px; width: 280px; height: 280px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 70%);
+}
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.home-hero .eyebrow { color: #e3d6ff; }
+.home-hero h1 { font-size: 32px; line-height: 1.2; margin-top: 8px; font-weight: 700; }
+.home-hero p.lead { margin-top: 12px; max-width: 640px; color: #f1eaff; font-size: 16px; }
+.section-title { font-size: 18px; font-weight: 700; margin: 36px 0 16px; }
+.exercise-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+.ex-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  padding: 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow-sm);
+  transition: box-shadow .2s, border-color .2s, transform .2s;
+}
+.ex-card:not(.is-disabled):hover { box-shadow: var(--shadow); border-color: var(--primary-200); transform: translateY(-2px); }
+.ex-card-top { display: flex; align-items: center; gap: 14px; }
+.ex-card-icon {
+  width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--primary-50); color: var(--primary);
+}
+.ex-card-icon .ico { width: 24px; height: 24px; }
+.ex-card .eyebrow { color: var(--primary); }
+.ex-card h2 { font-size: 19px; line-height: 1.3; margin-top: 2px; }
+.ex-card p.desc { color: var(--muted); flex: 1; }
+.ex-card-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+  padding: 3px 10px; border-radius: 999px; background: #f1f0f5; color: var(--ink-2);
+}
+.tag .ico { width: 14px; height: 14px; }
+.tag--progress { background: var(--primary-50); color: var(--primary-700); }
+.tag--done { background: var(--success-bg); color: var(--success); }
+.tag--soon { background: #fff4e0; color: var(--warning); }
+.ex-card.is-disabled { background: #fbfbfd; }
+.ex-card.is-disabled .ex-card-icon { background: #f1f0f5; color: #7b768c; }
+.ex-card-actions { display: flex; gap: 10px; align-items: center; }
+
+/* =====================================================================
+   EXERCISE LAYOUT
+   ===================================================================== */
+.instruction {
+  background: linear-gradient(110deg, var(--primary-800) 0%, var(--primary) 100%);
+  color: #fff; padding: 18px 24px;
+}
+.instruction-inner { display: flex; gap: 16px; align-items: flex-start; max-width: 1600px; margin: 0 auto; }
+.instruction-icon {
+  width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,.14);
+  display: grid; place-items: center; flex: none;
+}
+.instruction-icon .ico { width: 22px; height: 22px; }
+.instruction h1 { font-size: 18px; font-weight: 700; }
+.instruction p { color: #f3edff; margin-top: 4px; max-width: 1100px; }
+
+.ex-layout {
+  display: grid; grid-template-columns: minmax(0, 7fr) minmax(300px, 3fr); gap: 20px;
+  padding: 20px 24px 24px; max-width: 1600px; margin: 0 auto; align-items: start;
+}
+.workspace { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.toolbar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 10px 12px; box-shadow: var(--shadow-sm);
+}
+.toolbar-spacer { flex: 1; }
+.counter {
+  display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2);
+  padding: 6px 12px; border-radius: 999px; background: #f3f2f7; font-weight: 600;
+}
+.counter .ico { width: 16px; height: 16px; color: var(--primary); }
+.counter strong { color: var(--primary-700); }
+.check-wrap { display: flex; align-items: center; gap: 10px; }
+.check-hint { font-size: 12px; color: var(--muted); max-width: 170px; line-height: 1.3; }
+.segmented { display: inline-flex; padding: 3px; border-radius: 10px; background: #efedf5; gap: 2px; }
+.segmented button {
+  border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  color: var(--ink-2); cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+}
+.segmented button[aria-pressed="true"] { background: var(--surface); color: var(--primary-700); box-shadow: var(--shadow-sm); }
+.segmented button:hover:not([aria-pressed="true"]) { color: var(--primary-700); }
+
+.notice {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--radius);
+  border: 1px solid; font-size: 14px;
+}
+.notice .ico { width: 20px; height: 20px; }
+.notice p { flex: 1; }
+.notice--warning { background: var(--warning-bg); border-color: var(--warning-line); color: #6b3404; }
+.notice--success { background: var(--success-bg); border-color: #9fd8b2; color: #0e5a2a; }
+.notice--correction { background: #ecfdf3; border-color: #86cfa0; color: #0e5a2a; }
+
+/* =====================================================================
+   CANVAS
+   ===================================================================== */
+.canvas {
+  position: relative; overflow: hidden; border-radius: var(--radius);
+  border: 1px solid var(--line); background-color: #fcfcfe;
+  background-image: radial-gradient(circle, #d4cfe2 1.1px, transparent 1.2px);
+  height: calc(100vh - var(--appbar-h) - 210px); min-height: 520px;
+  touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab;
+  box-shadow: inset 0 1px 3px rgba(29,22,48,.04);
+}
+.canvas.is-panning { cursor: grabbing; }
+.canvas.is-correction { background-color: #f7fcf9; }
+.world { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+.edges { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; pointer-events: none; }
+.edges .edge-hit { pointer-events: stroke; cursor: pointer; }
+.edges path.edge { fill: none; stroke-width: 2.4; }
+.edge--manual { stroke: var(--manual); }
+.edge--automatic { stroke: var(--auto); }
+.edge--unknown { stroke: #8f8aa3; stroke-dasharray: 6 5; }
+.edge-badge {
+  position: absolute; transform: translate(-50%, -50%); z-index: 3;
+  display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px 0 6px;
+  border-radius: 999px; font-size: 11px; font-weight: 700; border: 1.5px solid; background: #fff;
+  cursor: pointer; white-space: nowrap; box-shadow: var(--shadow-sm);
+}
+.edge-badge .ico { width: 13px; height: 13px; }
+.edge-badge--manual { color: var(--manual); border-color: var(--manual); }
+.edge-badge--automatic { color: var(--auto); border-color: var(--auto); }
+.edge-badge--unknown { color: #5d5873; border-color: #a5a0b6; }
+button.edge-badge:hover { background: #f7f6fb; }
+span.edge-badge { cursor: default; }
+
+.node { position: absolute; z-index: 2; }
+.node:focus-visible { box-shadow: var(--focus); }
+.node.is-dragging { z-index: 10; }
+.node.is-dragging .card { box-shadow: var(--shadow-lg); }
+
+/* Fixed blocks: start / AND / END */
+.node--fixed {
+  width: 220px; min-height: 56px; border-radius: 12px; color: #fff;
+  background: linear-gradient(135deg, #6430cf 0%, var(--primary-700) 100%);
+  display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 16px;
+  font-weight: 700; font-size: 16px; letter-spacing: .02em; box-shadow: var(--shadow); cursor: move;
+}
+.node--fixed .node-icon { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: rgba(255,255,255,.16); }
+.node--fixed .node-icon .ico { width: 18px; height: 18px; }
+.node--fixed .lock { position: absolute; right: 8px; top: 6px; opacity: .65; }
+.node--fixed .lock .ico { width: 12px; height: 12px; }
+.node--and .node-icon .ico { transform: rotate(180deg); }
+.ports { position: absolute; left: 0; right: 0; height: 0; pointer-events: none; }
+.ports--top { top: 0; }
+.ports--bottom { bottom: 0; }
+.port {
+  position: absolute; width: 10px; height: 10px; border-radius: 50%; transform: translate(-50%, -50%);
+  background: #fff; border: 2px solid var(--primary-700);
+}
+.port.is-used { background: var(--primary-200); }
+
+/* Action cards */
+.node--action { width: 260px; cursor: move; }
+.card {
+  background: var(--surface); border: 1px solid var(--line-2); border-radius: 12px;
+  box-shadow: var(--shadow); overflow: hidden; border-top: 4px solid #b9b4c8;
+  transition: box-shadow .15s, border-color .15s;
+}
+.node--action:hover .card { border-color: var(--primary-200); }
+.node--action.in-manual .card { border-top-color: var(--manual); }
+.node--action.in-automatic .card { border-top-color: var(--auto); }
+.node--action.is-isolated .card { border-style: dashed; border-top-style: solid; background: #fdfcff; }
+.node--action.has-issue .card { border-color: var(--warning-line); box-shadow: 0 0 0 3px #ffe2b3, var(--shadow); }
+.node--fixed.has-issue { box-shadow: 0 0 0 4px #ffc56b, var(--shadow); }
+.card-head { display: flex; align-items: center; gap: 6px; padding: 8px 8px 0 12px; min-height: 38px; }
+.incoming {
+  display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em;
+}
+.incoming .ico { width: 12px; height: 12px; }
+.incoming--manual { background: var(--manual-bg); color: var(--manual); }
+.incoming--automatic { background: var(--auto-bg); color: var(--auto); }
+.incoming--none { background: #f1f0f5; color: var(--muted); }
+.incoming--required { background: var(--primary-50); color: var(--primary-700); }
+.card-tools { margin-left: auto; display: flex; gap: 2px; opacity: 0; transition: opacity .15s; }
+.node--action:hover .card-tools, .node--action:focus-within .card-tools, .node--action:focus .card-tools { opacity: 1; }
+@media (hover: none) { .card-tools { opacity: 1; } }
+.card-title { padding: 4px 12px 8px; font-weight: 700; font-size: 14.5px; line-height: 1.35; color: var(--ink); word-break: break-word; }
+.card-title.is-empty { color: var(--danger); font-style: italic; font-weight: 600; }
+.card-meta { list-style: none; margin: 0; padding: 8px 12px 10px; display: grid; gap: 6px; border-top: 1px solid #efedf4; background: #fbfafd; }
+.card-meta li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); min-width: 0; }
+.card-meta li span.txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.meta-ico {
+  width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; flex: none;
+  background: var(--primary-50); color: var(--primary);
+}
+.meta-ico .ico { width: 14px; height: 14px; }
+.meta-ico--app { background: #eef2ff; color: #3343a8; }
+.meta-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; width: 34px; flex: none; }
+.card-issue {
+  display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600;
+  background: var(--warning-bg); color: #7a3a04; border-top: 1px solid #f6d29e;
+}
+.card-issue .ico { width: 14px; height: 14px; }
+.card-status { display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; border-top: 1px solid; }
+.card-status .ico { width: 14px; height: 14px; }
+.card-status--ok { background: var(--success-bg); color: var(--success); border-color: #bfe5cb; }
+.card-status--partial { background: var(--warning-bg); color: #7a3a04; border-color: #f6d29e; }
+.card-status--missing { background: #fdecec; color: var(--danger); border-color: #f6c4c4; }
+.node--expected .card { border-color: #7fcf9b; border-style: solid; }
+.node--expected .card-head .expected-tag {
+  font-size: 11px; font-weight: 700; color: var(--success); text-transform: uppercase; letter-spacing: .04em; margin-left: auto; padding-right: 4px;
+}
+.node--readonly { cursor: default; }
+
+/* Handles under nodes */
+.handle { position: absolute; left: 50%; top: 100%; transform: translateX(-50%); display: flex; gap: 6px; align-items: center; margin-top: 14px; z-index: 4; }
+.handle--round { margin-top: 0; transform: translate(-50%, -50%); }
+.handle--side { left: 100%; top: 50%; transform: translateY(-50%); margin: 0 0 0 16px; flex-direction: column; align-items: flex-start; gap: 6px; }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px 0 10px; border-radius: 999px;
+  background: var(--surface); color: var(--primary-700); border: 1.5px dashed var(--primary-200);
+  font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap; box-shadow: var(--shadow-sm);
+  transition: background-color .15s, border-color .15s;
+}
+.pill:hover { background: var(--primary-50); border-color: var(--primary); border-style: solid; }
+.pill[aria-disabled="true"] { color: #6f6a82; border-color: #d3cfdf; background: #f6f5f9; }
+.pill .ico { width: 16px; height: 16px; }
+.pill-count { font-size: 11px; background: var(--primary-50); color: var(--primary-700); padding: 1px 6px; border-radius: 999px; }
+.round-btn {
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; padding: 0;
+  background: var(--surface); color: var(--primary); border: 2px solid var(--primary); cursor: pointer;
+  box-shadow: var(--shadow-sm); transition: background-color .15s, color .15s, transform .15s;
+}
+.round-btn .ico { width: 14px; height: 14px; }
+.round-btn:hover { background: var(--primary); color: #fff; transform: scale(1.08); }
+.link-btn {
+  width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; padding: 0;
+  background: var(--surface); color: var(--ink-2); border: 1px solid var(--line-2); cursor: pointer; box-shadow: var(--shadow-sm);
+}
+.link-btn:hover { color: var(--primary-700); border-color: var(--primary-200); background: var(--primary-50); }
+.link-btn .ico { width: 15px; height: 15px; }
+.and-hint { font-size: 12px; color: var(--muted); font-weight: 500; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+.and-hint .ico { width: 13px; height: 13px; }
+.handle-row { display: flex; gap: 6px; align-items: center; }
+
+/* Canvas overlays */
+.canvas-controls {
+  position: absolute; left: 12px; bottom: 12px; z-index: 6; display: flex; align-items: center; gap: 2px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 4px; box-shadow: var(--shadow);
+}
+.canvas-controls .sep { width: 1px; height: 22px; background: var(--line); margin: 0 4px; }
+.zoom-label { font-size: 12px; font-weight: 700; color: var(--ink-2); min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; }
+.canvas-hint {
+  position: absolute; right: 12px; bottom: 12px; z-index: 6; font-size: 12px; color: var(--muted);
+  background: rgba(255,255,255,.92); border: 1px solid var(--line); padding: 6px 10px; border-radius: 10px;
+}
+.canvas-banner {
+  position: absolute; left: 12px; right: 12px; top: 12px; z-index: 6;
+}
+
+/* =====================================================================
+   SIDE PANEL
+   ===================================================================== */
+.panel { position: sticky; top: calc(var(--appbar-h) + 16px); display: flex; flex-direction: column; gap: 14px; max-height: calc(100vh - var(--appbar-h) - 32px); overflow: auto; padding-bottom: 4px; }
+.panel-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow-sm); }
+.panel-card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.panel-card h2 .count { margin-left: auto; text-transform: none; letter-spacing: 0; font-size: 12px; color: var(--primary-700); background: var(--primary-50); padding: 1px 8px; border-radius: 999px; }
+.legend-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.legend-list--apps { grid-template-columns: 1fr 1fr; }
+.legend-item { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 10px; font-size: 14px; font-weight: 500; min-width: 0; }
+.legend-item:hover { background: #f8f7fb; }
+.legend-item .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.legend-ico { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; flex: none; background: var(--primary-50); color: var(--primary); }
+.legend-ico--app { background: #eef2ff; color: #3343a8; }
+.legend-ico .ico { width: 17px; height: 17px; }
+.legend-ico--custom { background: #fff; border: 1.5px dashed #8d97d8; }
+.legend-item .custom { font-size: 10px; font-weight: 700; color: var(--primary-700); background: var(--primary-50); padding: 0 6px; border-radius: 999px; text-transform: uppercase; margin-left: auto; }
+.arrow-sample { width: 52px; height: 16px; flex: none; }
+.legend-sub { font-size: 12px; color: var(--muted); display: block; font-weight: 400; }
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.checklist li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: var(--ink-2); }
+.checklist li .ico { width: 18px; height: 18px; margin-top: 1px; color: #a7a2b8; }
+.checklist li.is-ok { color: var(--ink); }
+.checklist li.is-ok .ico { color: var(--success); }
+.progress { height: 6px; background: #eeecf3; border-radius: 999px; overflow: hidden; margin-bottom: 12px; }
+.progress > span { display: block; height: 100%; background: linear-gradient(90deg, var(--primary), #7c4ae0); border-radius: 999px; transition: width .3s; }
+.tips { font-size: 13px; color: var(--ink-2); }
+.tips summary { cursor: pointer; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); list-style: none; display: flex; align-items: center; gap: 8px; border-radius: 6px; }
+.tips summary::-webkit-details-marker { display: none; }
+.tips summary .chev { margin-left: auto; transition: transform .2s; }
+.tips[open] summary .chev { transform: rotate(180deg); }
+.tips ul { margin: 12px 0 0; padding-left: 18px; display: grid; gap: 6px; }
+kbd { font-family: inherit; font-size: 11px; font-weight: 700; background: #f1f0f5; border: 1px solid var(--line-2); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; }
+
+/* =====================================================================
+   DIALOG
+   ===================================================================== */
+dialog.dialog {
+  border: 0; padding: 0; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+  width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 48px); color: var(--ink); background: var(--surface);
+}
+dialog.dialog--sm { width: min(460px, calc(100vw - 32px)); }
+dialog.dialog--lg { width: min(640px, calc(100vw - 32px)); }
+dialog.dialog::backdrop { background: rgba(23, 14, 46, .5); backdrop-filter: blur(2px); }
+.dialog-form { display: flex; flex-direction: column; max-height: calc(100vh - 48px); }
+.dialog-head { display: flex; align-items: center; gap: 12px; padding: 20px 20px 4px 24px; }
+.dialog-head h2 { font-size: 19px; font-weight: 700; flex: 1; line-height: 1.3; }
+.dialog-icon { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: var(--primary-50); color: var(--primary); flex: none; }
+.dialog-icon .ico { width: 21px; height: 21px; }
+.dialog--danger .dialog-icon { background: #fdecec; color: var(--danger); }
+.dialog--warning .dialog-icon { background: var(--warning-bg); color: var(--warning); }
+.dialog--success .dialog-icon { background: var(--success-bg); color: var(--success); }
+.dialog-body { padding: 12px 24px 8px; overflow: auto; display: grid; gap: 16px; }
+.dialog-body p { color: var(--ink-2); }
+.dialog-foot { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; padding: 16px 24px 20px; border-top: 1px solid #f0eef5; margin-top: 8px; }
+.dialog-foot .btn--left { margin-right: auto; }
+
+.field { display: grid; gap: 6px; }
+.field > label, .field > .label, fieldset.field > legend { font-weight: 600; font-size: 14px; color: var(--ink); padding: 0; }
+.field .req { color: var(--danger); margin-left: 2px; }
+.field .help { font-size: 12.5px; color: var(--muted); }
+fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
+fieldset.field > legend { margin-bottom: 6px; }
+.input, .select {
+  width: 100%; min-height: 42px; padding: 8px 12px; border-radius: 10px; border: 1.5px solid var(--line-2);
+  background: #fff; transition: border-color .15s, box-shadow .15s;
+}
+.select { appearance: none; padding-right: 36px; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235d5873' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; }
+.input:hover, .select:hover { border-color: #b7b1c9; }
+.input:focus, .select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-100); }
+.input[aria-invalid="true"], .select[aria-invalid="true"] { border-color: var(--danger); }
+.input:disabled, .select:disabled { background: #f4f3f8; color: #6f6a82; cursor: not-allowed; }
+.error { display: none; align-items: center; gap: 6px; color: var(--danger); font-size: 13px; font-weight: 600; }
+.error.is-visible { display: flex; }
+.error .ico { width: 15px; height: 15px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choice { position: relative; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1.5px solid var(--line-2); border-radius: 10px; cursor: pointer; background: #fff; transition: border-color .15s, background-color .15s; }
+.choice:hover { border-color: #b7b1c9; }
+.choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.choice .radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #a19bb4; flex: none; display: grid; place-items: center; }
+.choice input:checked + .radio { border-color: var(--primary); }
+.choice input:checked + .radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+.choice:has(input:checked) { border-color: var(--primary); background: var(--primary-50); }
+.choice:has(input:focus-visible) { box-shadow: var(--focus); }
+.choice:has(input:disabled) { opacity: .55; cursor: not-allowed; }
+.choice-text { display: grid; line-height: 1.25; font-weight: 600; font-size: 14px; }
+.choice-text small { font-weight: 400; color: var(--muted); font-size: 12px; }
+.choice--manual:has(input:checked) { border-color: var(--manual); background: var(--manual-bg); }
+.choice--manual input:checked + .radio { border-color: var(--manual); }
+.choice--manual input:checked + .radio::after { background: var(--manual); }
+.choice--automatic:has(input:checked) { border-color: var(--auto); background: var(--auto-bg); }
+.choice--automatic input:checked + .radio { border-color: var(--auto); }
+.choice--automatic input:checked + .radio::after { background: var(--auto); }
+.choices[aria-invalid="true"] .choice { border-color: var(--danger); }
+.context-line { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); background: #f6f5fa; border-radius: 10px; padding: 8px 12px; }
+.context-line .ico { width: 15px; height: 15px; color: var(--primary); }
+.context-line strong { color: var(--ink); }
+.feedback-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.feedback-list li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; background: #fffaf2; border: 1px solid #f6dcb4; }
+.feedback-list li .ico { color: var(--warning); margin-top: 2px; }
+.feedback-list .fb-body { flex: 1; display: grid; gap: 2px; }
+.feedback-list .fb-msg { font-weight: 600; color: #4f2703; font-size: 14px; }
+.feedback-list .fb-target { font-size: 12.5px; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stat { background: #f6f5fa; border-radius: 12px; padding: 12px; text-align: center; }
+.stat strong { display: block; font-size: 24px; color: var(--primary-700); line-height: 1.2; }
+.stat span { font-size: 12px; color: var(--muted); font-weight: 600; }
+.attempts { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.attempts .ico { width: 15px; height: 15px; }
+
+/* =====================================================================
+   TOASTS
+   ===================================================================== */
+.toast-region { position: fixed; right: 24px; top: calc(var(--appbar-h) + 12px); z-index: 200; display: grid; gap: 8px; pointer-events: none; width: min(420px, calc(100vw - 32px)); }
+.toast {
+  pointer-events: none; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px;
+  background: var(--ink); color: #fff; box-shadow: var(--shadow-lg); font-size: 14px; font-weight: 500;
+  animation: toast-in .2s ease-out;
+}
+.toast--error { background: #7f1414; }
+.toast--success { background: #0f5a2b; }
+.toast .ico { width: 18px; height: 18px; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.fatal { max-width: 640px; margin: 64px auto; padding: 24px; background: #fff; border-radius: var(--radius); border: 1px solid var(--line); }
+
+/* =====================================================================
+   RESPONSIVE
+   ===================================================================== */
+@media (max-width: 1100px) {
+  .ex-layout { grid-template-columns: 1fr; }
+  .panel { position: static; max-height: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .canvas { height: 68vh; }
+}
+@media (max-width: 640px) {
+  .appbar { padding: 0 16px; }
+  .appbar-crumb { display: none; }
+  .home { padding: 24px 16px 48px; }
+  .home-hero { padding: 28px 22px; }
+  .home-hero h1 { font-size: 25px; }
+  .exercise-grid { grid-template-columns: 1fr; }
+  .instruction { padding: 16px; }
+  .ex-layout { padding: 16px; }
+  .grid-2, .choices { grid-template-columns: 1fr; }
+  .check-hint, .canvas-hint { display: none; }
+  .legend-list--apps { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="appbar">
+  <a class="brand" href="#/" data-key="brand" aria-label="Cyber Academy – home">
+    <span class="brand-mark" id="brand-mark"></span>
+    <span><span class="brand-name">Cyber Academy</span><span class="brand-sub">Identity Governance &amp; Administration</span></span>
+  </a>
+  <div class="appbar-crumb" id="crumb"></div>
+</header>
+<main id="main" tabindex="-1"></main>
+<dialog class="dialog" id="dialog"></dialog>
+<div class="toast-region" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<!-- Configuration files (catalog and expected answer) -->
+<script src="config.js"></script>
+<script src="correction.js"></script>
+
+<script>
+(function () {
+'use strict';
+
+/* =====================================================================
+   1. CONFIGURATION
+   ===================================================================== */
+const CFG = window.IGA_CONFIG;
+const CORR = (window.IGA_CORRECTION && window.IGA_CORRECTION.exercise1) || null;
+const STORAGE_KEY = 'cyberAcademy.iga.exercise1.v1';
+const GRID = 20;          // visual grid
+const SNAP = 10;          // magnetic snapping step
+const CENTER_X = 420;     // horizontal axis of the default workflow
+const DEFAULT_SIZE = { fixed: { w: 220, h: 56 }, action: { w: 260, h: 124 } };
+const MAX_BRANCHES = 3;
+const MSG = {
+  maxBranches: 'You can add a maximum of three branches after the AND node.',
+  self: 'An action cannot be connected to itself.',
+  fromEnd: 'The END node cannot have outgoing connections.',
+  toStart: 'Employee arrival cannot have incoming connections.',
+  duplicate: 'These two steps are already connected.',
+  loop: 'This connection would create a loop in the workflow.',
+  startOnce: 'Employee arrival can only lead to one action.',
+  andToEnd: 'Each AND branch must contain at least one action before END.',
+  required: 'This action starts the workflow and cannot be deleted.',
+  // Pedagogical feedback
+  missing: 'One or more actions are missing.',
+  extra: 'This action does not seem to match an expected step. Check its name.',
+  extraGlobal: 'Some actions do not match the expected process.',
+  app: 'Check the application associated with this action.',
+  doer: 'Check the doer associated with this action.',
+  transition: 'Check the transition type.',
+  placement: 'Check where this action is placed in the workflow.',
+  andPosition: 'Check whether this action happens before or after the AND node.',
+  andBranch: 'One of the AND branches is incomplete.',
+  andParent: 'Check which action leads to the AND node.',
+  notToEnd: 'Some actions are not connected to the END node.'
+};
+
+/* =====================================================================
+   2. ICONS (inline SVG, Lucide-style, no remote resources)
+   ===================================================================== */
+const ICONS = {
+  shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+  shieldCheck: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  userPlus: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>',
+  userMinus: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6"/>',
+  bot: '<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>',
+  database: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/>',
+  grid: '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+  network: '<rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/>',
+  mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  idCard: '<rect width="20" height="14" x="2" y="5" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M5 16.5a3.5 3.5 0 0 1 6 0"/><path d="M14 10h4"/><path d="M14 14h3"/>',
+  package: '<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 8.7 5 8.7-5"/>',
+  key: '<path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/>',
+  server: '<rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><path d="M6 6h.01"/><path d="M6 18h.01"/>',
+  cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
+  building: '<rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/>',
+  laptop: '<path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/>',
+  plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  pencil: '<path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/><path d="m15 5 4 4"/>',
+  trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/>',
+  zoomIn: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/>',
+  zoomOut: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M8 11h6"/>',
+  fit: '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><circle cx="12" cy="12" r="3"/>',
+  rotate: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+  arrowLeft: '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+  arrowRight: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  hand: '<path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>',
+  zap: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+  split: '<circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"/><path d="M12 12v3"/>',
+  flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
+  sparkles: '<path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.13a.5.5 0 0 1 .96 0L14.06 8.5A2 2 0 0 0 15.5 9.94l6.13 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/>',
+  eye: '<path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/>',
+  lock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  circleCheck: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+  circle: '<circle cx="12" cy="12" r="10"/>',
+  circleX: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+  trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+  link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+  listChecks: '<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  lightbulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+  chevronDown: '<path d="m6 9 6 6 6-6"/>',
+  layers: '<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
+  workflow: '<rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/>'
+};
+function icon(name, cls) {
+  return '<svg class="ico' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + (ICONS[name] || ICONS.package) + '</svg>';
+}
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+const $ = (sel, root) => (root || document).querySelector(sel);
+const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const snap = v => Math.round(v / SNAP) * SNAP;
+
+/* =====================================================================
+   3. STATE & PERSISTENCE
+   ===================================================================== */
+function initialState() {
+  const fa = CFG.exercise1.firstAction;
+  return {
+    version: 1,
+    nodes: {
+      start: { id: 'start', type: 'start', x: CENTER_X - 110, y: 40 },
+      a1: { id: 'a1', type: 'action', x: CENTER_X - 130, y: 160, name: fa.name, doer: fa.doer, app: fa.application, required: true },
+      and: { id: 'and', type: 'and', x: CENTER_X - 110, y: 470 },
+      end: { id: 'end', type: 'end', x: CENTER_X - 110, y: 790 }
+    },
+    edges: [{ id: 'e1', from: 'start', to: 'a1', type: fa.transition, locked: true }],
+    customApps: [],
+    attempts: 0,
+    solved: false,
+    feedback: null,
+    view: null,
+    seq: 2
+  };
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (!s || s.version !== 1 || !s.nodes || !s.nodes.start || !s.nodes.and || !s.nodes.end || !Array.isArray(s.edges)) return null;
+    return s;
+  } catch (e) { return null; }
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable: keep working in memory */ }
+}
+let S = loadState() || initialState();
+const UI = { mode: 'mine', correction: null, tipsOpen: false };
+
+/* =====================================================================
+   4. CATALOG HELPERS
+   ===================================================================== */
+const allApps = () => CFG.applications.concat(S.customApps);
+const doerById = id => CFG.doers.find(d => d.id === id);
+const appById = id => allApps().find(a => a.id === id);
+const transById = id => CFG.transitions.find(t => t.id === id);
+const transLabel = id => (transById(id) || {}).label || 'Unspecified transition';
+const transShort = id => (transById(id) || {}).short || 'Unspecified';
+const transIcon = id => (transById(id) || {}).icon || 'arrowRight';
+function nodeLabel(n) {
+  if (!n) return '';
+  if (n.type === 'start') return CFG.exercise1.startLabel;
+  if (n.type === 'and') return 'AND';
+  if (n.type === 'end') return 'END';
+  return n.name || 'Untitled action';
+}
+
+/* =====================================================================
+   5. GRAPH HELPERS
+   ===================================================================== */
+const outEdges = (id, g) => (g || S).edges.filter(e => e.from === id);
+const inEdges = (id, g) => (g || S).edges.filter(e => e.to === id);
+function reachable(from, blocked, g) {
+  g = g || S;
+  const seen = new Set(), stack = [from];
+  while (stack.length) {
+    const cur = stack.pop();
+    for (const e of g.edges) {
+      if (e.from !== cur || seen.has(e.to)) continue;
+      if (blocked && blocked.has(e.to)) continue;
+      seen.add(e.to); stack.push(e.to);
+    }
+  }
+  return seen;
+}
+const isAfterAnd = id => reachable('and').has(id);
+const actionCount = () => Object.values(S.nodes).filter(n => n.type === 'action').length;
+
+/** Checks whether a connection from -> to is allowed. */
+function canConnect(from, to, ignoreEdgeId) {
+  const a = S.nodes[from], b = S.nodes[to];
+  if (!a || !b) return { ok: false, reason: 'Unknown step.' };
+  const edges = S.edges.filter(e => e.id !== ignoreEdgeId);
+  const g = { nodes: S.nodes, edges };
+  if (from === to) return { ok: false, reason: MSG.self };
+  if (a.type === 'end') return { ok: false, reason: MSG.fromEnd };
+  if (b.type === 'start') return { ok: false, reason: MSG.toStart };
+  if (edges.some(e => e.from === from && e.to === to)) return { ok: false, reason: MSG.duplicate };
+  if (a.type === 'and' && edges.filter(e => e.from === from).length >= MAX_BRANCHES) return { ok: false, reason: MSG.maxBranches };
+  if (a.type === 'start' && edges.some(e => e.from === from)) return { ok: false, reason: MSG.startOnce };
+  if (a.type === 'and' && b.type === 'end') return { ok: false, reason: MSG.andToEnd };
+  if (reachable(to, null, g).has(from)) return { ok: false, reason: MSG.loop };
+  return { ok: true };
+}
+
+/** Structural completeness (unlocks "Check answer"). */
+function structuralStatus() {
+  const actions = Object.values(S.nodes).filter(n => n.type === 'action');
+  const fromStart = reachable('start');
+  const startOk = outEdges('start').length > 0;
+  const fieldsOk = actions.every(a => (a.name || '').trim() && a.doer && a.app);
+  const connectedOk = actions.every(a => fromStart.has(a.id) && outEdges(a.id).length > 0);
+  const bypass = reachable('start', new Set(['and']));
+  const andOk = fromStart.has('and') && !bypass.has('end');
+  const nb = outEdges('and').length;
+  const branchesOk = nb >= 1 && nb <= MAX_BRANCHES;
+  const fromAnd = reachable('and');
+  const endOk = nb > 0 && fromAnd.has('end') && Array.from(fromAnd).every(id => id === 'end' || outEdges(id).length > 0);
+  const items = [
+    { ok: startOk, label: 'Employee arrival is connected to the first action' },
+    { ok: fieldsOk && actions.length > 0, label: 'Every action has a name, a doer and an application' },
+    { ok: andOk, label: 'The main actions are chained up to the AND node' },
+    { ok: branchesOk, label: 'The AND node has 1 to 3 parallel branches' },
+    { ok: endOk, label: 'Every branch is connected to the END node' },
+    { ok: connectedOk, label: 'No action is isolated or left without a next step' }
+  ];
+  return { items, done: items.filter(i => i.ok).length, complete: items.every(i => i.ok) };
+}
+
+/* =====================================================================
+   6. ANSWER GRADING
+   ===================================================================== */
+const DEFAULT_IGNORED = ['the', 'a', 'an', 'of', 'in', 'to', 'for', 'is', 'and', 'with', 'by', 'their', 'his', 'her'];
+function normalize(s) {
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/['’`]s\b/g, '').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ');
+}
+function stem(t) { return t.length > 4 ? t.replace(/(ing|ed|es|s)$/, '') : t; }
+function tokens(s, ignored) { return normalize(s).split(' ').filter(t => t && !ignored.has(t)).map(stem); }
+function levenshtein(a, b) {
+  if (a === b) return 0;
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  let prev = Array.from({ length: n + 1 }, (_, i) => i);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+const levRatio = (a, b) => (!a.length && !b.length) ? 1 : 1 - levenshtein(a, b) / Math.max(a.length, b.length);
+const tokenEq = (a, b) => a === b || (a.length >= 5 && b.length >= 5 && levRatio(a, b) >= 0.8);
+function diceTokens(ta, tb) {
+  if (!ta.length || !tb.length) return 0;
+  const used = new Set(); let hits = 0;
+  ta.forEach(t => { const j = tb.findIndex((u, k) => !used.has(k) && tokenEq(t, u)); if (j >= 0) { used.add(j); hits++; } });
+  return (2 * hits) / (ta.length + tb.length);
+}
+/** Similarity 0..1 between a participant wording and an expected step. */
+function nameScore(input, step, ignored) {
+  const ni = normalize(input);
+  if (!ni) return 0;
+  const ti = tokens(input, ignored);
+  let best = 0;
+  [step.name].concat(step.acceptedVariants || []).forEach(c => {
+    const nc = normalize(c);
+    if (ni === nc) { best = 1; return; }
+    best = Math.max(best, diceTokens(ti, tokens(c, ignored)), levRatio(ni, nc));
+  });
+  if (Array.isArray(step.keywords) && step.keywords.length) {
+    const all = step.keywords.every(group => (Array.isArray(group) ? group : [group])
+      .some(k => { const sk = stem(normalize(k)); return ti.some(t => tokenEq(t, sk)); }));
+    if (all) best = Math.max(best, 0.95);
+  }
+  return best;
+}
+const matchesId = (actual, expected) => expected == null || (Array.isArray(expected) ? expected : [expected]).some(x => {
+  if (x === actual) return true;
+  const app = appById(actual);   // custom apps can be referenced by their label
+  return app && normalize(app.label) === normalize(x);
+});
+function correctionConfigured() {
+  return !!(CORR && Array.isArray(CORR.steps) && CORR.steps.length &&
+    CORR.steps.every(s => !s.todo && s.name && !/^\s*todo/i.test(s.name)));
+}
+
+/** Compares the participant workflow with the configured correction. */
+function grade() {
+  const nm = CORR.nameMatching || {};
+  const threshold = nm.threshold != null ? nm.threshold : 0.72;
+  const ignored = new Set((nm.ignoredWords || DEFAULT_IGNORED).map(normalize));
+  const steps = CORR.steps;
+  const actions = Object.values(S.nodes).filter(n => n.type === 'action');
+
+  // 1. Pair participant actions with expected steps (best scores first).
+  const pairs = [];
+  actions.forEach(a => steps.forEach(s => {
+    const sc = nameScore(a.name, s, ignored);
+    if (sc >= threshold) pairs.push({ a: a.id, s: s.id, sc, rank: sc + (matchesId(a.doer, s.doer) ? .03 : 0) + (matchesId(a.app, s.application) ? .03 : 0) });
+  }));
+  pairs.sort((p, q) => q.rank - p.rank);
+  const a2s = {}, s2a = {};
+  pairs.forEach(p => { if (!a2s[p.a] && !s2a[p.s]) { a2s[p.a] = p.s; s2a[p.s] = p.a; } });
+
+  const nodeIssues = {}, globals = [];
+  const add = (id, msg) => { (nodeIssues[id] = nodeIssues[id] || []); if (!nodeIssues[id].includes(msg)) nodeIssues[id].push(msg); };
+  const addGlobal = msg => { if (!globals.includes(msg)) globals.push(msg); };
+  const keyOf = id => id === 'start' ? 'START' : id === 'and' ? 'AND' : (a2s[id] || '?');
+  const isLeaf = s => !steps.some(o => o.parent === s.id) && !(CORR.andNode && CORR.andNode.parent === s.id);
+  const stepState = {};
+
+  // 2. Missing / extra actions.
+  const missing = steps.filter(s => !s2a[s.id]);
+  if (missing.length) addGlobal(MSG.missing);
+  const extras = actions.filter(a => !a2s[a.id]);
+  extras.forEach(a => add(a.id, MSG.extra));
+  if (extras.length) addGlobal(MSG.extraGlobal);
+
+  // 3. Check each matched action.
+  steps.forEach(s => {
+    const id = s2a[s.id];
+    if (!id) { stepState[s.id] = 'missing'; return; }
+    const a = S.nodes[id];
+    if (!matchesId(a.doer, s.doer)) add(id, MSG.doer);
+    if (!matchesId(a.app, s.application)) add(id, MSG.app);
+    const parents = inEdges(id).map(e => ({ key: keyOf(e.from), e }));
+    let placementWrong = false;
+    if (s.parent) {
+      const pe = parents.find(p => p.key === s.parent);
+      if (!pe) { add(id, MSG.placement); placementWrong = true; }
+      else if (s.transition && pe.e.type !== s.transition) add(id, MSG.transition);
+    } else if (s.transition && parents[0] && parents[0].e.type !== s.transition) add(id, MSG.transition);
+    if (s.position && !placementWrong) {
+      const actual = isAfterAnd(id) ? 'after-and' : 'before-and';
+      if (actual !== s.position) add(id, MSG.andPosition);
+    }
+    if (s.transitionToEnd || (isLeaf(s) && s.position === 'after-and')) {
+      const ee = outEdges(id).find(e => e.to === 'end');
+      if (!ee) { add(id, MSG.notToEnd); addGlobal(MSG.notToEnd); }
+      else if (s.transitionToEnd && ee.type !== s.transitionToEnd) add(id, MSG.transition);
+    }
+    stepState[s.id] = nodeIssues[id] ? 'partial' : 'ok';
+  });
+
+  // 4. AND node.
+  if (CORR.andNode && CORR.andNode.parent) {
+    const ins = inEdges('and').map(e => ({ key: keyOf(e.from), e }));
+    const pe = ins.find(p => p.key === CORR.andNode.parent);
+    if (!pe) add('and', MSG.andParent);
+    else if (CORR.andNode.transition && pe.e.type !== CORR.andNode.transition) add('and', MSG.transition);
+  }
+  const branchSteps = steps.filter(s => s.parent === 'AND');
+  if (branchSteps.length) {
+    const inBranch = new Set();
+    const collect = sid => { inBranch.add(sid); steps.filter(o => o.parent === sid).forEach(o => collect(o.id)); };
+    branchSteps.forEach(s => collect(s.id));
+    const incomplete = outEdges('and').length !== branchSteps.length || Array.from(inBranch).some(sid => !s2a[sid]);
+    if (incomplete) { add('and', MSG.andBranch); addGlobal(MSG.andBranch); }
+  }
+
+  const correct = !globals.length && !Object.keys(nodeIssues).length;
+  return { correct, nodeIssues, globals, a2s, s2a, stepState };
+}
+
+/* =====================================================================
+   7. AUTOMATIC LAYOUT (layered, top-down)
+   ===================================================================== */
+function layeredLayout(g, sizeOf) {
+  const ids = Object.keys(g.nodes);
+  const indeg = {}; ids.forEach(id => indeg[id] = 0);
+  g.edges.forEach(e => { if (indeg[e.to] != null) indeg[e.to]++; });
+  const depth = {}; ids.forEach(id => depth[id] = 0);
+  const queue = ids.filter(id => !indeg[id]).sort((a, b) => (a === 'start' ? -1 : b === 'start' ? 1 : 0));
+  const order = [];
+  while (queue.length) {
+    const id = queue.shift(); order.push(id);
+    g.edges.filter(e => e.from === id).forEach(e => {
+      depth[e.to] = Math.max(depth[e.to], depth[id] + 1);
+      if (--indeg[e.to] === 0) queue.push(e.to);
+    });
+  }
+  if (g.nodes.end) depth.end = Math.max(0, ...ids.filter(id => id !== 'end').map(id => depth[id])) + 1;
+  const layers = [];
+  ids.forEach(id => (layers[depth[id]] = layers[depth[id]] || []).push(id));
+  const pos = {};
+  let y = 40;
+  const HGAP = 40, VGAP = 80;
+  layers.forEach(layer => {
+    if (!layer) return;
+    const items = layer.map(id => {
+      const parents = g.edges.filter(e => e.to === id && pos[e.from]).map(e => pos[e.from].cx);
+      const desired = parents.length ? parents.reduce((s, v) => s + v, 0) / parents.length : CENTER_X;
+      return { id, desired, cur: g.nodes[id].x || 0, w: sizeOf(g.nodes[id]).w };
+    }).sort((p, q) => p.desired - q.desired || p.cur - q.cur);
+    let prev = null;
+    items.forEach(it => { it.c = prev ? Math.max(it.desired, prev.c + (prev.w + it.w) / 2 + HGAP) : it.desired; prev = it; });
+    const shift = items.reduce((s, it) => s + it.desired - it.c, 0) / items.length;
+    let maxH = 0;
+    items.forEach(it => {
+      const cx = it.c + shift;
+      pos[it.id] = { x: snap(cx - it.w / 2), y: snap(y), cx };
+      maxH = Math.max(maxH, sizeOf(g.nodes[it.id]).h);
+    });
+    y += maxH + VGAP;
+  });
+  return pos;
+}
+
+/* =====================================================================
+   8. TOASTS
+   ===================================================================== */
+function toast(msg, tone) {
+  const region = $('#toasts');
+  const el = document.createElement('div');
+  el.className = 'toast' + (tone ? ' toast--' + tone : '');
+  if (tone === 'error') el.setAttribute('role', 'alert');
+  el.innerHTML = icon(tone === 'error' ? 'alert' : tone === 'success' ? 'circleCheck' : 'info') + '<span>' + esc(msg) + '</span>';
+  region.appendChild(el);
+  while (region.children.length > 3) region.firstElementChild.remove();
+  setTimeout(() => el.remove(), 4000);
+}
+
+/* =====================================================================
+   9. DIALOG (generic modal built on <dialog>)
+   ===================================================================== */
+const dlg = $('#dialog');
+let dlgFinish = null;
+function openDialog(opts) {
+  return new Promise(resolve => {
+    if (dlgFinish) dlgFinish(null, true);
+    const returnFocus = document.activeElement;
+    const returnKey = returnFocus && returnFocus.dataset ? returnFocus.dataset.key : null;
+    const actions = opts.actions || [];
+    dlg.className = 'dialog dialog--' + (opts.size || 'md') + (opts.tone ? ' dialog--' + opts.tone : '');
+    dlg.innerHTML =
+      '<form class="dialog-form" novalidate>' +
+        '<header class="dialog-head">' + (opts.icon ? '<span class="dialog-icon">' + icon(opts.icon) + '</span>' : '') +
+          '<h2 id="dlg-title">' + esc(opts.title) + '</h2>' +
+          '<button type="button" class="icon-btn" data-dlg-close aria-label="Close dialog">' + icon('x') + '</button></header>' +
+        '<div class="dialog-body" id="dlg-body">' + (opts.body || '') + '</div>' +
+        '<footer class="dialog-foot">' + actions.map((a, i) =>
+          '<button type="' + (a.submit ? 'submit' : 'button') + '" class="btn btn--' + (a.variant || 'secondary') + (a.left ? ' btn--left' : '') + '" data-dlg-action="' + i + '"' + (a.disabled ? ' disabled' : '') + '>' +
+          (a.icon ? icon(a.icon) : '') + '<span>' + esc(a.label) + '</span></button>').join('') +
+        '</footer></form>';
+    dlg.setAttribute('aria-labelledby', 'dlg-title');
+    dlg.setAttribute('aria-describedby', 'dlg-body');
+    const form = $('form', dlg);
+    let done = false;
+    const finish = (val, silent) => {
+      if (done) return; done = true; dlgFinish = null;
+      if (dlg.open) dlg.close();
+      resolve(val);
+      if (!silent) requestAnimationFrame(() => {
+        if (dlg.open) return;
+        if (returnFocus && returnFocus.isConnected) returnFocus.focus();
+        else if (returnKey) { const el = document.querySelector('[data-key="' + returnKey + '"]'); if (el) el.focus(); }
+      });
+    };
+    dlgFinish = finish;
+    const run = i => {
+      const a = actions[i];
+      if (a.onClick && a.onClick(dlg) === false) return;
+      finish(a.value);
+    };
+    $$('[data-dlg-action]', dlg).forEach(btn => btn.addEventListener('click', ev => { ev.preventDefault(); run(+btn.dataset.dlgAction); }));
+    form.addEventListener('submit', ev => { ev.preventDefault(); const i = actions.findIndex(a => a.submit); if (i >= 0) run(i); });
+    $('[data-dlg-close]', dlg).addEventListener('click', () => finish(null));
+    dlg.oncancel = ev => { ev.preventDefault(); finish(null); };
+    dlg.showModal();
+    if (opts.onMount) opts.onMount(dlg);
+    const first = $('[autofocus]', dlg) || $('input:not([type=radio]), select', dlg) || $('.btn--primary, .btn--danger, .btn--success', dlg);
+    if (first) first.focus();
+  });
+}
+function confirmDialog(title, message, confirmLabel, tone) {
+  return openDialog({
+    title, icon: tone === 'danger' ? 'trash' : 'alert', tone: tone || 'warning', size: 'sm',
+    body: '<p>' + message + '</p>',
+    actions: [{ label: 'Cancel', value: false }, { label: confirmLabel, value: true, variant: tone === 'danger' ? 'danger' : 'primary', submit: true }]
+  });
+}
+function setError(root, name, msg) {
+  const el = $('[data-error="' + name + '"]', root);
+  const ctrl = $('[data-field="' + name + '"]', root);
+  if (el) { el.classList.toggle('is-visible', !!msg); $('span', el).textContent = msg || ''; }
+  if (ctrl) ctrl.setAttribute('aria-invalid', msg ? 'true' : 'false');
+}
+const errorSlot = name => '<p class="error" id="err-' + name + '" data-error="' + name + '" role="alert">' + icon('alert') + '<span></span></p>';
+function transitionChoices(name, selected) {
+  return '<div class="choices" data-field="' + name + '" role="radiogroup" aria-describedby="err-' + name + '">' +
+    CFG.transitions.map(t =>
+      '<label class="choice choice--' + t.id + '"><input type="radio" name="' + name + '" value="' + t.id + '"' + (selected === t.id ? ' checked' : '') + '>' +
+      '<span class="radio"></span>' + arrowSample(t.id) +
+      '<span class="choice-text">' + esc(t.label) + '<small>' + (t.id === 'manual' ? 'Blue arrow' : 'Red arrow') + '</small></span></label>').join('') +
+    '</div>';
+}
+function arrowSample(type) {
+  const c = type === 'manual' ? 'var(--manual)' : type === 'automatic' ? 'var(--auto)' : '#8f8aa3';
+  return '<svg class="arrow-sample" viewBox="0 0 52 16" aria-hidden="true"><line x1="2" y1="8" x2="42" y2="8" stroke="' + c + '" stroke-width="2.6" stroke-linecap="round"/><path d="M40 2 L50 8 L40 14 Z" fill="' + c + '"/></svg>';
+}
+
+/* =====================================================================
+   10. ACTION MODAL (create / edit)
+   ===================================================================== */
+function parentCandidates(nodeId) {
+  const descendants = nodeId ? reachable(nodeId) : new Set();
+  const current = nodeId ? inEdges(nodeId)[0] : null;
+  return Object.values(S.nodes).filter(n => {
+    if (n.type !== 'action' && n.type !== 'and') return false;
+    if (n.id === nodeId || descendants.has(n.id)) return false;
+    if (n.type === 'and' && outEdges('and').length >= MAX_BRANCHES && !(current && current.from === 'and')) return false;
+    return true;
+  }).sort((a, b) => a.y - b.y || a.x - b.x);
+}
+function openActionModal(opts) {
+  const editing = opts.mode === 'edit';
+  const node = editing ? S.nodes[opts.nodeId] : null;
+  const firstIn = editing ? inEdges(node.id)[0] : null;
+  const parentId = editing ? (firstIn ? firstIn.from : '') : (opts.parentId || '');
+  const transition = editing ? (firstIn ? firstIn.type : '') : (opts.transition || '');
+  const locked = editing && node.required;
+  const showParent = !locked && (editing ? (!firstIn || isAfterAnd(node.id) || firstIn.from === 'and') : (parentId === 'and' || isAfterAnd(parentId)));
+  const apps = allApps();
+  const sugg = CFG.exercise1.actionSuggestions || [];
+  const parentNode = S.nodes[parentId];
+
+  const body =
+    (!showParent && parentNode ? '<p class="context-line">' + icon('workflow') + '<span>Follows: <strong>' + esc(nodeLabel(parentNode)) + '</strong></span></p>' : '') +
+    '<div class="field"><label for="f-name">Action name<span class="req" aria-hidden="true">*</span></label>' +
+      '<input class="input" id="f-name" data-field="name" type="text" maxlength="120" autocomplete="off" placeholder="Enter the action name" required aria-required="true" aria-describedby="err-name"' +
+      (sugg.length ? ' list="f-name-list"' : '') + ' value="' + esc(node ? node.name : '') + '">' +
+      (sugg.length ? '<datalist id="f-name-list">' + sugg.map(s => '<option value="' + esc(s) + '">').join('') + '</datalist>' : '') +
+      errorSlot('name') + '</div>' +
+    '<div class="grid-2">' +
+      '<div class="field"><label for="f-doer">Doer<span class="req" aria-hidden="true">*</span></label>' +
+        '<select class="select" id="f-doer" data-field="doer" required aria-required="true" aria-describedby="err-doer"><option value="">Select a doer</option>' +
+        CFG.doers.map(d => '<option value="' + esc(d.id) + '"' + (node && node.doer === d.id ? ' selected' : '') + '>' + esc(d.label) + '</option>').join('') +
+        '</select>' + errorSlot('doer') + '</div>' +
+      '<div class="field"><label for="f-app">Application<span class="req" aria-hidden="true">*</span></label>' +
+        '<select class="select" id="f-app" data-field="app" required aria-required="true" aria-describedby="err-app"><option value="">Select an application</option>' +
+        apps.map(a => '<option value="' + esc(a.id) + '"' + (node && node.app === a.id ? ' selected' : '') + '>' + esc(a.label) + '</option>').join('') +
+        '<option value="__other">Other…</option></select>' + errorSlot('app') + '</div>' +
+    '</div>' +
+    '<div class="field" id="f-other-wrap" hidden><label for="f-other">New application name<span class="req" aria-hidden="true">*</span></label>' +
+      '<input class="input" id="f-other" data-field="other" type="text" maxlength="40" placeholder="e.g. Badge management system" aria-describedby="err-other help-other">' +
+      '<p class="help" id="help-other">It will be added to the list of applications for the rest of your session.</p>' + errorSlot('other') + '</div>' +
+    (showParent ?
+      '<div class="field"><label for="f-parent">Parent action</label>' +
+        '<select class="select" id="f-parent" data-field="parent" aria-describedby="help-parent err-parent"><option value="">None – not connected yet</option>' +
+        parentCandidates(editing ? node.id : null).map(n => '<option value="' + esc(n.id) + '"' + (n.id === parentId ? ' selected' : '') + '>' + esc(n.type === 'and' ? 'AND node (new parallel branch)' : nodeLabel(n)) + '</option>').join('') +
+        '</select><p class="help" id="help-parent">The step this action follows (branch of the AND node or previous action).</p>' + errorSlot('parent') + '</div>' : '') +
+    '<fieldset class="field" id="f-trans-wrap"><legend>Transition from the previous step<span class="req" aria-hidden="true">*</span></legend>' +
+      transitionChoices('transition', transition) + errorSlot('transition') + '</fieldset>';
+
+  return openDialog({
+    title: editing ? 'Edit action' : 'Add an action',
+    icon: editing ? 'pencil' : 'plus',
+    size: 'lg',
+    body,
+    onMount(root) {
+      const appSel = $('#f-app', root), otherWrap = $('#f-other-wrap', root);
+      const parentSel = $('#f-parent', root), transWrap = $('#f-trans-wrap', root);
+      const syncOther = () => { otherWrap.hidden = appSel.value !== '__other'; };
+      const syncTrans = () => { transWrap.hidden = parentSel ? !parentSel.value : !parentId; };
+      appSel.addEventListener('change', () => { syncOther(); if (!otherWrap.hidden) $('#f-other', root).focus(); });
+      if (parentSel) parentSel.addEventListener('change', syncTrans);
+      syncOther(); syncTrans();
+      $$('input, select', root).forEach(el => el.addEventListener(el.type === 'radio' ? 'change' : 'input', () => setError(root, el.dataset.field || el.name, '')));
+    },
+    actions: [
+      { label: 'Cancel', value: null },
+      {
+        label: editing ? 'Save changes' : 'Add action', variant: 'primary', submit: true, icon: editing ? 'check' : 'plus',
+        onClick(root) {
+          const name = $('#f-name', root).value.trim().replace(/\s+/g, ' ');
+          const doer = $('#f-doer', root).value;
+          let app = $('#f-app', root).value;
+          const other = $('#f-other', root).value.trim().replace(/\s+/g, ' ');
+          const parentSel = $('#f-parent', root);
+          const parent = parentSel ? parentSel.value : parentId;
+          const tr = ($('input[name="transition"]:checked', root) || {}).value || '';
+          let ok = true, firstBad = null;
+          const fail = (f, m, el) => { setError(root, f, m); ok = false; firstBad = firstBad || el; };
+          if (!name) fail('name', 'Please enter the action name.', $('#f-name', root));
+          if (!doer) fail('doer', 'Please select a doer.', $('#f-doer', root));
+          if (!app) fail('app', 'Please select an application.', $('#f-app', root));
+          if (app === '__other' && !other) fail('other', 'Please enter the name of the new application.', $('#f-other', root));
+          if (parent && !tr) fail('transition', 'Please select a transition type.', $('input[name="transition"]', root));
+          if (parent) {
+            const res = editing ? canConnect(parent, node.id, firstIn ? firstIn.id : null) : (parent === 'and' && outEdges('and').length >= MAX_BRANCHES ? { ok: false, reason: MSG.maxBranches } : { ok: true });
+            if (!res.ok) fail('parent', res.reason, parentSel);
+          }
+          if (!ok) { if (firstBad) firstBad.focus(); return false; }
+
+          if (app === '__other') app = ensureCustomApp(other);
+          if (editing) {
+            Object.assign(node, { name, doer, app });
+            if (!locked) {
+              if (!parent && firstIn) S.edges = S.edges.filter(e => e !== firstIn);
+              else if (parent && firstIn) { firstIn.from = parent; firstIn.type = tr; }
+              else if (parent && !firstIn) S.edges.push({ id: newId('e'), from: parent, to: node.id, type: tr });
+            } else if (firstIn && tr) firstIn.type = tr;
+            clearIssues(node.id);
+            commit();
+            toast('Action updated.', 'success');
+          } else {
+            const id = newId('a');
+            const p = placeNew(parent || null);
+            S.nodes[id] = { id, type: 'action', x: p.x, y: p.y, name, doer, app };
+            if (parent) S.edges.push({ id: newId('e'), from: parent, to: id, type: tr });
+            commit('node:' + id);
+            ensureVisible(id);
+            toast('Action “' + name + '” added.', 'success');
+          }
+        }
+      }
+    ]
+  });
+}
+function ensureCustomApp(label) {
+  const existing = allApps().find(a => normalize(a.label) === normalize(label));
+  if (existing) return existing.id;
+  const id = 'custom-' + (normalize(label).replace(/\s+/g, '-') || 'app') + '-' + (S.seq++);
+  S.customApps.push({ id, label, icon: 'package', custom: true });
+  return id;
+}
+function newId(prefix) { return prefix + (S.seq++); }
+
+/* Where to place a new action (below its parent, without overlapping). */
+function placeNew(parentId) {
+  const size = { w: DEFAULT_SIZE.action.w, h: DEFAULT_SIZE.action.h + 56 }, GAP = 60; // + room for the handle under the card
+  const nodes = Object.values(S.nodes);
+  const rect = n => { const s = sizeOf(n); return { x: n.x, y: n.y, w: s.w + (n.type === 'and' ? 240 : 0), h: s.h + (n.type === 'end' ? 0 : 56) }; };
+  const overlaps = (r, q, m) => r.x < q.x + q.w + m && r.x + r.w + m > q.x && r.y < q.y + q.h + m && r.y + r.h + m > q.y;
+  if (!parentId) {
+    const maxRight = Math.max(...nodes.map(n => n.x + sizeOf(n).w));
+    return { x: snap(maxRight + 120), y: 160 };
+  }
+  const p = S.nodes[parentId], ps = sizeOf(p);
+  const pcx = p.x + ps.w / 2, y = snap(p.y + ps.h + 96);
+  for (const o of [0, 300, -300, 600, -600, 900, -900]) {
+    const cand = { x: snap(pcx + o - size.w / 2), y, w: size.w, h: size.h };
+    const blocking = nodes.filter(n => overlaps(cand, rect(n), 24));
+    if (blocking.some(n => n.y <= y + 10)) continue;
+    if (blocking.length) {
+      const top = Math.min(...blocking.map(n => n.y));
+      const shift = snap(cand.y + cand.h + GAP - top);
+      nodes.forEach(n => { if (n.y >= top - 1) n.y += shift; });
+    }
+    return { x: cand.x, y };
+  }
+  return { x: snap(pcx - size.w / 2 + 1200), y };
+}
+
+/* =====================================================================
+   11. CONNECT / EDGE / DELETE FLOWS
+   ===================================================================== */
+function addAfter(fromId) {
+  const n = S.nodes[fromId];
+  if (n.type === 'and' && outEdges('and').length >= MAX_BRANCHES) { toast(MSG.maxBranches, 'error'); return; }
+  openActionModal({ mode: 'create', parentId: fromId });
+}
+async function openConnectModal(fromId) {
+  const from = S.nodes[fromId];
+  if (from.type === 'end') { toast(MSG.fromEnd, 'error'); return; }
+  if (from.type === 'and' && outEdges('and').length >= MAX_BRANCHES) { toast(MSG.maxBranches, 'error'); return; }
+  const targets = Object.values(S.nodes).filter(n => n.id !== fromId && canConnect(fromId, n.id).ok).sort((a, b) => a.y - b.y || a.x - b.x);
+  const body =
+    '<p class="context-line">' + icon('workflow') + '<span>From: <strong>' + esc(nodeLabel(from)) + '</strong></span></p>' +
+    '<fieldset class="field"><legend>1. Transition type<span class="req" aria-hidden="true">*</span></legend>' + transitionChoices('ctrans', '') + errorSlot('ctrans') + '</fieldset>' +
+    '<fieldset class="field"><legend>2. Next step</legend><div class="choices" style="grid-template-columns:1fr">' +
+      '<label class="choice"><input type="radio" name="cmode" value="new" checked><span class="radio"></span><span class="choice-text">Create a new action<small>Opens the action form</small></span></label>' +
+      '<label class="choice"><input type="radio" name="cmode" value="existing"' + (targets.length ? '' : ' disabled') + '><span class="radio"></span><span class="choice-text">Connect to an existing step<small>' + (targets.length ? 'Another action, the AND node or END' : 'No valid step available') + '</small></span></label>' +
+    '</div></fieldset>' +
+    '<div class="field" id="c-target-wrap" hidden><label for="c-target">Existing step</label><select class="select" id="c-target" data-field="ctarget" aria-describedby="err-ctarget"><option value="">Select a step</option>' +
+      targets.map(n => '<option value="' + esc(n.id) + '">' + esc(n.type === 'action' ? nodeLabel(n) : nodeLabel(n) + ' node') + '</option>').join('') +
+    '</select>' + errorSlot('ctarget') + '</div>';
+  let result = null;
+  await openDialog({
+    title: 'Add a connection', icon: 'link', body,
+    onMount(root) {
+      const sync = () => { $('#c-target-wrap', root).hidden = ($('input[name="cmode"]:checked', root) || {}).value !== 'existing'; };
+      $$('input[name="cmode"]', root).forEach(r => r.addEventListener('change', sync));
+      $$('input[name="ctrans"]', root).forEach(r => r.addEventListener('change', () => setError(root, 'ctrans', '')));
+      $('#c-target', root).addEventListener('change', () => setError(root, 'ctarget', ''));
+      sync();
+      const firstRadio = $('input[name="ctrans"]', root); if (firstRadio) setTimeout(() => firstRadio.focus(), 0);
+    },
+    actions: [
+      { label: 'Cancel', value: null },
+      {
+        label: 'Continue', variant: 'primary', submit: true, icon: 'arrowRight',
+        onClick(root) {
+          const tr = ($('input[name="ctrans"]:checked', root) || {}).value;
+          const mode = ($('input[name="cmode"]:checked', root) || {}).value;
+          const target = $('#c-target', root).value;
+          let ok = true;
+          if (!tr) { setError(root, 'ctrans', 'Please select a transition type.'); ok = false; }
+          if (mode === 'existing') {
+            if (!target) { setError(root, 'ctarget', 'Please select the step to connect to.'); ok = false; }
+            else { const r = canConnect(fromId, target); if (!r.ok) { setError(root, 'ctarget', r.reason); ok = false; } }
+          }
+          if (!ok) return false;
+          result = { tr, mode, target };
+        }
+      }
+    ]
+  });
+  if (!result) return;
+  if (result.mode === 'new') { openActionModal({ mode: 'create', parentId: fromId, transition: result.tr }); return; }
+  S.edges.push({ id: newId('e'), from: fromId, to: result.target, type: result.tr });
+  commit();
+  toast('Connection added: ' + transLabel(result.tr).toLowerCase() + '.', 'success');
+}
+async function openEdgeModal(edgeId) {
+  const e = S.edges.find(x => x.id === edgeId);
+  if (!e) return;
+  const a = S.nodes[e.from], b = S.nodes[e.to];
+  let action = null;
+  await openDialog({
+    title: 'Edit connection', icon: 'link',
+    body: '<p class="context-line">' + icon('workflow') + '<span><strong>' + esc(nodeLabel(a)) + '</strong> → <strong>' + esc(nodeLabel(b)) + '</strong></span></p>' +
+      '<fieldset class="field"><legend>Transition type</legend>' + transitionChoices('etrans', e.type) + '</fieldset>' +
+      (e.locked ? '<p class="help">This connection starts the workflow: its type can be changed but it cannot be deleted.</p>' : ''),
+    actions: [
+      { label: 'Delete connection', variant: 'ghost', icon: 'trash', left: true, disabled: !!e.locked, onClick() { action = 'delete'; } },
+      { label: 'Cancel', value: null },
+      { label: 'Save changes', variant: 'primary', submit: true, icon: 'check', onClick(root) { action = ($('input[name="etrans"]:checked', root) || {}).value || e.type; } }
+    ]
+  });
+  if (!action) return;
+  if (action === 'delete') {
+    S.edges = S.edges.filter(x => x !== e);
+    commit(); toast('Connection deleted.');
+  } else { e.type = action; clearIssues(e.to); commit(); }
+}
+async function deleteAction(id) {
+  const n = S.nodes[id];
+  if (!n || n.type !== 'action') return;
+  if (n.required) { toast(MSG.required, 'error'); return; }
+  const children = outEdges(id).map(e => S.nodes[e.to]).filter(c => c.type === 'action');
+  let choice;
+  if (!children.length) {
+    choice = await confirmDialog('Delete action', 'Are you sure you want to delete this action?<br><strong>' + esc(nodeLabel(n)) + '</strong>', 'Delete action', 'danger') ? 'single' : null;
+  } else {
+    choice = await openDialog({
+      title: 'Delete action', icon: 'trash', tone: 'danger',
+      body: '<p>Are you sure you want to delete this action?</p>' +
+        '<p class="context-line">' + icon('workflow') + '<span><strong>' + esc(nodeLabel(n)) + '</strong> is followed by ' + children.length + ' action' + (children.length > 1 ? 's' : '') + '.</span></p>' +
+        '<p>What should happen to the following actions?</p>',
+      actions: [
+        { label: 'Cancel', value: null },
+        { label: 'Delete and detach the next actions', value: 'single', variant: 'secondary' },
+        { label: 'Delete with all next actions', value: 'cascade', variant: 'danger' }
+      ]
+    });
+  }
+  if (!choice) return;
+  const toDelete = new Set([id]);
+  if (choice === 'cascade') {
+    const stack = [id];
+    while (stack.length) {
+      const cur = stack.pop();
+      outEdges(cur).forEach(e => { const t = S.nodes[e.to]; if (t.type === 'action' && !t.required && !toDelete.has(t.id)) { toDelete.add(t.id); stack.push(t.id); } });
+    }
+  }
+  toDelete.forEach(d => { delete S.nodes[d]; clearIssues(d); });
+  S.edges = S.edges.filter(e => !toDelete.has(e.from) && !toDelete.has(e.to));
+  commit();
+  toast(toDelete.size > 1 ? toDelete.size + ' actions deleted.' : 'Action deleted.');
+}
+function clearIssues(id) {
+  if (S.feedback && S.feedback.nodes && S.feedback.nodes[id]) delete S.feedback.nodes[id];
+}
+
+/* =====================================================================
+   12. CHECK ANSWER / FEEDBACK / CORRECTION
+   ===================================================================== */
+const maxAttempts = () => (CORR && CORR.maxAttemptsBeforeCorrection) || 3;
+const canShowCorrection = () => correctionConfigured() && (S.attempts >= maxAttempts() || S.solved);
+async function checkAnswer() {
+  if (!structuralStatus().complete) return;
+  if (!correctionConfigured()) {
+    await openDialog({
+      title: 'Workflow complete', icon: 'info', size: 'sm',
+      body: '<p>Your workflow is structurally complete: every action is connected, the AND node has its branches and every branch reaches END.</p>' +
+        '<p>The reference answer has not been configured yet, so it cannot be checked automatically. Please ask your trainer to review your workflow.</p>',
+      actions: [{ label: 'Back to my workflow', variant: 'primary', submit: true }]
+    });
+    return;
+  }
+  const res = grade();
+  S.attempts++;
+  if (res.correct) {
+    S.solved = true; S.feedback = null; commit();
+    showCongrats();
+  } else {
+    S.feedback = { nodes: res.nodeIssues, globals: res.globals, attempt: S.attempts };
+    commit();
+    showFeedback();
+  }
+}
+async function showCongrats() {
+  const v = await openDialog({
+    title: 'Congratulations!', icon: 'trophy', tone: 'success',
+    body: '<p>Your workflow is correct: every step of the employee’s arrival is handled by the right doer, in the right application and with the right transition.</p>' +
+      '<div class="stats">' +
+        '<div class="stat"><strong>' + actionCount() + '</strong><span>Actions created</span></div>' +
+        '<div class="stat"><strong>' + outEdges('and').length + '</strong><span>Parallel branches</span></div>' +
+        '<div class="stat"><strong>' + S.attempts + '</strong><span>Attempt' + (S.attempts > 1 ? 's' : '') + '</span></div>' +
+      '</div>',
+    actions: [
+      { label: 'Review workflow', value: 'review', icon: 'eye' },
+      { label: 'Back to home', value: 'home', variant: 'primary', submit: true, icon: 'arrowLeft' }
+    ]
+  });
+  if (v === 'home') location.hash = '#/';
+}
+async function showFeedback() {
+  const fb = S.feedback;
+  if (!fb) return;
+  const items = [];
+  (fb.globals || []).forEach(m => items.push({ msg: m }));
+  Object.keys(fb.nodes || {}).forEach(id => {
+    if (!S.nodes[id]) return;
+    fb.nodes[id].forEach(m => { if (!(fb.globals || []).includes(m)) items.push({ msg: m, id }); });
+  });
+  const remaining = Math.max(0, maxAttempts() - S.attempts);
+  const v = await openDialog({
+    title: 'Not quite there yet', icon: 'alert', tone: 'warning', size: 'lg',
+    body: '<p>Your workflow is complete, but some elements need to be reviewed. The actions concerned are highlighted in orange in the workspace.</p>' +
+      '<ul class="feedback-list">' + items.map(it =>
+        '<li>' + icon('alert') + '<span class="fb-body"><span class="fb-msg">' + esc(it.msg) + '</span>' +
+        (it.id ? '<span class="fb-target">' + (S.nodes[it.id].type === 'action' ? 'Action: ' : 'Step: ') + esc(nodeLabel(S.nodes[it.id])) + '</span>' : '') + '</span>' +
+        (it.id ? '<button type="button" class="btn btn--ghost btn--sm" data-locate="' + esc(it.id) + '">Locate</button>' : '') + '</li>').join('') + '</ul>' +
+      '<p class="attempts">' + icon('clock') + 'Attempt ' + S.attempts + (canShowCorrection() ? ' · The correction is now available.' : ' · The correction becomes available after ' + maxAttempts() + ' attempts (' + remaining + ' left).') + '</p>',
+    onMount(root) {
+      $$('[data-locate]', root).forEach(b => b.addEventListener('click', () => {
+        const id = b.dataset.locate;
+        if (dlgFinish) dlgFinish(null, true);
+        locateNode(id);
+      }));
+    },
+    actions: (canShowCorrection() ? [{ label: 'Show correction', value: 'correction', icon: 'eye', left: true }] : [])
+      .concat([{ label: 'Back to my workflow', value: 'back', variant: 'primary', submit: true }])
+  });
+  if (v === 'correction') setMode('correction');
+}
+function buildCorrectionGraph() {
+  const res = grade();
+  const nodes = {
+    start: { id: 'start', type: 'start', x: 0, y: 0, readonly: true },
+    and: { id: 'and', type: 'and', x: 0, y: 0, readonly: true },
+    end: { id: 'end', type: 'end', x: 0, y: 0, readonly: true }
+  };
+  const key = ref => ref === 'START' ? 'start' : ref === 'AND' ? 'and' : 'step:' + ref;
+  const edges = [];
+  CORR.steps.forEach(s => {
+    const app = Array.isArray(s.application) ? s.application[0] : s.application;
+    const doer = Array.isArray(s.doer) ? s.doer[0] : s.doer;
+    nodes['step:' + s.id] = { id: 'step:' + s.id, type: 'action', x: 0, y: 0, name: s.name, doer, app, expected: true, status: res.stepState[s.id], readonly: true };
+    if (s.parent) edges.push({ id: 'ce-' + s.id, from: key(s.parent), to: 'step:' + s.id, type: s.transition || null });
+  });
+  if (CORR.andNode && CORR.andNode.parent) edges.push({ id: 'ce-and', from: key(CORR.andNode.parent), to: 'and', type: CORR.andNode.transition || null });
+  CORR.steps.forEach(s => {
+    const leaf = !CORR.steps.some(o => o.parent === s.id) && !(CORR.andNode && CORR.andNode.parent === s.id);
+    if (s.transitionToEnd || (leaf && s.position === 'after-and')) edges.push({ id: 'ce-end-' + s.id, from: 'step:' + s.id, to: 'end', type: s.transitionToEnd || null });
+  });
+  return { nodes, edges, readonly: true };
+}
+function setMode(mode) {
+  if (mode === 'correction' && !canShowCorrection()) return;
+  UI.mode = mode;
+  UI.correction = mode === 'correction' ? buildCorrectionGraph() : null;
+  renderExercise(mode === 'correction' ? 'tb:mode-correction' : 'tb:mode-mine');
+  if (mode === 'correction') {
+    const g = UI.correction;
+    const pos = layeredLayout(g, sizeOf);
+    Object.keys(pos).forEach(id => { g.nodes[id].x = pos[id].x; g.nodes[id].y = pos[id].y; });
+    renderCanvas();
+    fitView(false);
+  } else if (S.view) applyView(); else fitView();
+}
+
+/* =====================================================================
+   13. ROUTER & TOP-LEVEL RENDER
+   ===================================================================== */
+const main = $('#main');
+let currentRoute = null;
+function route() {
+  const r = location.hash.replace(/^#\/?/, '') || 'home';
+  const changed = r !== currentRoute;
+  currentRoute = r;
+  if (r === 'exercise-1') {
+    if (changed) { UI.mode = 'mine'; UI.correction = null; mountExercise(); }
+  } else {
+    renderHome();
+  }
+  if (changed) { window.scrollTo(0, 0); main.focus({ preventScroll: true }); }
+}
+function commit(focusKey) {
+  saveState();
+  if (currentRoute === 'exercise-1') renderExercise(focusKey);
+}
+
+/* ---------- Home ---------- */
+function renderHome() {
+  $('#crumb').innerHTML = '';
+  document.title = 'Cyber Academy – IGA Workshops';
+  const st = loadState();
+  const progress = st ? Object.values(st.nodes).filter(n => n.type === 'action').length : 0;
+  main.innerHTML =
+    '<div class="home">' +
+      '<section class="home-hero" aria-labelledby="home-title">' +
+        '<p class="eyebrow">Cyber Academy · Identity &amp; Access Management</p>' +
+        '<h1 id="home-title">Identity Governance workshops</h1>' +
+        '<p class="lead">Put what you learned during the presentation into practice. Choose an exercise and build the workflow interactively — your progress is saved in this browser.</p>' +
+      '</section>' +
+      '<h2 class="section-title">Choose an exercise</h2>' +
+      '<div class="exercise-grid">' + CFG.exercises.map(ex => {
+        let status = '';
+        if (ex.available && st && st.solved) status = '<span class="tag tag--done">' + icon('circleCheck') + 'Completed</span>';
+        else if (ex.available && st && progress > 1) status = '<span class="tag tag--progress">' + icon('workflow') + 'In progress · ' + progress + ' actions</span>';
+        else if (!ex.available) status = '<span class="tag tag--soon">' + icon('clock') + 'Coming soon</span>';
+        return '<article class="ex-card' + (ex.available ? '' : ' is-disabled') + '" aria-labelledby="t-' + ex.id + '">' +
+          '<div class="ex-card-top"><span class="ex-card-icon">' + icon(ex.icon) + '</span>' +
+          '<div><p class="eyebrow">' + esc(ex.number) + '</p><h2 id="t-' + ex.id + '">' + esc(ex.title) + '</h2></div></div>' +
+          '<p class="desc">' + esc(ex.description) + '</p>' +
+          '<div class="ex-card-meta"><span class="tag">' + icon('clock') + esc(ex.duration) + '</span>' + status + '</div>' +
+          '<div class="ex-card-actions">' + (ex.available
+            ? '<a class="btn btn--primary" href="#/' + ex.id + '" data-key="start-' + ex.id + '">Start exercise' + icon('arrowRight') + '</a>'
+            : '<button class="btn btn--secondary" type="button" disabled aria-disabled="true">' + icon('clock') + 'Coming soon</button>') +
+          '</div></article>';
+      }).join('') + '</div>' +
+    '</div>';
+}
+
+/* ---------- Exercise shell ---------- */
+let canvasEl, worldEl, edgesEl, nodesEl, badgesEl;
+function mountExercise() {
+  S = loadState() || S;
+  document.title = 'Exercise 1 – Employee arrival workflow · Cyber Academy';
+  $('#crumb').innerHTML = '<span>Exercises</span>' + icon('arrowRight') + '<strong>Exercise 1</strong>';
+  main.innerHTML =
+    '<div class="exercise">' +
+      '<section class="instruction" aria-labelledby="ins-title"><div class="instruction-inner">' +
+        '<span class="instruction-icon">' + icon('lightbulb') + '</span>' +
+        '<div><h1 id="ins-title">' + esc(CFG.exercise1.title) + '</h1><p>' + esc(CFG.exercise1.instruction) + '</p></div>' +
+      '</div></section>' +
+      '<div class="ex-layout">' +
+        '<section class="workspace" aria-label="Workflow workspace">' +
+          '<div class="toolbar" id="toolbar"></div>' +
+          '<div id="notices"></div>' +
+          '<div class="canvas" id="canvas" aria-label="Workflow canvas. Use Tab to move between steps, arrow keys to move a step, Enter to edit and Delete to remove an action.">' +
+            '<div class="world" id="world">' +
+              '<svg class="edges" id="edges" aria-hidden="true"><defs>' + markerDefs() + '</defs><g id="edge-paths"></g></svg>' +
+              '<div id="nodes"></div><div id="badges"></div>' +
+            '</div>' +
+            '<div class="canvas-controls" role="toolbar" aria-label="View controls">' +
+              '<button class="icon-btn" type="button" data-act="zoom-out" data-key="vc:out" aria-label="Zoom out" title="Zoom out">' + icon('zoomOut') + '</button>' +
+              '<span class="zoom-label" id="zoom-label" aria-live="polite">100%</span>' +
+              '<button class="icon-btn" type="button" data-act="zoom-in" data-key="vc:in" aria-label="Zoom in" title="Zoom in">' + icon('zoomIn') + '</button>' +
+              '<span class="sep"></span>' +
+              '<button class="icon-btn" type="button" data-act="fit" data-key="vc:fit" aria-label="Recenter the workflow" title="Recenter the workflow">' + icon('fit') + '</button>' +
+              '<button class="btn btn--ghost btn--sm" type="button" data-act="reset-view" data-key="vc:reset">' + icon('rotate') + 'Reset view</button>' +
+              '<span class="sep" id="arrange-sep"></span>' +
+              '<button class="btn btn--ghost btn--sm" type="button" data-act="arrange" data-key="vc:arrange" id="arrange-btn" title="Automatically tidy up the layout">' + icon('sparkles') + 'Tidy up</button>' +
+            '</div>' +
+            '<div class="canvas-hint" aria-hidden="true">Drag the background to pan · <kbd>Ctrl</kbd> + scroll to zoom</div>' +
+          '</div>' +
+        '</section>' +
+        '<aside class="panel" id="panel" aria-label="Available elements and legend"></aside>' +
+      '</div>' +
+    '</div>';
+  canvasEl = $('#canvas'); worldEl = $('#world'); edgesEl = $('#edge-paths'); nodesEl = $('#nodes'); badgesEl = $('#badges');
+  bindCanvas();
+  main.querySelector('.exercise').addEventListener('click', onExerciseClick);
+  renderExercise();
+  if (S.view) applyView(); else resetView();
+}
+function markerDefs() {
+  return ['manual', 'automatic', 'unknown'].map(t =>
+    '<marker id="arrow-' + t + '" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto">' +
+    '<path d="M1 1 L11 6 L1 11 Z" fill="' + (t === 'manual' ? '#1d4ed8' : t === 'automatic' ? '#c81e1e' : '#8f8aa3') + '"/></marker>').join('');
+}
+function renderExercise(focusKey) {
+  const active = document.activeElement;
+  const key = focusKey || (active && active.dataset ? active.dataset.key : null);
+  renderToolbar(); renderNotices(); renderPanel(); renderCanvas();
+  if (key && !dlg.open) {
+    const el = document.querySelector('[data-key="' + key + '"]');
+    if (el && el !== document.activeElement) el.focus({ preventScroll: true });
+  }
+}
+
+/* ---------- Toolbar ---------- */
+function renderToolbar() {
+  const st = structuralStatus();
+  const corr = UI.mode === 'correction';
+  const n = actionCount();
+  $('#toolbar').innerHTML =
+    '<a class="btn btn--secondary" href="#/" data-key="tb:home">' + icon('arrowLeft') + 'Back to home</a>' +
+    '<span class="counter" title="Number of actions in your workflow (including the pre-filled one)">' + icon('layers') + '<span><strong>' + n + '</strong> action' + (n > 1 ? 's' : '') + '</span></span>' +
+    (canShowCorrection() ? '<div class="segmented" role="group" aria-label="Displayed workflow">' +
+      '<button type="button" data-act="mode-mine" data-key="tb:mode-mine" aria-pressed="' + !corr + '">' + icon('user') + 'My workflow</button>' +
+      '<button type="button" data-act="mode-correction" data-key="tb:mode-correction" aria-pressed="' + corr + '">' + icon('eye') + 'Correction</button></div>' : '') +
+    '<span class="toolbar-spacer"></span>' +
+    (corr ? '' :
+    '<button class="btn btn--secondary" type="button" data-act="reset" data-key="tb:reset">' + icon('rotate') + 'Reset exercise</button>' +
+    '<div class="check-wrap">' +
+      (st.complete ? '' : '<span class="check-hint" id="check-hint">Complete the checklist to check your answer (' + st.done + '/' + st.items.length + ')</span>') +
+      '<button class="btn btn--primary" type="button" data-act="check" data-key="tb:check"' + (st.complete ? '' : ' disabled aria-describedby="check-hint"') + '>' + icon('circleCheck') + 'Check answer</button>' +
+    '</div>');
+}
+function renderNotices() {
+  const box = $('#notices');
+  let html = '';
+  if (UI.mode === 'correction') {
+    html = '<div class="notice notice--correction" role="status">' + icon('eye') + '<p><strong>Correction view (read-only).</strong> Green cards show the expected workflow; the status under each card compares it with your answer.</p>' +
+      '<button class="btn btn--secondary btn--sm" type="button" data-act="mode-mine" data-key="nt:back">' + icon('arrowLeft') + 'Back to my workflow</button></div>';
+  } else if (S.solved) {
+    html = '<div class="notice notice--success" role="status">' + icon('trophy') + '<p><strong>Well done!</strong> Your workflow is correct. You can review it or go back to the home page.</p></div>';
+  } else if (S.feedback && (Object.keys(S.feedback.nodes || {}).length || (S.feedback.globals || []).length)) {
+    const count = Object.keys(S.feedback.nodes || {}).filter(id => S.nodes[id]).length;
+    html = '<div class="notice notice--warning" role="status">' + icon('alert') + '<p><strong>Some elements need to be reviewed.</strong> ' +
+      (count ? count + ' highlighted step' + (count > 1 ? 's' : '') + ' in the workspace.' : 'See the feedback for details.') + '</p>' +
+      '<button class="btn btn--secondary btn--sm" type="button" data-act="feedback" data-key="nt:fb">View feedback</button>' +
+      (canShowCorrection() ? '<button class="btn btn--secondary btn--sm" type="button" data-act="mode-correction" data-key="nt:corr">' + icon('eye') + 'Show correction</button>' : '') + '</div>';
+  }
+  box.innerHTML = html;
+}
+
+/* ---------- Side panel ---------- */
+function renderPanel() {
+  const st = structuralStatus();
+  const panel = $('#panel');
+  const tipsOpen = UI.tipsOpen;
+  panel.innerHTML =
+    '<section class="panel-card" aria-labelledby="p-doers"><h2 id="p-doers">' + icon('users') + 'Doers<span class="count">' + CFG.doers.length + '</span></h2>' +
+      '<ul class="legend-list">' + CFG.doers.map(d => '<li class="legend-item"><span class="legend-ico">' + icon(d.icon) + '</span><span class="txt">' + esc(d.label) + '</span></li>').join('') + '</ul></section>' +
+    '<section class="panel-card" aria-labelledby="p-apps"><h2 id="p-apps">' + icon('grid') + 'Applications<span class="count">' + allApps().length + '</span></h2>' +
+      '<ul class="legend-list legend-list--apps">' + allApps().map(a => '<li class="legend-item" title="' + esc(a.label) + (a.custom ? ' – custom application added by you' : '') + '"><span class="legend-ico legend-ico--app' + (a.custom ? ' legend-ico--custom' : '') + '">' + icon(a.icon) + '</span><span class="txt">' + esc(a.label) + '</span>' + (a.custom ? '<span class="sr-only"> (custom application)</span>' : '') + '</li>').join('') + '</ul></section>' +
+    '<section class="panel-card" aria-labelledby="p-trans"><h2 id="p-trans">' + icon('arrowRight') + 'Transitions</h2>' +
+      '<ul class="legend-list">' + CFG.transitions.map(t => '<li class="legend-item">' + arrowSample(t.id) + '<span>' + esc(t.label) + '<span class="legend-sub">' + (t.id === 'manual' ? 'Blue arrow – performed by a person' : 'Red arrow – triggered by a system') + '</span></span></li>').join('') + '</ul></section>' +
+    '<section class="panel-card" aria-labelledby="p-check"><h2 id="p-check">' + icon('listChecks') + 'Workflow checklist<span class="count">' + st.done + '/' + st.items.length + '</span></h2>' +
+      '<div class="progress" role="progressbar" aria-label="Workflow completion" aria-valuemin="0" aria-valuemax="' + st.items.length + '" aria-valuenow="' + st.done + '"><span style="width:' + Math.round(100 * st.done / st.items.length) + '%"></span></div>' +
+      '<ul class="checklist">' + st.items.map(i => '<li class="' + (i.ok ? 'is-ok' : '') + '">' + icon(i.ok ? 'circleCheck' : 'circle') + '<span><span class="sr-only">' + (i.ok ? 'Done: ' : 'To do: ') + '</span>' + esc(i.label) + '</span></li>').join('') + '</ul></section>' +
+    '<section class="panel-card"><details class="tips" id="tips"' + (tipsOpen ? ' open' : '') + '><summary>' + icon('lightbulb') + 'How it works' + icon('chevronDown', 'chev') + '</summary><ul>' +
+      '<li>Click <strong>Add an action</strong> under a step to create the next one.</li>' +
+      '<li>Use the <strong>+</strong> button under a connected step to add another connection, to a new or an existing step.</li>' +
+      '<li>Hover or focus a card to <strong>edit</strong> or <strong>delete</strong> it.</li>' +
+      '<li>Click the label on an arrow to change its transition type.</li>' +
+      '<li>Drag cards to organise the workflow, or use <strong>Tidy up</strong>.</li>' +
+      '<li>Keyboard: <kbd>Tab</kbd> to select a step, arrow keys to move it, <kbd>Enter</kbd> to edit, <kbd>Del</kbd> to delete.</li>' +
+    '</ul></details></section>';
+  $('#tips').addEventListener('toggle', e => { UI.tipsOpen = e.target.open; });
+}
+
+/* =====================================================================
+   14. CANVAS RENDERING
+   ===================================================================== */
+const sizes = {};
+function sizeOf(n) {
+  return sizes[n.id] || (n.type === 'action' ? DEFAULT_SIZE.action : DEFAULT_SIZE.fixed);
+}
+const currentGraph = () => UI.mode === 'correction' && UI.correction ? UI.correction : { nodes: S.nodes, edges: S.edges, readonly: false };
+function renderCanvas() {
+  if (!nodesEl) return;
+  const g = currentGraph();
+  canvasEl.classList.toggle('is-correction', !!g.readonly);
+  $('#arrange-btn').hidden = !!g.readonly; $('#arrange-sep').hidden = !!g.readonly;
+  const fromStart = g.readonly ? null : reachable('start');
+  const list = Object.values(g.nodes).sort((a, b) => a.y - b.y || a.x - b.x);
+  nodesEl.innerHTML = list.map(n => nodeHTML(n, g, fromStart)).join('');
+  Object.keys(sizes).forEach(k => delete sizes[k]);
+  $$('.node', nodesEl).forEach(el => { sizes[el.dataset.id] = { w: el.offsetWidth, h: el.offsetHeight }; });
+  renderEdges();
+}
+function nodeHTML(n, g, fromStart) {
+  const ro = !!g.readonly;
+  const issues = !ro && S.feedback && S.feedback.nodes ? (S.feedback.nodes[n.id] || []) : [];
+  const style = 'left:' + n.x + 'px;top:' + n.y + 'px';
+  const common = 'data-id="' + esc(n.id) + '" data-key="node:' + esc(n.id) + '" tabindex="0" style="' + style + '"';
+  if (n.type !== 'action') {
+    const outs = outEdges(n.id, g).length, ins = inEdges(n.id, g).length;
+    const label = nodeLabel(n);
+    const ic = n.type === 'start' ? 'userPlus' : n.type === 'and' ? 'split' : 'flag';
+    let ports = '';
+    if (n.type === 'and') {
+      const used = outs === 1 ? [1] : outs === 2 ? [0, 2] : outs >= 3 ? [0, 1, 2] : [];
+      ports = '<div class="ports ports--top"><span class="port' + (ins ? ' is-used' : '') + '" style="left:50%"></span></div>' +
+        '<div class="ports ports--bottom">' + [25, 50, 75].map((p, i) => '<span class="port' + (used.includes(i) ? ' is-used' : '') + '" style="left:' + p + '%"></span>').join('') + '</div>';
+    } else if (n.type === 'end') {
+      ports = '<div class="ports ports--top"><span class="port' + (ins ? ' is-used' : '') + '" style="left:50%"></span></div>';
+    } else {
+      ports = '<div class="ports ports--bottom"><span class="port' + (outs ? ' is-used' : '') + '" style="left:50%"></span></div>';
+    }
+    let handle = '';
+    if (!ro && n.type === 'start' && !outs) handle = '<div class="handle"><button type="button" class="pill" data-act="add-after" data-id="start" data-key="add:start">' + icon('plus') + 'Add an action</button></div>';
+    if (!ro && n.type === 'and') {
+      const full = outs >= MAX_BRANCHES;
+      handle = '<div class="handle handle--side"><div class="handle-row">' +
+        '<button type="button" class="pill" data-act="add-after" data-id="and" data-key="add:and"' + (full ? ' aria-disabled="true"' : '') + ' aria-label="Add a parallel branch, ' + outs + ' of 3 used">' + icon('plus') + 'Add a branch <span class="pill-count">' + outs + '/3</span></button>' +
+        '<button type="button" class="link-btn" data-act="connect" data-id="and" data-key="link:and" aria-label="Connect the AND node to an existing step" title="Connect to an existing step">' + icon('link') + '</button></div>' +
+        '<span class="and-hint">' + icon('info') + 'Add 1 to 3 parallel actions</span></div>';
+    }
+    const aria = label + (n.type === 'start' ? ', start of the workflow' : n.type === 'and' ? ' node, launches parallel actions, ' + outs + ' branch' + (outs === 1 ? '' : 'es') : ', end of the workflow') + '. Fixed step.';
+    return '<div class="node node--fixed node--' + n.type + (ro ? ' node--readonly' : '') + (issues.length ? ' has-issue' : '') + '" ' + common + ' role="group" aria-label="' + esc(aria) + '"' + (issues.length ? ' title="' + esc(issues.join(' ')) + '"' : '') + '>' +
+      ports + '<span class="node-icon">' + icon(ic) + '</span><span>' + esc(label) + '</span>' +
+      '<span class="lock" title="Fixed step – cannot be deleted">' + icon('lock') + '</span>' + handle + '</div>';
+  }
+  // Action card
+  const ins = inEdges(n.id, g);
+  const inType = ins.length ? (ins[0].type || 'unknown') : null;
+  const outs = outEdges(n.id, g).length;
+  const doer = doerById(n.doer), app = appById(n.app);
+  const isolated = !ro && !fromStart.has(n.id);
+  let inChip;
+  if (!ins.length) inChip = '<span class="incoming incoming--none">' + icon('alert') + 'Not connected</span>';
+  else if (inType === 'unknown') inChip = '<span class="incoming incoming--none">Transition</span>';
+  else inChip = '<span class="incoming incoming--' + inType + '" title="Incoming transition: ' + esc(transLabel(inType)) + '">' + icon(transIcon(inType)) + esc(transShort(inType)) + '</span>';
+  const name = nodeLabel(n);
+  const tools = ro ? (n.expected ? '<span class="expected-tag">Expected</span>' : '') :
+    '<div class="card-tools">' +
+      '<button type="button" class="icon-btn" data-act="edit" data-id="' + esc(n.id) + '" data-key="edit:' + esc(n.id) + '" aria-label="Edit action ' + esc(name) + '" title="Edit">' + icon('pencil') + '</button>' +
+      '<button type="button" class="icon-btn icon-btn--danger" data-act="delete" data-id="' + esc(n.id) + '" data-key="del:' + esc(n.id) + '" aria-label="Delete action ' + esc(name) + '" title="' + (n.required ? esc(MSG.required) : 'Delete') + '"' + (n.required ? ' disabled' : '') + '>' + icon('trash') + '</button>' +
+    '</div>';
+  let footer = '';
+  if (issues.length) footer = '<div class="card-issue" title="' + esc(issues.join(' ')) + '">' + icon('alert') + '<span>' + esc(issues[0]) + (issues.length > 1 ? ' (+' + (issues.length - 1) + ')' : '') + '</span></div>';
+  if (ro && n.status) {
+    const map = { ok: ['ok', 'circleCheck', 'Correct in your workflow'], partial: ['partial', 'alert', 'In your workflow, with differences'], missing: ['missing', 'circleX', 'Missing from your workflow'] };
+    const m = map[n.status];
+    footer = '<div class="card-status card-status--' + m[0] + '">' + icon(m[1]) + m[2] + '</div>';
+  }
+  let handle = '';
+  if (!ro) {
+    handle = outs ?
+      '<div class="handle handle--round"><button type="button" class="round-btn" data-act="connect" data-id="' + esc(n.id) + '" data-key="link:' + esc(n.id) + '" aria-label="Add a connection from ' + esc(name) + '" title="Add a connection">' + icon('plus') + '</button></div>' :
+      '<div class="handle"><button type="button" class="pill" data-act="add-after" data-id="' + esc(n.id) + '" data-key="add:' + esc(n.id) + '" aria-label="Add an action after ' + esc(name) + '">' + icon('plus') + 'Add an action</button>' +
+      '<button type="button" class="link-btn" data-act="connect" data-id="' + esc(n.id) + '" data-key="link:' + esc(n.id) + '" aria-label="Connect ' + esc(name) + ' to an existing step or choose a transition" title="Connect to an existing step (e.g. END)">' + icon('link') + '</button></div>';
+  }
+  const aria = 'Action: ' + name + '. Doer: ' + (doer ? doer.label : 'not set') + '. Application: ' + (app ? app.label : (n.app || 'not set')) + '. ' +
+    (ins.length && inType !== 'unknown' ? 'Incoming transition: ' + transLabel(inType) + '. ' : ins.length ? '' : 'Not connected. ') + (issues.length ? 'To review: ' + issues.join(' ') : '');
+  return '<div class="node node--action' + (inType ? ' in-' + inType : '') + (isolated ? ' is-isolated' : '') + (issues.length ? ' has-issue' : '') + (n.expected ? ' node--expected' : '') + (ro ? ' node--readonly' : '') + '" ' + common + ' role="group" aria-label="' + esc(aria) + '">' +
+    '<div class="card"><div class="card-head">' + inChip + tools + '</div>' +
+    '<p class="card-title">' + esc(name) + '</p>' +
+    '<ul class="card-meta">' +
+      '<li><span class="meta-ico">' + icon(doer ? doer.icon : 'user') + '</span><span class="meta-label">Doer</span><span class="txt">' + esc(doer ? doer.label : '—') + '</span></li>' +
+      '<li><span class="meta-ico meta-ico--app">' + icon(app ? app.icon : 'package') + '</span><span class="meta-label">App</span><span class="txt">' + esc(app ? app.label : (n.app || '—')) + '</span></li>' +
+    '</ul>' + footer + '</div>' + handle + '</div>';
+}
+
+function edgeGeometry(e, g) {
+  const a = g.nodes[e.from], b = g.nodes[e.to];
+  if (!a || !b) return null;
+  const sa = sizeOf(a), sb = sizeOf(b);
+  const cx = n => n.x + sizeOf(n).w / 2;
+  const outs = outEdges(a.id, g).slice().sort((p, q) => cx(g.nodes[p.to]) - cx(g.nodes[q.to]));
+  const i = outs.indexOf(e), k = outs.length;
+  let sx;
+  if (a.type === 'and') { const slots = k === 1 ? [.5] : k === 2 ? [.25, .75] : [.25, .5, .75]; sx = a.x + sa.w * (slots[i] != null ? slots[i] : .5); }
+  else sx = a.x + sa.w * (i + 1) / (k + 1);
+  const sy = a.y + sa.h;
+  const ins = inEdges(b.id, g).slice().sort((p, q) => cx(g.nodes[p.from]) - cx(g.nodes[q.from]));
+  const j = ins.indexOf(e), m = ins.length;
+  const tx = b.x + sb.w * (j + 1) / (m + 1), ty = b.y - 2;
+  let d, mid;
+  if (ty - sy > 40) {
+    const dy = Math.max(36, (ty - sy) / 2);
+    d = 'M' + sx + ',' + sy + ' C' + sx + ',' + (sy + dy) + ' ' + tx + ',' + (ty - dy) + ' ' + tx + ',' + ty;
+    mid = { x: (sx + 3 * sx + 3 * tx + tx) / 8, y: (sy + 3 * (sy + dy) + 3 * (ty - dy) + ty) / 8 };
+  } else {
+    // Target above (or level with) the source: route around on the right.
+    const ox = Math.max(a.x + sa.w, b.x + sb.w) + 48;
+    const y1 = sy + 24, y2 = ty - 24;
+    d = 'M' + sx + ',' + sy + ' L' + sx + ',' + y1 + ' L' + ox + ',' + y1 + ' L' + ox + ',' + y2 + ' L' + tx + ',' + y2 + ' L' + tx + ',' + ty;
+    mid = { x: ox, y: (y1 + y2) / 2 };
+  }
+  return { d, mid };
+}
+function renderEdges() {
+  const g = currentGraph();
+  let paths = '', badges = '';
+  g.edges.forEach(e => {
+    const geo = edgeGeometry(e, g);
+    if (!geo) return;
+    const t = e.type || 'unknown';
+    const label = e.type ? transLabel(e.type) : 'Transition not specified';
+    const desc = label + ': ' + nodeLabel(g.nodes[e.from]) + ' to ' + nodeLabel(g.nodes[e.to]);
+    paths += '<path class="edge edge--' + t + '" d="' + geo.d + '" marker-end="url(#arrow-' + t + ')"><title>' + esc(desc) + '</title></path>';
+    if (!g.readonly) paths += '<path class="edge-hit" data-edge-id="' + esc(e.id) + '" d="' + geo.d + '" stroke="transparent" stroke-width="14" fill="none"><title>' + esc(desc) + ' – click to edit</title></path>';
+    const inner = icon(e.type ? transIcon(e.type) : 'info') + '<span>' + esc(e.type ? transShort(e.type) : '?') + '</span>';
+    badges += g.readonly
+      ? '<span class="edge-badge edge-badge--' + t + '" style="left:' + geo.mid.x + 'px;top:' + geo.mid.y + 'px" role="img" aria-label="' + esc(desc) + '" title="' + esc(label) + '">' + inner + '</span>'
+      : '<button type="button" class="edge-badge edge-badge--' + t + '" style="left:' + geo.mid.x + 'px;top:' + geo.mid.y + 'px" data-act="edge" data-edge-id="' + esc(e.id) + '" data-key="edge:' + esc(e.id) + '" aria-label="' + esc(desc) + '. Edit connection" title="' + esc(label) + ' – click to edit">' + inner + '</button>';
+  });
+  edgesEl.innerHTML = paths;
+  badgesEl.innerHTML = badges;
+}
+
+/* =====================================================================
+   15. VIEW: PAN / ZOOM / FIT
+   ===================================================================== */
+let view = { x: 0, y: 0, z: 1 };
+let viewSaveTimer = null;
+function applyView(v) {
+  if (v) view = v; else if (UI.mode !== 'correction' && S.view) view = S.view;
+  worldEl.style.transform = 'translate(' + view.x + 'px,' + view.y + 'px) scale(' + view.z + ')';
+  canvasEl.style.backgroundSize = (GRID * view.z) + 'px ' + (GRID * view.z) + 'px';
+  canvasEl.style.backgroundPosition = view.x + 'px ' + view.y + 'px';
+  $('#zoom-label').textContent = Math.round(view.z * 100) + '%';
+  if (UI.mode !== 'correction') {
+    S.view = Object.assign({}, view);
+    clearTimeout(viewSaveTimer); viewSaveTimer = setTimeout(saveState, 300);
+  }
+}
+function contentBox() {
+  const g = currentGraph();
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  Object.values(g.nodes).forEach(n => {
+    const s = sizeOf(n);
+    const extraR = n.type === 'and' && !g.readonly ? 230 : 0;
+    const extraB = n.type !== 'end' && !g.readonly ? 52 : 0;
+    x1 = Math.min(x1, n.x); y1 = Math.min(y1, n.y);
+    x2 = Math.max(x2, n.x + s.w + extraR); y2 = Math.max(y2, n.y + s.h + extraB);
+  });
+  return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+}
+function fitView(maxOne) {
+  const b = contentBox(), r = canvasEl.getBoundingClientRect();
+  const pad = 56;
+  // Keep the text readable: below 55 % the view is aligned to the top and the participant can pan.
+  const z = clamp(Math.min((r.width - pad * 2) / b.w, (r.height - pad * 2 - 40) / b.h), 0.55, maxOne === false ? 1.2 : 1);
+  applyView({ z, x: (r.width - b.w * z) / 2 - b.x * z, y: Math.max(pad / 2, (r.height - 40 - b.h * z) / 2) - b.y * z });
+}
+function resetView() {
+  const b = contentBox(), r = canvasEl.getBoundingClientRect();
+  applyView({ z: 1, x: r.width / 2 - (b.x + b.w / 2), y: 32 - b.y });
+}
+function zoomAt(factor, px, py) {
+  const r = canvasEl.getBoundingClientRect();
+  if (px == null) { px = r.width / 2; py = r.height / 2; }
+  const nz = clamp(view.z * factor, 0.3, 2);
+  const wx = (px - view.x) / view.z, wy = (py - view.y) / view.z;
+  applyView({ z: nz, x: px - wx * nz, y: py - wy * nz });
+}
+function ensureVisible(id) {
+  const n = S.nodes[id]; if (!n) return;
+  const s = sizeOf(n), r = canvasEl.getBoundingClientRect();
+  const left = n.x * view.z + view.x, top = n.y * view.z + view.y;
+  const right = left + s.w * view.z, bottom = top + (s.h + 60) * view.z;
+  let dx = 0, dy = 0;
+  if (left < 20) dx = 20 - left; else if (right > r.width - 20) dx = r.width - 20 - right;
+  if (top < 20) dy = 20 - top; else if (bottom > r.height - 60) dy = r.height - 60 - bottom;
+  if (dx || dy) applyView({ z: view.z, x: view.x + dx, y: view.y + dy });
+}
+function locateNode(id) {
+  const n = S.nodes[id]; if (!n) return;
+  const s = sizeOf(n), r = canvasEl.getBoundingClientRect();
+  applyView({ z: view.z, x: r.width / 2 - (n.x + s.w / 2) * view.z, y: r.height / 2 - (n.y + s.h / 2) * view.z });
+  canvasEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  const el = $('[data-key="node:' + id + '"]');
+  if (el) el.focus({ preventScroll: true });
+}
+
+/* =====================================================================
+   16. CANVAS INTERACTIONS (drag, pan, wheel, keyboard, clicks)
+   ===================================================================== */
+function bindCanvas() {
+  let drag = null;
+  canvasEl.addEventListener('pointerdown', ev => {
+    if (ev.button !== 0) return;
+    if (ev.target.closest('button, a, input, select, .canvas-controls, .canvas-hint')) return;
+    const nodeEl = ev.target.closest('.node');
+    const g = currentGraph();
+    if (nodeEl && !g.readonly) {
+      const n = S.nodes[nodeEl.dataset.id];
+      drag = { kind: 'node', id: n.id, el: nodeEl, sx: ev.clientX, sy: ev.clientY, ox: n.x, oy: n.y, moved: false };
+    } else {
+      drag = { kind: 'pan', sx: ev.clientX, sy: ev.clientY, ox: view.x, oy: view.y, moved: false };
+      canvasEl.classList.add('is-panning');
+    }
+    canvasEl.setPointerCapture(ev.pointerId);
+  });
+  canvasEl.addEventListener('pointermove', ev => {
+    if (!drag) return;
+    const dx = ev.clientX - drag.sx, dy = ev.clientY - drag.sy;
+    if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 4) return;
+    drag.moved = true;
+    if (drag.kind === 'pan') { applyView({ z: view.z, x: drag.ox + dx, y: drag.oy + dy }); return; }
+    const n = S.nodes[drag.id];
+    n.x = snap(drag.ox + dx / view.z); n.y = snap(drag.oy + dy / view.z);
+    drag.el.style.left = n.x + 'px'; drag.el.style.top = n.y + 'px';
+    drag.el.classList.add('is-dragging');
+    renderEdges();
+  });
+  const end = ev => {
+    if (!drag) return;
+    if (drag.kind === 'node') {
+      drag.el.classList.remove('is-dragging');
+      if (drag.moved) saveState(); else drag.el.focus({ preventScroll: true });
+    }
+    canvasEl.classList.remove('is-panning');
+    try { canvasEl.releasePointerCapture(ev.pointerId); } catch (e) { /* ignore */ }
+    drag = null;
+  };
+  canvasEl.addEventListener('pointerup', end);
+  canvasEl.addEventListener('pointercancel', end);
+  canvasEl.addEventListener('wheel', ev => {
+    ev.preventDefault();
+    const r = canvasEl.getBoundingClientRect();
+    if (ev.ctrlKey || ev.metaKey) zoomAt(Math.exp(-ev.deltaY * 0.0022), ev.clientX - r.left, ev.clientY - r.top);
+    else applyView({ z: view.z, x: view.x - ev.deltaX, y: view.y - ev.deltaY });
+  }, { passive: false });
+  canvasEl.addEventListener('keydown', ev => {
+    const nodeEl = ev.target.classList && ev.target.classList.contains('node') ? ev.target : null;
+    if (!nodeEl || currentGraph().readonly) return;
+    const n = S.nodes[nodeEl.dataset.id];
+    const step = ev.shiftKey ? 50 : SNAP;
+    const moves = { ArrowUp: [0, -step], ArrowDown: [0, step], ArrowLeft: [-step, 0], ArrowRight: [step, 0] };
+    if (moves[ev.key]) {
+      ev.preventDefault();
+      n.x = snap(n.x + moves[ev.key][0]); n.y = snap(n.y + moves[ev.key][1]);
+      nodeEl.style.left = n.x + 'px'; nodeEl.style.top = n.y + 'px';
+      renderEdges(); ensureVisible(n.id); saveState();
+    } else if (ev.key === 'Enter' && n.type === 'action') { ev.preventDefault(); openActionModal({ mode: 'edit', nodeId: n.id }); }
+    else if ((ev.key === 'Delete' || ev.key === 'Backspace') && n.type === 'action') { ev.preventDefault(); deleteAction(n.id); }
+  });
+  edgesEl.addEventListener('click', ev => { const p = ev.target.closest('[data-edge-id]'); if (p) openEdgeModal(p.dataset.edgeId); });
+  window.addEventListener('resize', () => { if (currentRoute === 'exercise-1' && canvasEl.isConnected) applyView(); });
+}
+async function onExerciseClick(ev) {
+  const b = ev.target.closest('[data-act]');
+  if (!b || b.disabled) return;
+  const act = b.dataset.act, id = b.dataset.id;
+  switch (act) {
+    case 'add-after': addAfter(id); break;
+    case 'connect': openConnectModal(id); break;
+    case 'edit': openActionModal({ mode: 'edit', nodeId: id }); break;
+    case 'delete': deleteAction(id); break;
+    case 'edge': openEdgeModal(b.dataset.edgeId); break;
+    case 'zoom-in': zoomAt(1.2); break;
+    case 'zoom-out': zoomAt(1 / 1.2); break;
+    case 'fit': fitView(); break;
+    case 'reset-view': resetView(); break;
+    case 'arrange': {
+      const pos = layeredLayout(S, sizeOf);
+      Object.keys(pos).forEach(k => { S.nodes[k].x = pos[k].x; S.nodes[k].y = pos[k].y; });
+      commit(); fitView(); toast('Workflow tidied up.');
+      break;
+    }
+    case 'check': checkAnswer(); break;
+    case 'feedback': showFeedback(); break;
+    case 'mode-correction': setMode('correction'); break;
+    case 'mode-mine': setMode('mine'); break;
+    case 'reset': {
+      const ok = await confirmDialog('Reset exercise', 'Are you sure you want to reset the exercise? Your workflow, custom applications and attempts will be deleted. This cannot be undone.', 'Reset exercise', 'danger');
+      if (!ok) return;
+      S = initialState(); UI.mode = 'mine'; UI.correction = null;
+      saveState(); renderExercise('tb:reset'); resetView();
+      toast('The exercise has been reset.');
+      break;
+    }
+  }
+}
+
+/* =====================================================================
+   17. BOOT
+   ===================================================================== */
+$('#brand-mark').innerHTML = icon('shield');
+if (!CFG) {
+  main.innerHTML = '<div class="fatal"><h1>Configuration missing</h1><p>The file <code>config.js</code> could not be loaded. Make sure it is located next to <code>index.html</code>.</p></div>';
+  return;
+}
+window.addEventListener('hashchange', route);
+route();
+})();
+</script>
+</body>
+</html>
