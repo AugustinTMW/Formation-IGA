@@ -45,6 +45,7 @@
   --appbar-h: 60px;
 }
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 body {
   font-family: var(--font);
@@ -1152,30 +1153,24 @@ function arrowSample(type) {
 /* =====================================================================
    10. ACTION MODAL (create / edit)
    ===================================================================== */
-function parentCandidates(nodeId) {
-  const descendants = nodeId ? reachable(nodeId) : new Set();
-  const current = nodeId ? inEdges(nodeId)[0] : null;
-  return Object.values(S.nodes).filter(n => {
-    if (n.type !== 'action' && n.type !== 'and') return false;
-    if (n.id === nodeId || descendants.has(n.id)) return false;
-    if (n.type === 'and' && outEdges('and').length >= MAX_BRANCHES && !(current && current.from === 'and')) return false;
-    return true;
-  }).sort((a, b) => a.y - b.y || a.x - b.x);
-}
+/* Action form: name, doer and application only. The previous step and the
+   transition are chosen when the arrow is drawn (drag, "Add an action",
+   "Add a connection") and changed on the arrow itself. */
 function openActionModal(opts) {
   const editing = opts.mode === 'edit';
   const node = editing ? S.nodes[opts.nodeId] : null;
   const firstIn = editing ? inEdges(node.id)[0] : null;
   const parentId = editing ? (firstIn ? firstIn.from : '') : (opts.parentId || '');
   const transition = editing ? (firstIn ? firstIn.type : '') : (opts.transition || '');
-  const locked = editing && node.required;
-  const showParent = !locked && (editing ? (!firstIn || isAfterAnd(node.id) || firstIn.from === 'and') : (parentId === 'and' || isAfterAnd(parentId)));
   const apps = allApps();
   const sugg = EX.actionSuggestions || [];
   const parentNode = S.nodes[parentId];
+  const transChip = transition
+    ? ' <span class="incoming incoming--' + esc(transition) + '">' + icon(transIcon(transition)) + esc(transShort(transition)) + '</span>'
+    : (parentNode ? ' <span class="incoming incoming--none">' + icon('alert') + 'Transition not set</span>' : '');
 
   const body =
-    (!showParent && parentNode ? '<p class="context-line">' + icon('workflow') + '<span>Follows: <strong>' + esc(nodeLabel(parentNode)) + '</strong></span></p>' : '') +
+    (parentNode ? '<p class="context-line">' + icon('workflow') + '<span>Follows: <strong>' + esc(nodeLabel(parentNode)) + '</strong>' + transChip + '</span></p>' : '') +
     '<div class="field"><label for="f-name">Action name<span class="req" aria-hidden="true">*</span></label>' +
       '<input class="input" id="f-name" data-field="name" type="text" maxlength="120" autocomplete="off" placeholder="Enter the action name" required aria-required="true" aria-describedby="err-name"' +
       (sugg.length ? ' list="f-name-list"' : '') + ' value="' + esc(node ? node.name : '') + '">' +
@@ -1194,13 +1189,7 @@ function openActionModal(opts) {
     '<div class="field" id="f-other-wrap" hidden><label for="f-other">New application name<span class="req" aria-hidden="true">*</span></label>' +
       '<input class="input" id="f-other" data-field="other" type="text" maxlength="40" placeholder="e.g. Badge management system" aria-describedby="err-other help-other">' +
       '<p class="help" id="help-other">It will be added to the list of applications for the rest of your session.</p>' + errorSlot('other') + '</div>' +
-    (showParent ?
-      '<div class="field"><label for="f-parent">Parent action</label>' +
-        '<select class="select" id="f-parent" data-field="parent" aria-describedby="help-parent err-parent"><option value="">None – not connected yet</option>' +
-        parentCandidates(editing ? node.id : null).map(n => '<option value="' + esc(n.id) + '"' + (n.id === parentId ? ' selected' : '') + '>' + esc(n.type === 'and' ? 'AND node (new parallel branch)' : nodeLabel(n)) + '</option>').join('') +
-        '</select><p class="help" id="help-parent">The step this action follows (branch of the AND node or previous action).</p>' + errorSlot('parent') + '</div>' : '') +
-    '<fieldset class="field" id="f-trans-wrap"><legend>Transition from the previous step<span class="req" aria-hidden="true">*</span></legend>' +
-      transitionChoices('transition', transition) + errorSlot('transition') + '</fieldset>';
+    (editing ? '<p class="help">To change the transition, click the label on the arrow. To change the previous step, drag the end of the arrow onto another step.</p>' : '');
 
   return openDialog({
     title: editing ? 'Edit action' : 'Add an action',
@@ -1209,13 +1198,10 @@ function openActionModal(opts) {
     body,
     onMount(root) {
       const appSel = $('#f-app', root), otherWrap = $('#f-other-wrap', root);
-      const parentSel = $('#f-parent', root), transWrap = $('#f-trans-wrap', root);
       const syncOther = () => { otherWrap.hidden = appSel.value !== '__other'; };
-      const syncTrans = () => { transWrap.hidden = parentSel ? !parentSel.value : !parentId; };
       appSel.addEventListener('change', () => { syncOther(); if (!otherWrap.hidden) $('#f-other', root).focus(); });
-      if (parentSel) parentSel.addEventListener('change', syncTrans);
-      syncOther(); syncTrans();
-      $$('input, select', root).forEach(el => el.addEventListener(el.type === 'radio' ? 'change' : 'input', () => setError(root, el.dataset.field || el.name, '')));
+      syncOther();
+      $$('input, select', root).forEach(el => el.addEventListener('input', () => setError(root, el.dataset.field, '')));
     },
     actions: [
       { label: 'Cancel', value: null },
@@ -1226,40 +1212,31 @@ function openActionModal(opts) {
           const doer = $('#f-doer', root).value;
           let app = $('#f-app', root).value;
           const other = $('#f-other', root).value.trim().replace(/\s+/g, ' ');
-          const parentSel = $('#f-parent', root);
-          const parent = parentSel ? parentSel.value : parentId;
-          const tr = ($('input[name="transition"]:checked', root) || {}).value || '';
           let ok = true, firstBad = null;
           const fail = (f, m, el) => { setError(root, f, m); ok = false; firstBad = firstBad || el; };
           if (!name) fail('name', 'Please enter the action name.', $('#f-name', root));
           if (!doer) fail('doer', 'Please select a doer.', $('#f-doer', root));
           if (!app) fail('app', 'Please select an application.', $('#f-app', root));
           if (app === '__other' && !other) fail('other', 'Please enter the name of the new application.', $('#f-other', root));
-          if (parent && !tr) fail('transition', 'Please select a transition type.', $('input[name="transition"]', root));
-          if (parent) {
-            const res = editing ? canConnect(parent, node.id, firstIn ? firstIn.id : null) : (parent === 'and' && outEdges('and').length >= MAX_BRANCHES ? { ok: false, reason: MSG.maxBranches } : { ok: true });
-            if (!res.ok) fail('parent', res.reason, parentSel);
-          }
           if (!ok) { if (firstBad) firstBad.focus(); return false; }
+          if (!editing && parentId) {
+            const blocked = outgoingBlocked(parentId);
+            if (blocked) { toast(blocked, 'error'); return false; }
+          }
 
           if (app === '__other') app = ensureCustomApp(other);
           if (editing) {
             Object.assign(node, { name, doer, app });
-            if (!locked) {
-              if (!parent && firstIn) S.edges = S.edges.filter(e => e !== firstIn);
-              else if (parent && firstIn) { firstIn.from = parent; firstIn.type = tr; }
-              else if (parent && !firstIn) S.edges.push({ id: newId('e'), from: parent, to: node.id, type: tr });
-            } else if (firstIn && tr) firstIn.type = tr;
             clearIssues(node.id);
             commit();
             toast('Action updated.', 'success');
           } else {
             const id = newId('a');
-            const p = opts.at && parent === parentId
+            const p = opts.at
               ? { x: snap(opts.at.x - DEFAULT_SIZE.action.w / 2), y: snap(opts.at.y) }   // released in empty space
-              : placeNew(parent || null);
+              : placeNew(parentId || null);
             S.nodes[id] = { id, type: 'action', x: p.x, y: p.y, name, doer, app };
-            if (parent) S.edges.push({ id: newId('e'), from: parent, to: id, type: tr });
+            if (parentId) S.edges.push({ id: newId('e'), from: parentId, to: id, type: transition || null });
             commit('node:' + id);
             ensureVisible(id);
             toast('Action “' + name + '” added.', 'success');
@@ -1307,10 +1284,15 @@ function placeNew(parentId) {
 /* =====================================================================
    11. CONNECT / EDGE / DELETE FLOWS
    ===================================================================== */
-function addAfter(fromId) {
-  const n = S.nodes[fromId];
-  if (n.type === 'and' && outEdges('and').length >= MAX_BRANCHES) { toast(MSG.maxBranches, 'error'); return; }
-  openActionModal({ mode: 'create', parentId: fromId });
+/* "Add an action" / "Add a branch": choose the transition first (same
+   popover as when an arrow is drawn), then fill in the action. */
+function addAfter(fromId, btn) {
+  const blocked = outgoingBlocked(fromId);
+  if (blocked) { toast(blocked, 'error'); return; }
+  const r = btn ? btn.getBoundingClientRect() : canvasEl.getBoundingClientRect();
+  openTransPop({ clientX: r.left, clientY: r.bottom - 8 }, 'New action after ' + nodeLabel(S.nodes[fromId]), type => {
+    if (type) openActionModal({ mode: 'create', parentId: fromId, transition: type });
+  });
 }
 async function openConnectModal(fromId) {
   const from = S.nodes[fromId];
@@ -1759,7 +1741,7 @@ function renderPanel() {
       '<div class="progress" role="progressbar" aria-label="Workflow completion" aria-valuemin="0" aria-valuemax="' + st.items.length + '" aria-valuenow="' + st.done + '"><span style="width:' + Math.round(100 * st.done / st.items.length) + '%"></span></div>' +
       '<ul class="checklist">' + st.items.map(i => '<li class="' + (i.ok ? 'is-ok' : '') + '">' + icon(i.ok ? 'circleCheck' : 'circle') + '<span><span class="sr-only">' + (i.ok ? 'Done: ' : 'To do: ') + '</span>' + esc(i.label) + '</span></li>').join('') + '</ul></section>' +
     '<section class="panel-card"><details class="tips" id="tips"' + (tipsOpen ? ' open' : '') + '><summary>' + icon('lightbulb') + 'How it works' + icon('chevronDown', 'chev') + '</summary><ul>' +
-      '<li>Click <strong>Add an action</strong> under a step to create the next one.</li>' +
+      '<li>Click <strong>Add an action</strong> under a step, choose the transition, then enter the name, doer and application of the next action.</li>' +
       '<li><strong>Drag the round + port</strong> under a step onto another step to draw an arrow, then choose Manual or Automatic. Release it in empty space to create a new action there.</li>' +
       '<li><strong>Drag the end of an arrow</strong> onto another step to reconnect it.</li>' +
       '<li>Hover or focus a card to <strong>edit</strong> or <strong>delete</strong> it.</li>' +
@@ -2231,7 +2213,7 @@ async function onExerciseClick(ev) {
   if (b.dataset.port && ev.detail > 0) return;   // mouse click on a port: handled on pointerup
   const act = b.dataset.act, id = b.dataset.id;
   switch (act) {
-    case 'add-after': addAfter(id); break;
+    case 'add-after': addAfter(id, b); break;
     case 'connect': openConnectModal(id); break;
     case 'edit': openActionModal({ mode: 'edit', nodeId: id }); break;
     case 'delete': deleteAction(id); break;

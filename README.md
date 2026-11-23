@@ -192,6 +192,9 @@ textes de ces messages se trouvent dans la constante `MSG` au début du script d
 
 ## 5. Accessibilité et ergonomie
 
+- **Fenêtre d'action :** elle ne contient que le nom, le doer et l'application. L'étape précédente
+  et le type de transition se choisissent sur la flèche : en la traçant, via « Add an action » (petit
+  menu Manual / Automatic avant la fenêtre), en cliquant sur son étiquette ou en déplaçant son bout.
 - **Tracer une flèche à la souris :** attraper le point rond « + » sous un bloc et le glisser
   - sur un autre bloc : il s'entoure de vert (connexion valide) ou de rouge (refusée, avec la raison) ;
     au relâchement, un petit menu demande *Manual operation* ou *Automatic operation* ;
