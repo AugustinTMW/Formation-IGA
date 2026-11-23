@@ -708,8 +708,27 @@ function initialState() {
     solved: false,
     feedback: null,
     view: null,
-    seq: 2
+    seq: 2,
+    firstActionCfg: Object.assign({}, fa)
   };
+}
+/* A trainer may update the pre-filled action in config.js after participants
+   have started. Saved progress must not hide that update: every field that is
+   still empty, or still equal to the previous configuration, takes the new
+   configured value. Fields the participant changed themselves are kept. */
+function syncFirstAction(s, part) {
+  const cfg = part.firstAction || {};
+  const old = s.firstActionCfg || {};
+  const a1 = Object.values(s.nodes).find(n => n.required);
+  if (a1) {
+    [['name', 'name'], ['doer', 'doer'], ['app', 'application']].forEach(([f, c]) => {
+      if (cfg[c] && (!a1[f] || a1[f] === old[c])) a1[f] = cfg[c];
+    });
+    const e = s.edges.find(x => x.from === 'start' && x.to === a1.id);
+    if (e && cfg.transition && (!e.type || e.type === old.transition)) e.type = cfg.transition;
+  }
+  s.firstActionCfg = Object.assign({}, cfg);
+  return s;
 }
 function loadState(part) {
   try {
@@ -717,7 +736,7 @@ function loadState(part) {
     if (!raw) return null;
     const s = JSON.parse(raw);
     if (!s || s.version !== 1 || !s.nodes || !s.nodes.start || !s.nodes.and || !s.nodes.end || !Array.isArray(s.edges)) return null;
-    return s;
+    return syncFirstAction(s, part || PART);
   } catch (e) { return null; }
 }
 function saveState() {
