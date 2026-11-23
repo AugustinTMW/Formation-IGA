@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Cyber Academy – IGA Workshops</title>
+<title>Cyber AcaDimy – IGA Workshops</title>
 <style>
 /* =====================================================================
    DESIGN TOKENS
@@ -560,9 +560,9 @@ fieldset.field > legend { margin-bottom: 6px; }
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
 <header class="appbar">
-  <a class="brand" href="#/" data-key="brand" aria-label="Cyber Academy – home">
+  <a class="brand" href="#/" data-key="brand" aria-label="Cyber AcaDimy – home">
     <span class="brand-mark" id="brand-mark"></span>
-    <span><span class="brand-name">Cyber Academy</span><span class="brand-sub">Identity Governance &amp; Administration</span></span>
+    <span><span class="brand-name">Cyber AcaDimy</span><span class="brand-sub">Identity Governance &amp; Administration</span></span>
   </a>
   <div class="appbar-crumb" id="crumb"></div>
 </header>
@@ -1507,7 +1507,7 @@ function commit(focusKey) {
 /* ---------- Home ---------- */
 function renderHome() {
   $('#crumb').innerHTML = '';
-  document.title = 'Cyber Academy – IGA Workshops';
+  document.title = 'Cyber AcaDimy – IGA Workshops';
   // Progress of each part of Exercise 1 (for the status tags and the start link).
   const parts = PARTS.map(p => {
     const st = loadState(p);
@@ -1550,7 +1550,7 @@ function renderHome() {
 let canvasEl, worldEl, edgesEl, nodesEl, badgesEl;
 function mountExercise() {
   S = loadState() || initialState();
-  document.title = 'Exercise 1 – ' + PART.label + ': ' + PART.title + ' · Cyber Academy';
+  document.title = 'Exercise 1 – ' + PART.label + ': ' + PART.title + ' · Cyber AcaDimy';
   $('#crumb').innerHTML = '<span>Exercises</span>' + icon('arrowRight') + '<span>Exercise 1</span>' + icon('arrowRight') + '<strong>' + esc(PART.label + ' – ' + PART.title) + '</strong>';
   main.innerHTML =
     '<div class="exercise">' +
