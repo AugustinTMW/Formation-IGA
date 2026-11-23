@@ -105,9 +105,9 @@ window.IGA_CONFIG = {
         solutionKey: 'employeeDepartureSolution',
         firstAction: {
           name: 'End date for employee is set in HR source',
-          doer: null,        // TODO (trainer): doer id – not provided yet
-          application: null, // TODO (trainer): application id – not provided yet
-          transition: null   // TODO (trainer): 'manual' | 'automatic' – not provided yet
+          doer: 'hr',        // TODO (trainer): doer id – not provided yet
+          application: 'sirh', // TODO (trainer): application id – not provided yet
+          transition: 'manual'   // TODO (trainer): 'manual' | 'automatic' – not provided yet
         }
       }
     ],
