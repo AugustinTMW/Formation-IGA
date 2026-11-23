@@ -36,8 +36,9 @@ puis ouvrir <http://localhost:8000>.
 | `index.html` | Application complète (HTML, CSS et JavaScript). |
 | `config.js` | Catalogue : doers, applications, transitions, et parties de l'exercice 1 (consignes, bloc de départ, action préremplie). |
 | `correction.js` | Corrections attendues : `employeeArrivalSolution` et `employeeDepartureSolution` (**à compléter**, voir §4). |
+| `assets/wavestone-symbol.svg` | Logo affiché en haut à gauche (cadre blanc à contour violet). |
 
-Les trois fichiers doivent rester dans le même dossier.
+Ces fichiers doivent rester dans le même dossier (avec le sous-dossier `assets/`).
 
 ## 2. Organisation du code (`index.html`)
 
