@@ -3,7 +3,9 @@
 Site de formation permettant aux participants de la Cyber Academy de réaliser de façon interactive
 les exercices jusqu'ici présentés sous forme de diapositives PowerPoint.
 
-- **Exercice 1 – Employee arrival/departure workflow** : disponible.
+- **Exercice 1 – Employee arrival/departure workflow** : disponible, en deux parties :
+  - *Part 1 – Employee arrival* (`#/exercise-1/arrival`) ;
+  - *Part 2 – Employee departure* (`#/exercise-1/departure`).
 - **Exercice 2 – Profile and entitlement association** : affiché « Coming soon ».
 
 L'interface participant est en anglais.
@@ -32,12 +34,34 @@ puis ouvrir <http://localhost:8000>.
 | Fichier | Rôle |
 |---|---|
 | `index.html` | Application complète (HTML, CSS et JavaScript). |
-| `config.js` | Catalogue : doers, applications, transitions, textes, action préremplie. |
-| `correction.js` | Correction attendue de l'exercice 1 (**à compléter**, voir §4). |
+| `config.js` | Catalogue : doers, applications, transitions, et parties de l'exercice 1 (consignes, bloc de départ, action préremplie). |
+| `correction.js` | Corrections attendues : `employeeArrivalSolution` et `employeeDepartureSolution` (**à compléter**, voir §4). |
 
 Les trois fichiers doivent rester dans le même dossier.
 
 ## 2. Organisation du code (`index.html`)
+
+### Un seul moteur pour les deux parties
+
+Les parties *Employee arrival* et *Employee departure* n'ont pas d'interface séparée : elles utilisent
+exactement le même code. Seules les données changent (`config.js` → `exercise1.parts[]`,
+`correction.js` → une solution par partie). Au chargement d'une partie, `setPart(id)` définit
+`PART` (configuration) et `CORR` (correction). Tous les composants lisent ensuite ces deux variables.
+
+| Composant (cahier des charges) | Implémentation dans `index.html` |
+|---|---|
+| WorkflowCanvas | `mountExercise`, `renderCanvas`, `renderEdges`, section 15–16 (vue et interactions) |
+| ActionNode | `nodeHTML` (cartes `node--action`) |
+| AndNode / EndNode / bloc de départ | `nodeHTML` (blocs `node--fixed`) |
+| ElementsSidebar | `renderPanel` |
+| ActionModal | `openActionModal` |
+| TransitionSelector | `transitionChoices`, `openConnectModal`, `openEdgeModal` |
+| Validation structurelle | `structuralStatus` |
+| Correction | `grade`, `checkAnswer`, `showFeedback`, `buildCorrectionGraph` |
+| Navigation entre parties | `partTabs` / `renderPartTabs` (onglets dans le bandeau violet) |
+
+Pour ajouter une troisième partie, il suffit d'ajouter une entrée dans `exercise1.parts` et la
+solution correspondante dans `correction.js`.
 
 Le script est découpé en sections numérotées (repérables par les bandeaux de commentaires) :
 
@@ -73,8 +97,19 @@ Le script est découpé en sections numérotées (repérables par les bandeaux d
 }
 ```
 
-La progression est enregistrée dans le `localStorage` du navigateur (clé
-`cyberAcademy.iga.exercise1.v1`). Le bouton « Reset exercise » l'efface.
+La progression de chaque partie est enregistrée séparément dans le `localStorage` du navigateur
+(clé `storageKey` de chaque partie : `cyberAcademy.iga.exercise1.v1` pour l'arrivée,
+`cyberAcademy.iga.exercise1.departure.v1` pour le départ). Le bouton « Reset exercise » efface
+uniquement la partie affichée.
+
+### Fin de l'exercice
+
+- Partie correcte : fenêtre « Congratulations! » propre à la partie, avec un bouton vers la partie
+  restante si elle n'est pas encore réussie.
+- Les deux parties correctes : fenêtre « Exercise completed! » (Employee Arrival / Employee
+  Departure – Completed), avec « Review exercise » et « Back to home » (bouton principal).
+- La carte de l'exercice 1 sur la page d'accueil affiche l'avancement de chaque partie, et
+  « Start exercise » ouvre la première partie non terminée.
 
 ## 3. Modifier les listes d'actions, de doers et d'applications
 
@@ -84,10 +119,18 @@ Tout se trouve dans **`config.js`** :
 - `applications` : liste des applications (`id`, `label`, `icon`).
 - `transitions` : libellés des opérations manuelle / automatique.
 - `exercises` : cartes de la page d'accueil (titre, description, disponibilité).
-- `exercise1.instruction` : consigne affichée dans le bandeau violet.
-- `exercise1.firstAction` : action préremplie sous « Employee arrival ».
+- `exercise1.parts[]` : une entrée par partie :
+  - `instruction` : consigne affichée dans le bandeau violet ;
+  - `startLabel` / `startIcon` : bloc de départ (« Employee arrival », « Employee departure ») ;
+  - `firstAction` : action préremplie (`name`, `doer`, `application`, `transition`) ;
+  - `storageKey` / `solutionKey` : clé de sauvegarde et nom de la solution dans `correction.js`.
 - `exercise1.actionSuggestions` : suggestions facultatives d'intitulés d'action (autocomplétion du
   champ « Action name »). Laissée vide par défaut pour ne pas donner la réponse.
+
+> **Part 2 – à compléter :** le doer, l'application et la transition de l'action préremplie
+> « End date for employee is set in HR source » ne sont pas encore fournis (`null` + `TODO`).
+> Tant qu'ils valent `null`, la carte affiche « Not set » et le participant doit les renseigner
+> lui-même (crayon) pour que le workflow soit complet.
 
 Icônes disponibles : `users`, `bot`, `database`, `shieldCheck`, `grid`, `network`, `mail`, `idCard`,
 `package`, `userPlus`, `userMinus`, `key`, `server`, `cloud`, `building`, `laptop`.
@@ -98,8 +141,13 @@ Pour en ajouter une, insérer son tracé SVG (24×24) dans l'objet `ICONS` de `i
 
 ## 4. Configurer la correction attendue
 
-La correction se configure dans **`correction.js`**. Elle contient volontairement des valeurs
-**TODO** : aucune correction métier n'est intégrée au code.
+La correction se configure dans **`correction.js`**, qui contient deux solutions indépendantes :
+
+- `employeeArrivalSolution` – Part 1 ;
+- `employeeDepartureSolution` – Part 2.
+
+Les deux ont exactement la même structure (décrite ci-dessous). Elles contiennent volontairement des
+valeurs **TODO** : aucune correction métier n'est intégrée au code.
 
 Tant qu'une étape porte `todo: true`, le bouton « Check answer » vérifie uniquement la **structure**
 du workflow et indique au participant que la correction n'est pas encore configurée.
