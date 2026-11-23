@@ -186,6 +186,23 @@ button, input, select { font: inherit; color: inherit; }
 .instruction-icon .ico { width: 22px; height: 22px; }
 .instruction h1 { font-size: 18px; font-weight: 700; }
 .instruction p { color: #f3edff; margin-top: 4px; max-width: 1100px; }
+.instruction-text { flex: 1; min-width: 0; }
+.instruction .instruction-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #d9c8ff; margin: 0 0 2px; }
+.part-tabs { display: flex; flex-direction: column; gap: 6px; flex: none; }
+.part-tab {
+  display: flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; border-radius: 10px;
+  color: #fff; text-decoration: none; font-weight: 600; font-size: 14px; line-height: 1.2;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); transition: background-color .15s;
+}
+.part-tab:hover { background: rgba(255,255,255,.18); }
+.part-tab.is-current { background: #fff; color: var(--primary-700); border-color: #fff; }
+.part-tab-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; opacity: .8; }
+.part-tab-state { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: rgba(255,255,255,.14); flex: none; }
+.part-tab.is-current .part-tab-state { background: var(--primary-50); }
+.part-tab-state .ico { width: 16px; height: 16px; }
+.completed-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.completed-list li { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--success-bg); color: #0e5a2a; font-size: 15px; }
+.completed-list li .ico { width: 22px; height: 22px; color: var(--success); }
 
 .ex-layout {
   display: grid; grid-template-columns: minmax(0, 7fr) minmax(300px, 3fr); gap: 20px;
@@ -266,8 +283,8 @@ span.edge-badge { cursor: default; }
 .node--fixed {
   width: 220px; min-height: 56px; border-radius: 12px; color: #fff;
   background: linear-gradient(135deg, #6430cf 0%, var(--primary-700) 100%);
-  display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 16px;
-  font-weight: 700; font-size: 16px; letter-spacing: .02em; box-shadow: var(--shadow); cursor: move;
+  display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 22px 12px 12px;
+  font-weight: 700; font-size: 15.5px; white-space: nowrap; letter-spacing: .02em; box-shadow: var(--shadow); cursor: move;
 }
 .node--fixed .node-icon { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: rgba(255,255,255,.16); }
 .node--fixed .node-icon .ico { width: 18px; height: 18px; }
@@ -528,6 +545,8 @@ fieldset.field > legend { margin-bottom: 6px; }
   .home-hero h1 { font-size: 25px; }
   .exercise-grid { grid-template-columns: 1fr; }
   .instruction { padding: 16px; }
+  .instruction-inner { flex-wrap: wrap; }
+  .part-tabs { flex-direction: row; flex-wrap: wrap; width: 100%; }
   .ex-layout { padding: 16px; }
   .grid-2, .choices { grid-template-columns: 1fr; }
   .check-hint, .canvas-hint { display: none; }
@@ -563,8 +582,19 @@ fieldset.field > legend { margin-bottom: 6px; }
    1. CONFIGURATION
    ===================================================================== */
 const CFG = window.IGA_CONFIG;
-const CORR = (window.IGA_CORRECTION && window.IGA_CORRECTION.exercise1) || null;
-const STORAGE_KEY = 'cyberAcademy.iga.exercise1.v1';
+const EX = CFG && CFG.exercise1;
+const PARTS = EX ? EX.parts : [];
+/* Current part of the exercise: all components below read PART / CORR,
+   so the same engine serves "Employee arrival" and "Employee departure". */
+let PART = null;
+let CORR = null;
+const solutionOf = part => (window.IGA_CORRECTION && window.IGA_CORRECTION[part.solutionKey]) || null;
+const partById = id => PARTS.find(p => p.id === id);
+function setPart(id) {
+  PART = partById(id) || PARTS[0];
+  CORR = solutionOf(PART);
+}
+const startLabel = () => (PART ? PART.startLabel : 'The start step');
 const GRID = 20;          // visual grid
 const SNAP = 10;          // magnetic snapping step
 const CENTER_X = 420;     // horizontal axis of the default workflow
@@ -574,10 +604,10 @@ const MSG = {
   maxBranches: 'You can add a maximum of three branches after the AND node.',
   self: 'An action cannot be connected to itself.',
   fromEnd: 'The END node cannot have outgoing connections.',
-  toStart: 'Employee arrival cannot have incoming connections.',
+  get toStart() { return startLabel() + ' cannot have incoming connections.'; },
   duplicate: 'These two steps are already connected.',
   loop: 'This connection would create a loop in the workflow.',
-  startOnce: 'Employee arrival can only lead to one action.',
+  get startOnce() { return startLabel() + ' can only lead to one action.'; },
   andToEnd: 'Each AND branch must contain at least one action before END.',
   required: 'This action starts the workflow and cannot be deleted.',
   // Pedagogical feedback
@@ -663,16 +693,16 @@ const snap = v => Math.round(v / SNAP) * SNAP;
    3. STATE & PERSISTENCE
    ===================================================================== */
 function initialState() {
-  const fa = CFG.exercise1.firstAction;
+  const fa = PART.firstAction;
   return {
     version: 1,
     nodes: {
       start: { id: 'start', type: 'start', x: CENTER_X - 110, y: 40 },
-      a1: { id: 'a1', type: 'action', x: CENTER_X - 130, y: 160, name: fa.name, doer: fa.doer, app: fa.application, required: true },
+      a1: { id: 'a1', type: 'action', x: CENTER_X - 130, y: 160, name: fa.name, doer: fa.doer || '', app: fa.application || '', required: true },
       and: { id: 'and', type: 'and', x: CENTER_X - 110, y: 470 },
       end: { id: 'end', type: 'end', x: CENTER_X - 110, y: 790 }
     },
-    edges: [{ id: 'e1', from: 'start', to: 'a1', type: fa.transition, locked: true }],
+    edges: [{ id: 'e1', from: 'start', to: 'a1', type: fa.transition || null, locked: true }],
     customApps: [],
     attempts: 0,
     solved: false,
@@ -681,9 +711,9 @@ function initialState() {
     seq: 2
   };
 }
-function loadState() {
+function loadState(part) {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem((part || PART).storageKey);
     if (!raw) return null;
     const s = JSON.parse(raw);
     if (!s || s.version !== 1 || !s.nodes || !s.nodes.start || !s.nodes.and || !s.nodes.end || !Array.isArray(s.edges)) return null;
@@ -691,9 +721,9 @@ function loadState() {
   } catch (e) { return null; }
 }
 function saveState() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable: keep working in memory */ }
+  try { localStorage.setItem(PART.storageKey, JSON.stringify(S)); } catch (e) { /* storage unavailable: keep working in memory */ }
 }
-let S = loadState() || initialState();
+let S = null;   // state of the current part (set when the part is opened)
 const UI = { mode: 'mine', correction: null, tipsOpen: false };
 
 /* =====================================================================
@@ -708,7 +738,7 @@ const transShort = id => (transById(id) || {}).short || 'Unspecified';
 const transIcon = id => (transById(id) || {}).icon || 'arrowRight';
 function nodeLabel(n) {
   if (!n) return '';
-  if (n.type === 'start') return CFG.exercise1.startLabel;
+  if (n.type === 'start') return startLabel();
   if (n.type === 'and') return 'AND';
   if (n.type === 'end') return 'END';
   return n.name || 'Untitled action';
@@ -766,7 +796,7 @@ function structuralStatus() {
   const fromAnd = reachable('and');
   const endOk = nb > 0 && fromAnd.has('end') && Array.from(fromAnd).every(id => id === 'end' || outEdges(id).length > 0);
   const items = [
-    { ok: startOk, label: 'Employee arrival is connected to the first action' },
+    { ok: startOk, label: startLabel() + ' is connected to the first action' },
     { ok: fieldsOk && actions.length > 0, label: 'Every action has a name, a doer and an application' },
     { ok: andOk, label: 'The main actions are chained up to the AND node' },
     { ok: branchesOk, label: 'The AND node has 1 to 3 parallel branches' },
@@ -1071,7 +1101,7 @@ function openActionModal(opts) {
   const locked = editing && node.required;
   const showParent = !locked && (editing ? (!firstIn || isAfterAnd(node.id) || firstIn.from === 'and') : (parentId === 'and' || isAfterAnd(parentId)));
   const apps = allApps();
-  const sugg = CFG.exercise1.actionSuggestions || [];
+  const sugg = EX.actionSuggestions || [];
   const parentNode = S.nodes[parentId];
 
   const body =
@@ -1351,16 +1381,33 @@ async function checkAnswer() {
   }
 }
 async function showCongrats() {
+  const allSolved = PARTS.every(p => p === PART ? S.solved : !!(loadState(p) || {}).solved);
+  if (allSolved) return showExerciseCompleted();
+  const missing = PARTS.find(p => p !== PART && !(loadState(p) || {}).solved);
   const v = await openDialog({
     title: 'Congratulations!', icon: 'trophy', tone: 'success',
-    body: '<p>Your workflow is correct: every step of the employee’s arrival is handled by the right doer, in the right application and with the right transition.</p>' +
+    body: '<p>Your workflow is correct: every step of the ' + esc(PART.title.toLowerCase()) + ' is handled by the right doer, in the right application and with the right transition.</p>' +
       '<div class="stats">' +
         '<div class="stat"><strong>' + actionCount() + '</strong><span>Actions created</span></div>' +
         '<div class="stat"><strong>' + outEdges('and').length + '</strong><span>Parallel branches</span></div>' +
         '<div class="stat"><strong>' + S.attempts + '</strong><span>Attempt' + (S.attempts > 1 ? 's' : '') + '</span></div>' +
-      '</div>',
+      '</div>' +
+      (missing ? '<p class="context-line">' + icon('info') + '<span>To complete Exercise 1, finish <strong>' + esc(missing.label + ' – ' + missing.title) + '</strong>.</span></p>' : ''),
     actions: [
       { label: 'Review workflow', value: 'review', icon: 'eye' },
+      { label: 'Back to home', value: 'home', variant: missing ? 'secondary' : 'primary', icon: 'arrowLeft', submit: !missing }
+    ].concat(missing ? [{ label: 'Go to ' + missing.label, value: 'part:' + missing.id, variant: 'primary', submit: true, icon: 'arrowRight' }] : [])
+  });
+  if (v === 'home') location.hash = '#/';
+  else if (v && v.indexOf('part:') === 0) location.hash = '#/exercise-1/' + v.slice(5);
+}
+async function showExerciseCompleted() {
+  const v = await openDialog({
+    title: 'Exercise completed!', icon: 'trophy', tone: 'success',
+    body: '<p>Congratulations! You have successfully completed the Employee Arrival and Employee Departure workflows.</p>' +
+      '<ul class="completed-list">' + PARTS.map(p => '<li>' + icon('circleCheck') + '<span><strong>' + esc(p.title.replace(/\b\w/g, c => c.toUpperCase())) + '</strong> – Completed</span></li>').join('') + '</ul>',
+    actions: [
+      { label: 'Review exercise', value: 'review', icon: 'eye' },
       { label: 'Back to home', value: 'home', variant: 'primary', submit: true, icon: 'arrowLeft' }
     ]
   });
@@ -1441,24 +1488,34 @@ function route() {
   const r = location.hash.replace(/^#\/?/, '') || 'home';
   const changed = r !== currentRoute;
   currentRoute = r;
-  if (r === 'exercise-1') {
-    if (changed) { UI.mode = 'mine'; UI.correction = null; mountExercise(); }
+  const m = r.match(/^exercise-1(?:\/([\w-]+))?$/);
+  if (m && PARTS.length) {
+    if (!m[1] || !partById(m[1])) { location.replace('#/exercise-1/' + PARTS[0].id); return; }
+    if (changed) { setPart(m[1]); UI.mode = 'mine'; UI.correction = null; mountExercise(); }
   } else {
+    PART = null; CORR = null;
     renderHome();
   }
   if (changed) { window.scrollTo(0, 0); main.focus({ preventScroll: true }); }
 }
+const inExercise = () => !!PART && /^exercise-1\//.test(currentRoute || '');
 function commit(focusKey) {
   saveState();
-  if (currentRoute === 'exercise-1') renderExercise(focusKey);
+  if (inExercise()) renderExercise(focusKey);
 }
 
 /* ---------- Home ---------- */
 function renderHome() {
   $('#crumb').innerHTML = '';
   document.title = 'Cyber Academy – IGA Workshops';
-  const st = loadState();
-  const progress = st ? Object.values(st.nodes).filter(n => n.type === 'action').length : 0;
+  // Progress of each part of Exercise 1 (for the status tags and the start link).
+  const parts = PARTS.map(p => {
+    const st = loadState(p);
+    const actions = st ? Object.values(st.nodes).filter(n => n.type === 'action').length : 0;
+    return { p, solved: !!(st && st.solved), started: !!st && actions > 1 };
+  });
+  const allDone = parts.length && parts.every(x => x.solved);
+  const resume = parts.find(x => !x.solved) || parts[0];
   main.innerHTML =
     '<div class="home">' +
       '<section class="home-hero" aria-labelledby="home-title">' +
@@ -1469,16 +1526,20 @@ function renderHome() {
       '<h2 class="section-title">Choose an exercise</h2>' +
       '<div class="exercise-grid">' + CFG.exercises.map(ex => {
         let status = '';
-        if (ex.available && st && st.solved) status = '<span class="tag tag--done">' + icon('circleCheck') + 'Completed</span>';
-        else if (ex.available && st && progress > 1) status = '<span class="tag tag--progress">' + icon('workflow') + 'In progress · ' + progress + ' actions</span>';
-        else if (!ex.available) status = '<span class="tag tag--soon">' + icon('clock') + 'Coming soon</span>';
+        if (!ex.available) status = '<span class="tag tag--soon">' + icon('clock') + 'Coming soon</span>';
+        else if (ex.id === 'exercise-1') {
+          if (allDone) status = '<span class="tag tag--done">' + icon('circleCheck') + 'Completed</span>';
+          else status = parts.map(x => x.solved
+            ? '<span class="tag tag--done">' + icon('circleCheck') + esc(x.p.label) + ' completed</span>'
+            : x.started ? '<span class="tag tag--progress">' + icon('workflow') + esc(x.p.label) + ' in progress</span>' : '').join('');
+        }
         return '<article class="ex-card' + (ex.available ? '' : ' is-disabled') + '" aria-labelledby="t-' + ex.id + '">' +
           '<div class="ex-card-top"><span class="ex-card-icon">' + icon(ex.icon) + '</span>' +
           '<div><p class="eyebrow">' + esc(ex.number) + '</p><h2 id="t-' + ex.id + '">' + esc(ex.title) + '</h2></div></div>' +
           '<p class="desc">' + esc(ex.description) + '</p>' +
           '<div class="ex-card-meta"><span class="tag">' + icon('clock') + esc(ex.duration) + '</span>' + status + '</div>' +
           '<div class="ex-card-actions">' + (ex.available
-            ? '<a class="btn btn--primary" href="#/' + ex.id + '" data-key="start-' + ex.id + '">Start exercise' + icon('arrowRight') + '</a>'
+            ? '<a class="btn btn--primary" href="#/' + ex.id + (ex.id === 'exercise-1' && resume ? '/' + resume.p.id : '') + '" data-key="start-' + ex.id + '">Start exercise' + icon('arrowRight') + '</a>'
             : '<button class="btn btn--secondary" type="button" disabled aria-disabled="true">' + icon('clock') + 'Coming soon</button>') +
           '</div></article>';
       }).join('') + '</div>' +
@@ -1488,14 +1549,16 @@ function renderHome() {
 /* ---------- Exercise shell ---------- */
 let canvasEl, worldEl, edgesEl, nodesEl, badgesEl;
 function mountExercise() {
-  S = loadState() || S;
-  document.title = 'Exercise 1 – Employee arrival workflow · Cyber Academy';
-  $('#crumb').innerHTML = '<span>Exercises</span>' + icon('arrowRight') + '<strong>Exercise 1</strong>';
+  S = loadState() || initialState();
+  document.title = 'Exercise 1 – ' + PART.label + ': ' + PART.title + ' · Cyber Academy';
+  $('#crumb').innerHTML = '<span>Exercises</span>' + icon('arrowRight') + '<span>Exercise 1</span>' + icon('arrowRight') + '<strong>' + esc(PART.label + ' – ' + PART.title) + '</strong>';
   main.innerHTML =
     '<div class="exercise">' +
       '<section class="instruction" aria-labelledby="ins-title"><div class="instruction-inner">' +
         '<span class="instruction-icon">' + icon('lightbulb') + '</span>' +
-        '<div><h1 id="ins-title">' + esc(CFG.exercise1.title) + '</h1><p>' + esc(CFG.exercise1.instruction) + '</p></div>' +
+        '<div class="instruction-text"><p class="instruction-eyebrow">' + esc(EX.title) + '</p>' +
+          '<h1 id="ins-title">' + esc(PART.label + ' – ' + PART.title) + '</h1><p>' + esc(PART.instruction) + '</p></div>' +
+        partTabs() +
       '</div></section>' +
       '<div class="ex-layout">' +
         '<section class="workspace" aria-label="Workflow workspace">' +
@@ -1528,6 +1591,19 @@ function mountExercise() {
   renderExercise();
   if (S.view) applyView(); else resetView();
 }
+/* Tabs "Part 1 / Part 2" displayed in the purple instruction banner. */
+function partTabs() { return '<nav class="part-tabs" id="part-tabs" aria-label="Parts of Exercise 1"></nav>'; }
+function renderPartTabs() {
+  const nav = $('#part-tabs');
+  if (!nav) return;
+  nav.innerHTML = PARTS.map(p => {
+    const current = p === PART;
+    const solved = current ? S.solved : !!(loadState(p) || {}).solved;
+    return '<a class="part-tab' + (current ? ' is-current' : '') + '" href="#/exercise-1/' + esc(p.id) + '" data-key="part:' + esc(p.id) + '"' + (current ? ' aria-current="page"' : '') + '>' +
+      '<span class="part-tab-state">' + icon(solved ? 'circleCheck' : p.startIcon || 'user') + '</span>' +
+      '<span><span class="part-tab-label">' + esc(p.label) + '</span>' + esc(p.title) + (solved ? '<span class="sr-only"> (completed)</span>' : '') + '</span></a>';
+  }).join('');
+}
 function markerDefs() {
   return ['manual', 'automatic', 'unknown'].map(t =>
     '<marker id="arrow-' + t + '" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto">' +
@@ -1536,7 +1612,7 @@ function markerDefs() {
 function renderExercise(focusKey) {
   const active = document.activeElement;
   const key = focusKey || (active && active.dataset ? active.dataset.key : null);
-  renderToolbar(); renderNotices(); renderPanel(); renderCanvas();
+  renderPartTabs(); renderToolbar(); renderNotices(); renderPanel(); renderCanvas();
   if (key && !dlg.open) {
     const el = document.querySelector('[data-key="' + key + '"]');
     if (el && el !== document.activeElement) el.focus({ preventScroll: true });
@@ -1569,7 +1645,10 @@ function renderNotices() {
     html = '<div class="notice notice--correction" role="status">' + icon('eye') + '<p><strong>Correction view (read-only).</strong> Green cards show the expected workflow; the status under each card compares it with your answer.</p>' +
       '<button class="btn btn--secondary btn--sm" type="button" data-act="mode-mine" data-key="nt:back">' + icon('arrowLeft') + 'Back to my workflow</button></div>';
   } else if (S.solved) {
-    html = '<div class="notice notice--success" role="status">' + icon('trophy') + '<p><strong>Well done!</strong> Your workflow is correct. You can review it or go back to the home page.</p></div>';
+    const todo = PARTS.find(p => p !== PART && !(loadState(p) || {}).solved);
+    html = '<div class="notice notice--success" role="status">' + icon('trophy') + '<p><strong>Well done!</strong> Your ' + esc(PART.title.toLowerCase()) + ' workflow is correct.' +
+      (todo ? ' Continue with ' + esc(todo.label + ' – ' + todo.title) + ' to complete the exercise.' : ' You have completed Exercise 1.') + '</p>' +
+      (todo ? '<a class="btn btn--secondary btn--sm" href="#/exercise-1/' + esc(todo.id) + '" data-key="nt:next">Go to ' + esc(todo.label) + icon('arrowRight') + '</a>' : '') + '</div>';
   } else if (S.feedback && (Object.keys(S.feedback.nodes || {}).length || (S.feedback.globals || []).length)) {
     const count = Object.keys(S.feedback.nodes || {}).filter(id => S.nodes[id]).length;
     html = '<div class="notice notice--warning" role="status">' + icon('alert') + '<p><strong>Some elements need to be reviewed.</strong> ' +
@@ -1634,7 +1713,7 @@ function nodeHTML(n, g, fromStart) {
   if (n.type !== 'action') {
     const outs = outEdges(n.id, g).length, ins = inEdges(n.id, g).length;
     const label = nodeLabel(n);
-    const ic = n.type === 'start' ? 'userPlus' : n.type === 'and' ? 'split' : 'flag';
+    const ic = n.type === 'start' ? (PART.startIcon || 'user') : n.type === 'and' ? 'split' : 'flag';
     let ports = '';
     if (n.type === 'and') {
       const used = outs === 1 ? [1] : outs === 2 ? [0, 2] : outs >= 3 ? [0, 1, 2] : [];
@@ -1667,7 +1746,7 @@ function nodeHTML(n, g, fromStart) {
   const isolated = !ro && !fromStart.has(n.id);
   let inChip;
   if (!ins.length) inChip = '<span class="incoming incoming--none">' + icon('alert') + 'Not connected</span>';
-  else if (inType === 'unknown') inChip = '<span class="incoming incoming--none">Transition</span>';
+  else if (inType === 'unknown') inChip = '<span class="incoming incoming--none" title="Transition type not set">' + icon('alert') + 'Transition not set</span>';
   else inChip = '<span class="incoming incoming--' + inType + '" title="Incoming transition: ' + esc(transLabel(inType)) + '">' + icon(transIcon(inType)) + esc(transShort(inType)) + '</span>';
   const name = nodeLabel(n);
   const tools = ro ? (n.expected ? '<span class="expected-tag">Expected</span>' : '') :
@@ -1695,8 +1774,8 @@ function nodeHTML(n, g, fromStart) {
     '<div class="card"><div class="card-head">' + inChip + tools + '</div>' +
     '<p class="card-title">' + esc(name) + '</p>' +
     '<ul class="card-meta">' +
-      '<li><span class="meta-ico">' + icon(doer ? doer.icon : 'user') + '</span><span class="meta-label">Doer</span><span class="txt">' + esc(doer ? doer.label : '—') + '</span></li>' +
-      '<li><span class="meta-ico meta-ico--app">' + icon(app ? app.icon : 'package') + '</span><span class="meta-label">App</span><span class="txt">' + esc(app ? app.label : (n.app || '—')) + '</span></li>' +
+      '<li><span class="meta-ico">' + icon(doer ? doer.icon : 'user') + '</span><span class="meta-label">Doer</span><span class="txt">' + esc(doer ? doer.label : 'Not set') + '</span></li>' +
+      '<li><span class="meta-ico meta-ico--app">' + icon(app ? app.icon : 'package') + '</span><span class="meta-label">App</span><span class="txt">' + esc(app ? app.label : (n.app || 'Not set')) + '</span></li>' +
     '</ul>' + footer + '</div>' + handle + '</div>';
 }
 
@@ -1877,7 +1956,7 @@ function bindCanvas() {
     else if ((ev.key === 'Delete' || ev.key === 'Backspace') && n.type === 'action') { ev.preventDefault(); deleteAction(n.id); }
   });
   edgesEl.addEventListener('click', ev => { const p = ev.target.closest('[data-edge-id]'); if (p) openEdgeModal(p.dataset.edgeId); });
-  window.addEventListener('resize', () => { if (currentRoute === 'exercise-1' && canvasEl.isConnected) applyView(); });
+  window.addEventListener('resize', () => { if (inExercise() && canvasEl.isConnected) applyView(); });
 }
 async function onExerciseClick(ev) {
   const b = ev.target.closest('[data-act]');
@@ -1904,7 +1983,7 @@ async function onExerciseClick(ev) {
     case 'mode-correction': setMode('correction'); break;
     case 'mode-mine': setMode('mine'); break;
     case 'reset': {
-      const ok = await confirmDialog('Reset exercise', 'Are you sure you want to reset the exercise? Your workflow, custom applications and attempts will be deleted. This cannot be undone.', 'Reset exercise', 'danger');
+      const ok = await confirmDialog('Reset exercise', 'Are you sure you want to reset <strong>' + esc(PART.label + ' – ' + PART.title) + '</strong>? Your workflow, custom applications and attempts for this part will be deleted. The other part is not affected. This cannot be undone.', 'Reset exercise', 'danger');
       if (!ok) return;
       S = initialState(); UI.mode = 'mine'; UI.correction = null;
       saveState(); renderExercise('tb:reset'); resetView();
