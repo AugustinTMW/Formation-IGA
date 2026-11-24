@@ -172,7 +172,8 @@
         aliases: ['wavestone'],   // old URL #/exercise-2/wavestone still works
         label: 'Consulting',
         description: 'A consulting firm: HR, sales, IT and management teams, and the tools they use every day.',
-        icon: 'briefcase',
+        image: 'assets/wavestone-symbol.svg',
+        icon: 'briefcase',   // fallback if the image is removed
         available: true,
         storageKey: 'cyberAcademy.iga.exercise2.wavestone.v1',   // kept as is: preserves saved progress
         cards: consultingCards,
