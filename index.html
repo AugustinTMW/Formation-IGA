@@ -466,6 +466,11 @@ span.edge-badge { cursor: default; }
 .legend-item .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .legend-ico { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; flex: none; background: var(--primary-50); color: var(--primary); }
 .legend-ico--app { background: #eef2ff; color: #3343a8; }
+/* Real application logos (config.js > applications[].image) */
+.app-logo { display: block; object-fit: contain; }
+.legend-ico.has-logo, .meta-ico.has-logo { background: #fff; border: 1px solid var(--line); }
+.legend-ico .app-logo { width: 20px; height: 20px; }
+.meta-ico .app-logo { width: 16px; height: 16px; }
 .legend-ico .ico { width: 17px; height: 17px; }
 .legend-ico--custom { background: #fff; border: 1.5px dashed #8d97d8; }
 .legend-item .custom { font-size: 10px; font-weight: 700; color: var(--primary-700); background: var(--primary-50); padding: 0 6px; border-radius: 999px; text-transform: uppercase; margin-left: auto; }
@@ -807,6 +812,11 @@ const transById = id => CFG.transitions.find(t => t.id === id);
 const transLabel = id => (transById(id) || {}).label || 'Unspecified transition';
 const transShort = id => (transById(id) || {}).short || 'Unspecified';
 const transIcon = id => (transById(id) || {}).icon || 'arrowRight';
+/** Application icon: real logo when config.js gives an image, generic icon otherwise. */
+function appIcon(app) {
+  if (app && app.image) return '<img class="app-logo" src="' + esc(app.image) + '" alt="" loading="lazy">';
+  return icon(app ? app.icon : 'package');
+}
 function nodeLabel(n) {
   if (!n) return '';
   if (n.type === 'start') return startLabel();
@@ -1731,7 +1741,7 @@ function renderPanel() {
     '<section class="panel-card" aria-labelledby="p-doers"><h2 id="p-doers">' + icon('users') + 'Doers<span class="count">' + CFG.doers.length + '</span></h2>' +
       '<ul class="legend-list">' + CFG.doers.map(d => '<li class="legend-item"><span class="legend-ico">' + icon(d.icon) + '</span><span class="txt">' + esc(d.label) + '</span></li>').join('') + '</ul></section>' +
     '<section class="panel-card" aria-labelledby="p-apps"><h2 id="p-apps">' + icon('grid') + 'Applications<span class="count">' + allApps().length + '</span></h2>' +
-      '<ul class="legend-list legend-list--apps">' + allApps().map(a => '<li class="legend-item" title="' + esc(a.label) + (a.custom ? ' – custom application added by you' : '') + '"><span class="legend-ico legend-ico--app' + (a.custom ? ' legend-ico--custom' : '') + '">' + icon(a.icon) + '</span><span class="txt">' + esc(a.label) + '</span>' + (a.custom ? '<span class="sr-only"> (custom application)</span>' : '') + '</li>').join('') + '</ul></section>' +
+      '<ul class="legend-list legend-list--apps">' + allApps().map(a => '<li class="legend-item" title="' + esc(a.label) + (a.custom ? ' – custom application added by you' : '') + '"><span class="legend-ico legend-ico--app' + (a.custom ? ' legend-ico--custom' : '') + (a.image ? ' has-logo' : '') + '">' + appIcon(a) + '</span><span class="txt">' + esc(a.label) + '</span>' + (a.custom ? '<span class="sr-only"> (custom application)</span>' : '') + '</li>').join('') + '</ul></section>' +
     '<section class="panel-card" aria-labelledby="p-trans"><h2 id="p-trans">' + icon('arrowRight') + 'Transitions</h2>' +
       '<ul class="legend-list">' + CFG.transitions.map(t => '<li class="legend-item">' + arrowSample(t.id) + '<span>' + esc(t.label) + '<span class="legend-sub">' + (t.id === 'manual' ? 'Blue arrow – performed by a person' : 'Red arrow – triggered by a system') + '</span></span></li>').join('') + '</ul></section>' +
     '<section class="panel-card" aria-labelledby="p-check"><h2 id="p-check">' + icon('listChecks') + 'Workflow checklist<span class="count">' + st.done + '/' + st.items.length + '</span></h2>' +
@@ -1839,7 +1849,7 @@ function nodeHTML(n, g, fromStart) {
     '<p class="card-title">' + esc(name) + '</p>' +
     '<ul class="card-meta">' +
       '<li><span class="meta-ico">' + icon(doer ? doer.icon : 'user') + '</span><span class="meta-label">Doer</span><span class="txt">' + esc(doer ? doer.label : 'Not set') + '</span></li>' +
-      '<li><span class="meta-ico meta-ico--app">' + icon(app ? app.icon : 'package') + '</span><span class="meta-label">App</span><span class="txt">' + esc(app ? app.label : (n.app || 'Not set')) + '</span></li>' +
+      '<li><span class="meta-ico meta-ico--app' + (app && app.image ? ' has-logo' : '') + '">' + appIcon(app) + '</span><span class="meta-label">App</span><span class="txt">' + esc(app ? app.label : (n.app || 'Not set')) + '</span></li>' +
     '</ul>' + footer + '</div>' + handle + '</div>';
 }
 

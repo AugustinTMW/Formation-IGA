@@ -24,13 +24,15 @@ window.IGA_CONFIG = {
   /* ---------- Applications ----------
    * Participants can also add their own application with "Other";
    * custom applications are stored with their progress in the browser.
+   * `image` (optional): path to a real logo (SVG or transparent PNG, square,
+   * stored in assets/apps/). When it is set it replaces `icon`.
    */
   applications: [
     { id: 'sirh', label: 'SIRH',             icon: 'database' },
     { id: 'iga',  label: 'IGA tool',         icon: 'shieldCheck' },
-    { id: 'o365', label: 'Office 365',       icon: 'grid' },
-    { id: 'ad',   label: 'Active Directory', icon: 'network' },
-    { id: 'mail', label: 'Mail Address',     icon: 'mail' },
+    { id: 'o365', label: 'Office 365',       icon: 'grid',        image: 'assets/apps/office-365.svg' },
+    { id: 'ad',   label: 'Active Directory', icon: 'network',     image: 'assets/apps/active-directory.svg' },
+    { id: 'mail', label: 'Mail Address',     icon: 'mail',        image: 'assets/apps/outlook.png' },
     { id: 'card', label: 'Access card',      icon: 'idCard' }
   ],
 
