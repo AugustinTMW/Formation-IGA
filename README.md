@@ -37,6 +37,7 @@ puis ouvrir <http://localhost:8000>.
 | `config.js` | Catalogue : doers, applications, transitions, et parties de l'exercice 1 (consignes, bloc de départ, action préremplie). |
 | `correction.js` | Corrections attendues : `employeeArrivalSolution` et `employeeDepartureSolution` (**à compléter**, voir §4). |
 | `assets/wavestone-symbol.svg` | Logo affiché en haut à gauche (cadre blanc à contour violet). |
+| `assets/apps/` | Logos des applications (Active Directory, Office 365, Outlook pour *Mail Address*). |
 
 Ces fichiers doivent rester dans le même dossier (avec le sous-dossier `assets/`).
 
@@ -117,7 +118,8 @@ uniquement la partie affichée.
 Tout se trouve dans **`config.js`** :
 
 - `doers` : liste des doers (`id`, `label`, `icon`).
-- `applications` : liste des applications (`id`, `label`, `icon`).
+- `applications` : liste des applications (`id`, `label`, `icon`, et `image` facultatif : chemin vers un vrai
+  logo SVG ou PNG transparent carré, rangé dans `assets/apps/`, qui remplace alors l'icône).
 - `transitions` : libellés des opérations manuelle / automatique.
 - `exercises` : cartes de la page d'accueil (titre, description, disponibilité).
 - `exercise1.parts[]` : une entrée par partie :
