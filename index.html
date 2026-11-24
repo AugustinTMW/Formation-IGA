@@ -586,6 +586,135 @@ fieldset.field > legend { margin-bottom: 6px; }
 
 .fatal { max-width: 640px; margin: 64px auto; padding: 24px; background: #fff; border-radius: var(--radius); border: 1px solid var(--line); }
 
+
+/* =====================================================================
+   EXERCISE 2 – classification & relationships (reuses the tokens above)
+   ===================================================================== */
+.x2-layout { max-width: 1600px; margin: 0 auto; padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 12px; }
+.instruction-sector {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 4px 6px 4px 4px; border-radius: 999px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); font-size: 13px; font-weight: 600; color: #fff;
+}
+.instruction-sector img { width: 22px; height: 22px; border-radius: 6px; background: #fff; padding: 2px; }
+.instruction-sector a { color: #fff; font-weight: 600; font-size: 12px; text-decoration: underline; text-underline-offset: 2px; padding: 2px 8px; border-radius: 999px; }
+.instruction-sector a:hover { background: rgba(255,255,255,.16); }
+
+/* Tray of unclassified items */
+.x2-tray {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px;
+  box-shadow: var(--shadow-sm); transition: border-color .15s, box-shadow .15s, background-color .15s;
+}
+.x2-tray-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.x2-tray-head h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.x2-tray-head .count { font-size: 12px; color: var(--primary-700); background: var(--primary-50); padding: 1px 8px; border-radius: 999px; }
+.x2-tray-head p { font-size: 13px; color: var(--muted); }
+.x2-tray-list { display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; max-height: 176px; overflow-y: auto; align-items: flex-start; padding: 4px 4px 8px 2px; }
+.x2-tray-empty { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; padding: 10px 4px; }
+.x2-tray-empty .ico { color: var(--success); }
+.x2-tray.is-drop-target { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-100); background: #fcfaff; }
+
+/* Canvas with the three category zones */
+.x2-canvas { height: calc(100vh - var(--appbar-h) - 250px); min-height: 560px; }
+.x2-cols { position: relative; display: grid; grid-template-columns: repeat(3, 320px); column-gap: 150px; align-items: start; padding: 0; }
+.x2-col {
+  position: relative; background: var(--surface); border: 1px solid var(--line-2); border-radius: 16px; padding: 14px 14px 18px;
+  box-shadow: var(--shadow-sm); border-top: 5px solid var(--x2-accent); transition: border-color .15s, box-shadow .15s, background-color .15s;
+  --x2-accent: var(--primary); --x2-tint: var(--primary-50);
+}
+.x2-col--actor { --x2-accent: #5221b5; --x2-tint: #f5f0fe; }
+.x2-col--activity { --x2-accent: #3343a8; --x2-tint: #e4e9ff; background: #eef2ff; border-color: #c7d2fe; }
+.x2-col--right { --x2-accent: #0f766e; --x2-tint: #e6f6f4; }
+.x2-col-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.x2-col-icon { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none; background: var(--x2-tint); color: var(--x2-accent); }
+.x2-col--activity .x2-col-icon { background: #fff; }
+.x2-col-icon .ico { width: 18px; height: 18px; }
+.x2-col-head h2 { font-size: 15px; line-height: 1.3; font-weight: 700; color: var(--ink); }
+.x2-col-head .count { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+.x2-col-list {
+  display: flex; flex-direction: column; gap: 8px; min-height: 120px; border-radius: 12px; padding: 6px;
+  border: 2px dashed transparent; transition: border-color .15s, background-color .15s;
+}
+.x2-col-empty { font-size: 13px; color: var(--muted); text-align: center; padding: 26px 10px; border: 2px dashed var(--line-2); border-radius: 12px; }
+.x2-col.is-drop-target { box-shadow: 0 0 0 3px var(--x2-tint), var(--shadow); }
+.x2-col.is-drop-target .x2-col-list { border-color: var(--x2-accent); background: rgba(255,255,255,.55); }
+
+/* Cards */
+.x2-card {
+  position: relative; background: var(--surface); border: 1px solid var(--line-2); border-radius: 10px;
+  padding: 9px 12px; font-size: 13.5px; font-weight: 600; line-height: 1.35; color: var(--ink);
+  box-shadow: var(--shadow-sm); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  transition: border-color .15s, box-shadow .15s, opacity .15s, transform .15s, background-color .15s;
+}
+.x2-card:hover { border-color: var(--primary-200); box-shadow: var(--shadow); }
+.x2-card:focus-visible { box-shadow: var(--focus); }
+.x2-card--chip { max-width: 290px; }
+.x2-col .x2-card { border-left: 4px solid var(--x2-accent); padding-right: 22px; }
+.x2-card-app { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 1px; }
+.x2-card.is-drag-source { opacity: .35; }
+.x2-card.is-selected { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-200), var(--shadow); background: #fbf9ff; }
+.x2-card.is-compatible { border-color: #22a355; box-shadow: 0 0 0 3px #c6f0d5, var(--shadow-sm); cursor: pointer; }
+.x2-card.is-linked { box-shadow: 0 0 0 2px var(--primary-100), var(--shadow-sm); }
+.x2-card.is-dim { opacity: .45; }
+.x2-card.is-drop-ok { border-color: #22a355; box-shadow: 0 0 0 4px #86efac; }
+.x2-card.is-drop-bad { border-color: var(--danger); box-shadow: 0 0 0 4px #fca5a5; }
+.x2-card.mark-ok { border-color: #86cfa0; background: #f3fbf6; }
+.x2-card.mark-bad { border-color: #f1a5a5; background: #fff5f5; }
+.x2-mark { position: absolute; top: -8px; left: -8px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; color: #fff; box-shadow: var(--shadow-sm); }
+.x2-mark .ico { width: 12px; height: 12px; stroke-width: 3; }
+.x2-mark--ok { background: var(--success); }
+.x2-mark--bad { background: var(--danger); }
+.x2-card.just-dropped { animation: x2-drop .28s ease-out; }
+@keyframes x2-drop { from { transform: scale(.94); opacity: .5; } to { transform: none; opacity: 1; } }
+.x2-ghost {
+  position: fixed; z-index: 300; pointer-events: none; margin: 0; transform: rotate(-1.5deg);
+  box-shadow: var(--shadow-lg); border-color: var(--primary); cursor: grabbing; opacity: .96;
+}
+.x2-ph { border: 2px dashed var(--primary-200); border-radius: 10px; background: rgba(82,33,181,.05); flex: none; }
+.x2-ph--chip { width: 140px; height: 38px; }
+
+/* Connection port (right side of actor and activity cards) */
+.x2-port {
+  position: absolute; right: -10px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--x2-accent, var(--primary)); color: var(--x2-accent, var(--primary)); padding: 0;
+  display: grid; place-items: center; cursor: crosshair; box-shadow: var(--shadow-sm); touch-action: none; z-index: 2;
+  transition: transform .15s, background-color .15s, color .15s;
+}
+.x2-port .ico { width: 11px; height: 11px; stroke-width: 3; }
+.x2-port:hover, .x2-port.is-active { background: var(--x2-accent, var(--primary)); color: #fff; transform: translateY(-50%) scale(1.15); }
+
+/* Relationships */
+.x2-rels { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; pointer-events: none; z-index: 3; }
+.x2-rel { fill: none; stroke: #6b5bb5; stroke-width: 2.2; transition: stroke .2s, stroke-width .2s, opacity .2s; }
+.x2-rel.is-verified { stroke: #1f9d55; }
+.x2-rel.is-sel { stroke: var(--primary); stroke-width: 3; }
+.x2-rel.is-faded { opacity: .25; }
+.x2-rel.eval-ok { stroke: #16a34a; stroke-width: 3.2; }
+.x2-rel.eval-bad { stroke: #dc2626; stroke-width: 3.2; stroke-dasharray: 8 5; }
+.x2-rel-del {
+  position: absolute; transform: translate(-50%, -50%); width: 22px; height: 22px; border-radius: 50%; padding: 0; z-index: 4;
+  display: grid; place-items: center; background: #fff; color: var(--danger); border: 1.5px solid #f1a5a5; cursor: pointer;
+  box-shadow: var(--shadow-sm); opacity: 0; transition: opacity .15s, background-color .15s;
+}
+.x2-rel-del .ico { width: 12px; height: 12px; stroke-width: 3; }
+.x2-rel-del:hover, .x2-rel-del:focus-visible, .x2-rel-del.is-visible { opacity: 1; }
+.x2-rel-del:hover { background: #fdecec; }
+.x2-checking .x2-rel-del, .x2-checking .x2-port { display: none; }
+.x2-checking .x2-card { cursor: default; }
+
+/* Sector selection */
+.sector-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.ex-card-icon img { width: 30px; height: 30px; }
+.x2-sector-back { margin-top: 24px; }
+.x2-summary { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.x2-summary li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; background: #f6f5fa; font-size: 14px; }
+.x2-summary li strong { font-size: 20px; min-width: 34px; text-align: center; color: var(--primary-700); }
+.x2-summary li.is-good strong { color: var(--success); }
+.x2-summary li.is-bad strong { color: var(--danger); }
+.x2-help .tips ul { columns: 2; column-gap: 32px; display: block; }
+.x2-help .tips li { margin-bottom: 6px; break-inside: avoid; }
+@media (max-width: 900px) { .x2-help .tips ul { columns: 1; } }
+@media (max-width: 640px) { .x2-layout { padding: 16px; } .x2-canvas { height: 70vh; } }
+
 /* =====================================================================
    RESPONSIVE
    ===================================================================== */
@@ -630,6 +759,7 @@ fieldset.field > legend { margin-bottom: 6px; }
 <!-- Configuration files (catalog and expected answer) -->
 <script src="config.js"></script>
 <script src="correction.js"></script>
+<script src="exercise2-data.js"></script>
 
 <script>
 (function () {
@@ -1562,7 +1692,11 @@ function route() {
   const changed = r !== currentRoute;
   currentRoute = r;
   const m = r.match(/^exercise-1(?:\/([\w-]+))?$/);
-  if (m && PARTS.length) {
+  const m2 = r.match(/^exercise-2(?:\/([\w-]+))?$/);
+  if (m2 && EX2) {
+    PART = null; CORR = null;
+    if (changed) { if (m2[1] && x2SectorById(m2[1]) && x2SectorById(m2[1]).available) x2Mount(x2SectorById(m2[1])); else x2RenderSectors(); }
+  } else if (m && PARTS.length) {
     if (!m[1] || !partById(m[1])) { location.replace('#/exercise-1/' + PARTS[0].id); return; }
     if (changed) { setPart(m[1]); UI.mode = 'mine'; UI.correction = null; mountExercise(); }
   } else {
@@ -1605,6 +1739,13 @@ function renderHome() {
           else status = parts.map(x => x.solved
             ? '<span class="tag tag--done">' + icon('circleCheck') + esc(x.p.label) + ' completed</span>'
             : x.started ? '<span class="tag tag--progress">' + icon('workflow') + esc(x.p.label) + ' in progress</span>' : '').join('');
+        } else if (ex.id === 'exercise-2' && EX2) {
+          status = EX2.sectors.filter(sc => sc.available).map(sc => {
+            const st = x2Load(sc);
+            if (st && st.solved) return '<span class="tag tag--done">' + icon('circleCheck') + esc(sc.label) + ' completed</span>';
+            if (st && (st.rels.length || x2PlacedCount(st))) return '<span class="tag tag--progress">' + icon('workflow') + esc(sc.label) + ' in progress</span>';
+            return '';
+          }).join('');
         }
         return '<article class="ex-card' + (ex.available ? '' : ' is-disabled') + '" aria-labelledby="t-' + ex.id + '">' +
           '<div class="ex-card-top"><span class="ex-card-icon">' + icon(ex.icon) + '</span>' +
@@ -1693,23 +1834,34 @@ function renderExercise(focusKey) {
 }
 
 /* ---------- Toolbar ---------- */
+/* Shared action bar (Exercise 1 and Exercise 2): Back to home, counter,
+   optional extra content, Reset exercise and the main Check answer button. */
+function toolbarHTML(o) {
+  return '<a class="btn btn--secondary" href="#/" data-key="tb:home">' + icon('arrowLeft') + 'Back to home</a>' +
+    '<span class="counter" title="' + esc(o.counterTitle) + '">' + icon(o.counterIcon || 'layers') + '<span>' + o.counterHTML + '</span></span>' +
+    (o.extraHTML || '') +
+    '<span class="toolbar-spacer"></span>' +
+    (o.readonly ? '' :
+    '<button class="btn btn--secondary" type="button" data-act="reset" data-key="tb:reset"' + (o.busy ? ' disabled' : '') + '>' + icon('rotate') + 'Reset exercise</button>' +
+    '<div class="check-wrap">' +
+      (o.checkEnabled ? '' : '<span class="check-hint" id="check-hint">' + esc(o.hint) + '</span>') +
+      '<button class="btn btn--primary" type="button" data-act="check" data-key="tb:check"' + (o.checkEnabled && !o.busy ? '' : ' disabled') + (o.checkEnabled ? '' : ' aria-describedby="check-hint"') + '>' + icon('circleCheck') + 'Check answer</button>' +
+    '</div>');
+}
 function renderToolbar() {
   const st = structuralStatus();
   const corr = UI.mode === 'correction';
   const n = actionCount();
-  $('#toolbar').innerHTML =
-    '<a class="btn btn--secondary" href="#/" data-key="tb:home">' + icon('arrowLeft') + 'Back to home</a>' +
-    '<span class="counter" title="Number of actions in your workflow (including the pre-filled one)">' + icon('layers') + '<span><strong>' + n + '</strong> action' + (n > 1 ? 's' : '') + '</span></span>' +
-    (canShowCorrection() ? '<div class="segmented" role="group" aria-label="Displayed workflow">' +
+  $('#toolbar').innerHTML = toolbarHTML({
+    counterTitle: 'Number of actions in your workflow (including the pre-filled one)',
+    counterHTML: '<strong>' + n + '</strong> action' + (n > 1 ? 's' : ''),
+    extraHTML: canShowCorrection() ? '<div class="segmented" role="group" aria-label="Displayed workflow">' +
       '<button type="button" data-act="mode-mine" data-key="tb:mode-mine" aria-pressed="' + !corr + '">' + icon('user') + 'My workflow</button>' +
-      '<button type="button" data-act="mode-correction" data-key="tb:mode-correction" aria-pressed="' + corr + '">' + icon('eye') + 'Correction</button></div>' : '') +
-    '<span class="toolbar-spacer"></span>' +
-    (corr ? '' :
-    '<button class="btn btn--secondary" type="button" data-act="reset" data-key="tb:reset">' + icon('rotate') + 'Reset exercise</button>' +
-    '<div class="check-wrap">' +
-      (st.complete ? '' : '<span class="check-hint" id="check-hint">Complete the checklist to check your answer (' + st.done + '/' + st.items.length + ')</span>') +
-      '<button class="btn btn--primary" type="button" data-act="check" data-key="tb:check"' + (st.complete ? '' : ' disabled aria-describedby="check-hint"') + '>' + icon('circleCheck') + 'Check answer</button>' +
-    '</div>');
+      '<button type="button" data-act="mode-correction" data-key="tb:mode-correction" aria-pressed="' + corr + '">' + icon('eye') + 'Correction</button></div>' : '',
+    readonly: corr,
+    checkEnabled: st.complete,
+    hint: 'Complete the checklist to check your answer (' + st.done + '/' + st.items.length + ')'
+  });
 }
 function renderNotices() {
   const box = $('#notices');
@@ -2248,6 +2400,747 @@ async function onExerciseClick(ev) {
       break;
     }
   }
+}
+
+
+/* =====================================================================
+   18. EXERCISE 2 – PROFILE AND ENTITLEMENT ASSOCIATION
+   Same shell as Exercise 1 (instruction banner, action bar, canvas and view
+   controls, dialogs, toasts, cards). Business data: exercise2-data.js.
+   ===================================================================== */
+const EX2 = window.IGA_EXERCISE2 || null;
+const X2_FLOW = { actor: 'activity', activity: 'right' };   // allowed arrow directions
+const X2_CHECK_DELAY = 2800;                                // ms the green/red correction stays visible
+let X2 = null;   // { sector, byId, root, canvas, world, cols, rels, badges }
+let S2 = null;   // participant state of the current sector
+const UI2 = { selected: null, checking: false, evalCls: null, view: { x: 0, y: 0, z: 1 }, tipsOpen: false, resizeBound: false };
+
+const x2SectorById = id => EX2 && EX2.sectors.find(sc => sc.id === id);
+const x2Cats = () => EX2.categories;
+const x2Card = id => X2.byId[id];
+const wait = ms => new Promise(r => setTimeout(r, ms));
+function x2Shuffle(list) {
+  const a = list.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+/* ---------- State ---------- */
+function x2Initial(sector) {
+  return { version: 1, tray: x2Shuffle(sector.cards.map(c => c.id)), cols: { actor: [], activity: [], right: [] },
+    rels: [], marks: {}, verified: {}, attempts: 0, solved: false, view: null, seq: 1 };
+}
+/** Loads the saved state and reconciles it with the current data (new / removed cards). */
+function x2Load(sector) {
+  try {
+    const raw = localStorage.getItem(sector.storageKey);
+    if (!raw) return null;
+    const st = JSON.parse(raw);
+    if (!st || st.version !== 1 || !Array.isArray(st.tray) || !st.cols) return null;
+    const ids = new Set(sector.cards.map(c => c.id)), seen = new Set();
+    const clean = list => (list || []).filter(id => ids.has(id) && !seen.has(id) && seen.add(id));
+    st.tray = clean(st.tray);
+    ['actor', 'activity', 'right'].forEach(k => { st.cols[k] = clean(st.cols[k]); });
+    sector.cards.forEach(c => { if (!seen.has(c.id)) st.tray.push(c.id); });
+    st.rels = (st.rels || []).filter(r => ids.has(r.from) && ids.has(r.to));
+    st.marks = st.marks || {}; st.verified = st.verified || {};
+    return st;
+  } catch (e) { return null; }
+}
+function x2Save() {
+  try { localStorage.setItem(X2.sector.storageKey, JSON.stringify(S2)); } catch (e) { /* storage unavailable */ }
+}
+const x2PlacedCount = st => st.cols.actor.length + st.cols.activity.length + st.cols.right.length;
+function x2ColOf(id) {
+  for (const k of ['actor', 'activity', 'right']) if (S2.cols[k].includes(id)) return k;
+  return 'tray';
+}
+const x2ListOf = col => col === 'tray' ? S2.tray : S2.cols[col];
+const x2Label = id => (x2Card(id) || {}).label || '';
+
+/* ---------- Relationship rules ---------- */
+/** Can a and b be connected? Returns { ok, from, to, reason }. strict: a must be the source. */
+function x2CanRelate(a, b, strict) {
+  if (a === b) return { ok: false, reason: 'An item cannot be connected to itself.' };
+  const ca = x2ColOf(a), cb = x2ColOf(b);
+  if (ca === 'tray' || cb === 'tray') return { ok: false, reason: 'Place both items in a category first.' };
+  let from = null, to = null;
+  if (X2_FLOW[ca] === cb) { from = a; to = b; }
+  else if (!strict && X2_FLOW[cb] === ca) { from = b; to = a; }
+  if (!from) {
+    if (ca === cb) return { ok: false, reason: 'Connect items from two different categories.' };
+    if ((ca === 'actor' && cb === 'right') || (ca === 'right' && cb === 'actor')) return { ok: false, reason: 'An actor cannot be connected directly to a fine-grained right: go through an activity.' };
+    return { ok: false, reason: 'Arrows go from left to right: Actor → Activity → Fine-grained right.' };
+  }
+  if (S2.rels.some(r => r.from === from && r.to === to)) return { ok: false, reason: 'These items are already connected.' };
+  return { ok: true, from, to };
+}
+/** Number of complete chains Actor → Activity → Fine-grained right. */
+function x2ChainCount() {
+  return S2.cols.activity.reduce((sum, act) => {
+    const ins = S2.rels.filter(r => r.to === act && x2ColOf(r.from) === 'actor').length;
+    const outs = S2.rels.filter(r => r.from === act && x2ColOf(r.to) === 'right').length;
+    return sum + ins * outs;
+  }, 0);
+}
+/** Removes relationships whose direction is no longer valid after a card moved. */
+function x2PruneRels() {
+  const before = S2.rels.length;
+  S2.rels = S2.rels.filter(r => X2_FLOW[x2ColOf(r.from)] === x2ColOf(r.to));
+  Object.keys(S2.verified).forEach(id => { if (!S2.rels.some(r => r.id === id)) delete S2.verified[id]; });
+  return before - S2.rels.length;
+}
+function x2AddRel(from, to) {
+  const id = 'rel' + (S2.seq++);
+  S2.rels.push({ id, from, to });
+  return id;
+}
+
+/* ---------- Correction ---------- */
+/** Evaluates every relationship, chain by chain (see the rules in README). */
+function x2Evaluate() {
+  const sector = X2.sector;
+  const key = (a, b) => a + '>' + b;
+  const cat = id => x2Card(id).category;
+  const expAA = new Set(), expAR = new Set();
+  sector.relations.forEach(l => (cat(l.from) === 'actor' ? expAA : expAR).add(key(l.from, l.to)));
+  const aaRels = S2.rels.filter(r => x2ColOf(r.from) === 'actor');
+  const arRels = S2.rels.filter(r => x2ColOf(r.from) === 'activity');
+
+  const okAA = new Set(aaRels.filter(r => expAA.has(key(r.from, r.to))).map(r => r.id));
+  const okAR = new Set(arRels.filter(r => expAR.has(key(r.from, r.to))).map(r => r.id));
+  // Cards with identical labels: accept any card of the group, each card used once.
+  (sector.interchangeableCards || []).forEach(group => {
+    const inGroup = id => group.includes(id);
+    const used = new Set(arRels.filter(r => okAR.has(r.id) && inGroup(r.to)).map(r => r.to));
+    sector.relations.filter(l => inGroup(l.to)).forEach(l => {
+      if (arRels.some(r => okAR.has(r.id) && r.from === l.from && inGroup(r.to))) return;   // already satisfied
+      const cand = arRels.find(r => !okAR.has(r.id) && r.from === l.from && inGroup(r.to) && !used.has(r.to));
+      if (cand) { okAR.add(cand.id); used.add(cand.to); }
+    });
+  });
+
+  const keep = new Set(), cls = {}, why = {};
+  aaRels.forEach(r => { if (okAA.has(r.id)) { keep.add(r.id); cls[r.id] = 'ok'; } else { cls[r.id] = 'bad'; why[r.id] = 'Wrong actor for this activity.'; } });
+  arRels.forEach(r => {
+    if (!okAR.has(r.id)) { cls[r.id] = 'bad'; why[r.id] = 'Wrong fine-grained right for this activity.'; return; }
+    const firsts = aaRels.filter(x => x.to === r.from);
+    if (!firsts.length || firsts.some(x => okAA.has(x.id))) { keep.add(r.id); cls[r.id] = 'ok'; }
+    else { cls[r.id] = 'bad'; why[r.id] = 'Removed because the actor → activity link of this chain is wrong.'; }
+  });
+
+  const removed = S2.rels.filter(r => !keep.has(r.id));
+  const keptAA = aaRels.filter(r => keep.has(r.id));
+  const keptAR = arRels.filter(r => keep.has(r.id));
+  const fullChains = keptAA.reduce((n, a) => n + keptAR.filter(r => r.from === a.to).length, 0);
+  const marks = {};
+  ['actor', 'activity', 'right'].forEach(col => S2.cols[col].forEach(id => { marks[id] = cat(id) === col ? 'ok' : 'bad'; }));
+  const placedOk = Object.values(marks).filter(m => m === 'ok').length;
+  const placedBad = Object.values(marks).length - placedOk;
+  const complete = !S2.tray.length && !placedBad && keep.size === sector.relations.length && !removed.length;
+  return { keep, cls, why, removed, fullChains, keptAA: keptAA.length, marks, placedOk, placedBad, complete, total: sector.relations.length };
+}
+async function x2Check() {
+  if (UI2.checking || x2ChainCount() < EX2.minChains) return;
+  UI2.selected = null;
+  const res = x2Evaluate();
+  S2.marks = res.marks;
+  UI2.checking = true; UI2.evalCls = res;
+  x2Render();
+  await wait(X2_CHECK_DELAY);
+  const removedIds = new Set(res.removed.map(r => r.id));
+  S2.rels = S2.rels.filter(r => !removedIds.has(r.id));
+  S2.verified = {}; S2.rels.forEach(r => { S2.verified[r.id] = true; });
+  S2.attempts++;
+  S2.solved = res.complete;
+  UI2.checking = false; UI2.evalCls = null;
+  x2Save(); x2Render('tb:check');
+  if (res.complete) return x2ShowCompleted();
+  const remaining = res.total - res.keep.size;
+  const row = (n, label, tone) => '<li class="' + (tone || '') + '"><strong>' + n + '</strong><span>' + esc(label) + '</span></li>';
+  openDialog({
+    title: 'Correction', icon: 'listChecks', tone: res.removed.length || res.placedBad ? 'warning' : 'success', size: 'lg',
+    body: '<p>Correct connections have been kept. Incorrect ones have been removed: when the actor → activity link of a chain is wrong, the whole chain is removed.</p>' +
+      '<ul class="x2-summary">' +
+        row(res.fullChains, 'Complete chains entirely correct (Actor → Activity → Fine-grained right)', 'is-good') +
+        row(res.keptAA, 'Actor → Activity relationships kept', 'is-good') +
+        row(res.removed.length, 'Incorrect connections removed', res.removed.length ? 'is-bad' : '') +
+        row(res.placedOk, 'Items in the right category', 'is-good') +
+        row(res.placedBad, 'Items in the wrong category (red cross)', res.placedBad ? 'is-bad' : '') +
+      '</ul>' +
+      '<p class="attempts">' + icon('clock') + 'Attempt ' + S2.attempts + ' · ' + (remaining > 0 ? 'Keep going: move the items marked with a red cross, add new relationships and check again.' : 'Move the items marked with a red cross and check again.') + '</p>',
+    actions: [{ label: 'Continue', variant: 'primary', submit: true, icon: 'arrowRight' }]
+  });
+}
+async function x2ShowCompleted() {
+  const v = await openDialog({
+    title: 'Exercise completed!', icon: 'trophy', tone: 'success',
+    body: '<p>Congratulations! You have built the complete authorization model for ' + esc(X2.sector.label) + ': every item is in the right category and every relationship is correct.</p>' +
+      '<div class="stats">' +
+        '<div class="stat"><strong>' + S2.rels.length + '</strong><span>Correct relationships</span></div>' +
+        '<div class="stat"><strong>' + x2ChainCount() + '</strong><span>Complete chains</span></div>' +
+        '<div class="stat"><strong>' + S2.attempts + '</strong><span>Attempt' + (S2.attempts > 1 ? 's' : '') + '</span></div>' +
+      '</div>',
+    actions: [
+      { label: 'Review exercise', value: 'review', icon: 'eye' },
+      { label: 'Back to home', value: 'home', variant: 'primary', submit: true, icon: 'arrowLeft' }
+    ]
+  });
+  if (v === 'home') location.hash = '#/';
+}
+
+/* ---------- Sector selection ---------- */
+function x2RenderSectors() {
+  X2 = null;
+  document.title = EX2.title + ' · Cyber AcaDimy';
+  $('#crumb').innerHTML = '<span>Exercises</span>' + icon('arrowRight') + '<strong>Exercise 2</strong>';
+  main.innerHTML =
+    '<div class="exercise">' +
+      '<section class="instruction" aria-labelledby="ins-title"><div class="instruction-inner">' +
+        '<span class="instruction-icon">' + icon('lightbulb') + '</span>' +
+        '<div class="instruction-text"><p class="instruction-eyebrow">' + esc(EX2.title) + '</p>' +
+          '<h1 id="ins-title">Choose a sector</h1><p>Each sector has its own actors, activities and fine-grained rights. Choose the organization you want to work on.</p></div>' +
+      '</div></section>' +
+      '<div class="home">' +
+        '<div class="exercise-grid sector-grid">' + EX2.sectors.map(sc => {
+          const st = sc.available ? x2Load(sc) : null;
+          const status = !sc.available ? '<span class="tag tag--soon">' + icon('clock') + 'Coming soon</span>'
+            : st && st.solved ? '<span class="tag tag--done">' + icon('circleCheck') + 'Completed</span>'
+            : st && (st.rels.length || x2PlacedCount(st)) ? '<span class="tag tag--progress">' + icon('workflow') + 'In progress</span>' : '';
+          return '<article class="ex-card' + (sc.available ? '' : ' is-disabled') + '" aria-labelledby="sc-' + esc(sc.id) + '">' +
+            '<div class="ex-card-top"><span class="ex-card-icon">' + (sc.image ? '<img src="' + esc(sc.image) + '" alt="">' : icon(sc.icon || 'building')) + '</span>' +
+            '<div><p class="eyebrow">Sector</p><h2 id="sc-' + esc(sc.id) + '">' + esc(sc.label) + '</h2></div></div>' +
+            '<p class="desc">' + esc(sc.description || '') + '</p>' +
+            (status ? '<div class="ex-card-meta">' + status + '</div>' : '') +
+            '<div class="ex-card-actions">' + (sc.available
+              ? '<a class="btn btn--primary" href="#/exercise-2/' + esc(sc.id) + '" data-key="sector-' + esc(sc.id) + '">Start exercise' + icon('arrowRight') + '</a>'
+              : '<button class="btn btn--secondary" type="button" disabled aria-disabled="true">' + icon('clock') + 'Coming soon</button>') +
+            '</div></article>';
+        }).join('') + '</div>' +
+        '<a class="btn btn--secondary x2-sector-back" href="#/" data-key="sector-home">' + icon('arrowLeft') + 'Back to home</a>' +
+      '</div>' +
+    '</div>';
+}
+
+/* ---------- Exercise page ---------- */
+function x2Mount(sector) {
+  const byId = {};
+  sector.cards.forEach(c => { byId[c.id] = c; });
+  X2 = { sector, byId };
+  S2 = x2Load(sector) || x2Initial(sector);
+  UI2.selected = null; UI2.checking = false; UI2.evalCls = null;
+  document.title = EX2.title + ' – ' + sector.label + ' · Cyber AcaDimy';
+  $('#crumb').innerHTML = '<span>Exercises</span>' + icon('arrowRight') + '<a href="#/exercise-2" style="color:inherit">Exercise 2</a>' + icon('arrowRight') + '<strong>' + esc(sector.label) + '</strong>';
+  main.innerHTML =
+    '<div class="exercise exercise--x2" id="x2-root">' +
+      '<section class="instruction" aria-labelledby="ins-title"><div class="instruction-inner">' +
+        '<span class="instruction-icon">' + icon('lightbulb') + '</span>' +
+        '<div class="instruction-text"><p class="instruction-eyebrow">' + esc(EX2.title) + '</p>' +
+          '<h1 id="ins-title">Build the authorization model</h1><p>' + esc(EX2.instruction) + '</p>' +
+          '<span class="instruction-sector">' + (sector.image ? '<img src="' + esc(sector.image) + '" alt="">' : icon(sector.icon || 'building')) + 'Sector: ' + esc(sector.label) +
+            '<a href="#/exercise-2" data-key="x2-change-sector">Change sector</a></span></div>' +
+      '</div></section>' +
+      '<div class="x2-layout">' +
+        '<div class="toolbar" id="toolbar"></div>' +
+        '<div id="notices" aria-live="polite"></div>' +
+        '<section class="x2-tray" id="x2-tray" aria-labelledby="x2-tray-title"></section>' +
+        '<div class="canvas x2-canvas" id="x2-canvas" aria-label="Categories and relationships. Drag items between categories; drag the round handle of an item, or select it, to create a relationship.">' +
+          '<div class="world" id="x2-world">' +
+            '<div class="x2-cols" id="x2-cols"></div>' +
+            '<svg class="x2-rels" aria-hidden="true"><defs>' + x2Markers() + '</defs><g id="x2-rel-paths"></g><g id="x2-link-layer"></g></svg>' +
+            '<div id="x2-badges"></div>' +
+          '</div>' +
+          '<div class="canvas-controls" role="toolbar" aria-label="View controls">' +
+            '<button class="icon-btn" type="button" data-x2="zoom-out" data-key="vc:out" aria-label="Zoom out" title="Zoom out">' + icon('zoomOut') + '</button>' +
+            '<span class="zoom-label" id="x2-zoom" aria-live="polite">100%</span>' +
+            '<button class="icon-btn" type="button" data-x2="zoom-in" data-key="vc:in" aria-label="Zoom in" title="Zoom in">' + icon('zoomIn') + '</button>' +
+            '<span class="sep"></span>' +
+            '<button class="icon-btn" type="button" data-x2="fit" data-key="vc:fit" aria-label="Focus: fit everything in the view" title="Focus: fit everything in the view">' + icon('fit') + '</button>' +
+            '<button class="btn btn--ghost btn--sm" type="button" data-x2="reset-view" data-key="vc:reset">' + icon('rotate') + 'Reset view</button>' +
+            '<span class="sep"></span>' +
+            '<button class="btn btn--ghost btn--sm" type="button" data-x2="arrange" data-key="vc:arrange" title="Reorder the items to limit crossing arrows (categories and relationships are kept)">' + icon('sparkles') + 'Tidy up</button>' +
+          '</div>' +
+          '<div class="canvas-hint" aria-hidden="true">Drag the background to pan · <kbd>Ctrl</kbd> + scroll to zoom</div>' +
+        '</div>' +
+        '<section class="panel-card x2-help"><details class="tips" id="x2-tips"' + (UI2.tipsOpen ? ' open' : '') + '><summary>' + icon('lightbulb') + 'How it works' + icon('chevronDown', 'chev') + '</summary><ul>' +
+          '<li><strong>Classify:</strong> drag each item from the top banner into one of the three categories. You can move it to another category, reorder it, or drag it back to the banner.</li>' +
+          '<li><strong>Connect:</strong> drag the round handle on the right of an item onto a compatible item, or click an item and then click one of the items highlighted in green.</li>' +
+          '<li>Allowed relationships: <strong>Actor → Activity</strong> and <strong>Activity → Fine-grained right</strong>. An item can have several relationships.</li>' +
+          '<li><strong>Remove a relationship:</strong> select one of its items (or hover the arrow) and click the red ×.</li>' +
+          '<li><strong>Check answer</strong> needs at least ' + EX2.minChains + ' complete chains Actor → Activity → Fine-grained right. Correct connections are kept, incorrect ones are removed; you can check as many times as you like.</li>' +
+          '<li>Keyboard: <kbd>Tab</kbd> to an item, <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to place it in a category, <kbd>0</kbd> to send it back to the banner, <kbd>Alt</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd> to reorder, <kbd>Enter</kbd> to select / connect, <kbd>Esc</kbd> to cancel.</li>' +
+        '</ul></details></section>' +
+      '</div>' +
+    '</div>';
+  X2.root = $('#x2-root'); X2.canvas = $('#x2-canvas'); X2.world = $('#x2-world');
+  X2.cols = $('#x2-cols'); X2.rels = $('#x2-rel-paths'); X2.link = $('#x2-link-layer'); X2.badges = $('#x2-badges');
+  $('#x2-tips').addEventListener('toggle', e => { UI2.tipsOpen = e.target.open; });
+  x2Bind();
+  x2Render();
+  if (S2.view) x2ApplyView(S2.view); else x2ResetView();
+}
+function x2Markers() {
+  return [['def', '#6b5bb5'], ['verified', '#1f9d55'], ['sel', '#5221b5'], ['ok', '#16a34a'], ['bad', '#dc2626'], ['link', '#5221b5']].map(([k, c]) =>
+    '<marker id="x2-arrow-' + k + '" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">' +
+    '<path d="M1 1 L11 6 L1 11 Z" fill="' + c + '"/></marker>').join('');
+}
+
+/* ---------- Rendering ---------- */
+function x2Render(focusKey) {
+  if (!X2 || !X2.root || !X2.root.isConnected) return;
+  const active = document.activeElement;
+  const key = focusKey || (active && active.dataset ? active.dataset.key : null);
+  x2RenderToolbar(); x2RenderNotices(); x2RenderTray(); x2RenderCols(); x2DrawRels();
+  if (key && !dlg.open) { const el = document.querySelector('[data-key="' + key + '"]'); if (el && el !== document.activeElement) el.focus({ preventScroll: true }); }
+}
+function x2RenderToolbar() {
+  const chains = x2ChainCount(), min = EX2.minChains;
+  const left = S2.tray.length;
+  $('#toolbar').innerHTML = toolbarHTML({
+    counterIcon: 'link',
+    counterTitle: 'Complete chains Actor → Activity → Fine-grained right',
+    counterHTML: '<strong>' + chains + '</strong> complete relationship' + (chains > 1 ? 's' : ''),
+    extraHTML: '<span class="counter" title="Items still to classify">' + icon('layers') + '<span><strong>' + left + '</strong> item' + (left > 1 ? 's' : '') + ' to classify</span></span>',
+    checkEnabled: chains >= min,
+    busy: UI2.checking,
+    hint: 'Create at least ' + min + ' complete relationships to check your answer (' + Math.min(chains, min) + '/' + min + ')'
+  });
+}
+function x2RenderNotices() {
+  const box = $('#notices');
+  let html = '';
+  if (UI2.checking) {
+    html = '<div class="notice notice--warning" role="status">' + icon('listChecks') + '<p><strong>Checking your answer…</strong> Correct connections are shown in green; connections in red will be removed.</p></div>';
+  } else if (UI2.selected) {
+    const c = x2Card(UI2.selected);
+    html = '<div class="notice notice--correction" role="status">' + icon('link') + '<p><strong>' + esc(c.label) + '</strong> is selected. Click an item highlighted in green to connect it, or press <kbd>Esc</kbd> to cancel.</p>' +
+      '<button class="btn btn--secondary btn--sm" type="button" data-x2="deselect" data-key="x2-deselect">Cancel</button></div>';
+  } else if (S2.solved) {
+    html = '<div class="notice notice--success" role="status">' + icon('trophy') + '<p><strong>Well done!</strong> Your authorization model for ' + esc(X2.sector.label) + ' is complete and correct.</p></div>';
+  } else if (Object.values(S2.marks).some(m => m === 'bad')) {
+    html = '<div class="notice notice--warning" role="status">' + icon('alert') + '<p><strong>Some items are in the wrong category</strong> (red cross). Move them, then complete your relationships and check again.</p></div>';
+  }
+  box.innerHTML = html;
+}
+function x2CardHTML(id, where) {
+  const c = x2Card(id);
+  const parts = c.label.split(' – ');
+  const text = parts.length > 1 ? '<span class="x2-card-app">' + esc(parts[0]) + '</span>' + esc(parts.slice(1).join(' – ')) : esc(c.label);
+  const mark = where !== 'tray' ? S2.marks[id] : null;
+  const sel = UI2.selected;
+  let cls = 'x2-card' + (where === 'tray' ? ' x2-card--chip' : '');
+  if (mark) cls += ' mark-' + mark;
+  if (sel && where !== 'tray') {
+    if (id === sel) cls += ' is-selected';
+    else if (x2CanRelate(sel, id).ok) cls += ' is-compatible';
+    else if (S2.rels.some(r => (r.from === sel && r.to === id) || (r.to === sel && r.from === id))) cls += ' is-linked';
+    else cls += ' is-dim';
+  }
+  const nRels = S2.rels.filter(r => r.from === id || r.to === id).length;
+  const catTitle = where === 'tray' ? 'not classified yet' : 'in ' + x2Cats().find(k => k.id === where).short;
+  const aria = c.label + ', ' + catTitle + (nRels ? ', ' + nRels + ' relationship' + (nRels > 1 ? 's' : '') : '') +
+    (mark === 'ok' ? ', right category' : mark === 'bad' ? ', wrong category' : '') + (id === sel ? ', selected' : '');
+  const port = (where === 'actor' || where === 'activity') && !UI2.checking
+    ? '<button type="button" class="x2-port" data-x2-port="' + esc(id) + '" tabindex="-1" aria-hidden="true" title="Drag onto a compatible item to create a relationship">' + icon('plus') + '</button>' : '';
+  return '<div class="' + cls + '" data-card="' + esc(id) + '" data-key="card:' + esc(id) + '" tabindex="0" role="button" aria-pressed="' + (id === sel) + '" aria-label="' + esc(aria) + '">' +
+    text + (mark ? '<span class="x2-mark x2-mark--' + mark + '" title="' + (mark === 'ok' ? 'Right category' : 'Wrong category') + '">' + icon(mark === 'ok' ? 'check' : 'x') + '</span>' : '') + port + '</div>';
+}
+function x2RenderTray() {
+  const n = S2.tray.length;
+  $('#x2-tray').innerHTML =
+    '<div class="x2-tray-head"><h2 id="x2-tray-title">' + icon('layers') + 'Items to classify<span class="count">' + n + '</span></h2>' +
+      '<p>' + (n ? 'Drag each item into one of the three categories below.' : '') + '</p></div>' +
+    '<div class="x2-tray-list" id="x2-tray-list" data-drop="tray">' +
+      (n ? S2.tray.map(id => x2CardHTML(id, 'tray')).join('')
+         : '<p class="x2-tray-empty">' + icon('circleCheck') + 'All items are classified. You can drag an item back here at any time.</p>') +
+    '</div>';
+}
+function x2RenderCols() {
+  X2.cols.innerHTML = x2Cats().map(k => {
+    const list = S2.cols[k.id];
+    return '<section class="x2-col x2-col--' + k.id + '" data-col="' + k.id + '" aria-labelledby="x2-col-' + k.id + '">' +
+      '<header class="x2-col-head"><span class="x2-col-icon">' + icon(k.icon) + '</span><div><h2 id="x2-col-' + k.id + '">' + esc(k.title) + '</h2>' +
+        '<span class="count">' + list.length + ' item' + (list.length > 1 ? 's' : '') + '</span></div></header>' +
+      '<div class="x2-col-list" data-drop="' + k.id + '">' +
+        (list.length ? list.map(id => x2CardHTML(id, k.id)).join('') : '<p class="x2-col-empty">Drop items here</p>') +
+      '</div></section>';
+  }).join('');
+}
+function x2WorldRect(el) {
+  const wr = X2.world.getBoundingClientRect(), r = el.getBoundingClientRect(), z = UI2.view.z;
+  return { x: (r.left - wr.left) / z, y: (r.top - wr.top) / z, w: r.width / z, h: r.height / z };
+}
+function x2CardEl(id) { return X2.cols.querySelector('[data-card="' + id + '"]'); }
+function x2DrawRels() {
+  if (!X2 || !X2.rels) return;
+  const sel = UI2.selected, ev = UI2.evalCls;
+  let paths = '', badges = '';
+  S2.rels.forEach(r => {
+    const a = x2CardEl(r.from), b = x2CardEl(r.to);
+    if (!a || !b) return;
+    const ra = x2WorldRect(a), rb = x2WorldRect(b);
+    const x1 = ra.x + ra.w + 10, y1 = ra.y + ra.h / 2, x2 = rb.x - 3, y2 = rb.y + rb.h / 2;
+    const dx = Math.max(40, (x2 - x1) / 2);
+    const d = 'M' + x1 + ',' + y1 + ' C' + (x1 + dx) + ',' + y1 + ' ' + (x2 - dx) + ',' + y2 + ' ' + x2 + ',' + y2;
+    let cls = 'x2-rel', mk = 'def';
+    const touches = sel && (r.from === sel || r.to === sel);
+    if (ev) { cls += ' eval-' + ev.cls[r.id]; mk = ev.cls[r.id]; }
+    else if (touches) { cls += ' is-sel'; mk = 'sel'; }
+    else {
+      if (S2.verified[r.id]) { cls += ' is-verified'; mk = 'verified'; }
+      if (sel) cls += ' is-faded';
+    }
+    const label = x2Label(r.from) + ' → ' + x2Label(r.to);
+    const title = ev ? (ev.cls[r.id] === 'ok' ? 'Correct: ' : 'Incorrect: ') + label + (ev.why[r.id] ? ' – ' + ev.why[r.id] : '') : label + (S2.verified[r.id] ? ' (checked: correct)' : '');
+    paths += '<path class="' + cls + '" d="' + d + '" marker-end="url(#x2-arrow-' + mk + ')"><title>' + esc(title) + '</title></path>';
+    if (!ev) {
+      const mx = (x1 + 3 * (x1 + dx) + 3 * (x2 - dx) + x2) / 8, my = (y1 + y2) / 2;
+      badges += '<button type="button" class="x2-rel-del' + (touches ? ' is-visible' : '') + '" style="left:' + mx + 'px;top:' + my + 'px" data-rel-del="' + esc(r.id) + '" data-key="rel:' + esc(r.id) + '" aria-label="Remove the relationship ' + esc(label) + '" title="Remove this relationship">' + icon('x') + '</button>';
+    }
+  });
+  X2.rels.innerHTML = paths;
+  X2.badges.innerHTML = badges;
+  X2.root.classList.toggle('x2-checking', UI2.checking);
+}
+
+/* ---------- View (same behaviour as Exercise 1) ---------- */
+let x2ViewTimer = null;
+function x2ApplyView(v) {
+  if (v) UI2.view = { x: v.x, y: v.y, z: v.z };
+  const view = UI2.view;
+  X2.world.style.transform = 'translate(' + view.x + 'px,' + view.y + 'px) scale(' + view.z + ')';
+  X2.canvas.style.backgroundSize = (GRID * view.z) + 'px ' + (GRID * view.z) + 'px';
+  X2.canvas.style.backgroundPosition = view.x + 'px ' + view.y + 'px';
+  $('#x2-zoom').textContent = Math.round(view.z * 100) + '%';
+  S2.view = Object.assign({}, view);
+  clearTimeout(x2ViewTimer); x2ViewTimer = setTimeout(x2Save, 300);
+}
+function x2Content() { return { w: X2.cols.offsetWidth, h: X2.cols.offsetHeight }; }
+function x2FitView() {
+  const b = x2Content(), r = X2.canvas.getBoundingClientRect(), pad = 40;
+  const z = clamp(Math.min((r.width - pad * 2) / b.w, (r.height - pad * 2 - 50) / b.h), 0.35, 1);
+  x2ApplyView({ z, x: (r.width - b.w * z) / 2, y: pad });
+}
+function x2ResetView() {
+  const b = x2Content(), r = X2.canvas.getBoundingClientRect();
+  const z = r.width < b.w + 48 ? clamp((r.width - 32) / b.w, 0.35, 1) : 1;
+  x2ApplyView({ z, x: Math.max(16, (r.width - b.w * z) / 2), y: 24 });
+}
+function x2ZoomAt(f, px, py) {
+  const r = X2.canvas.getBoundingClientRect(), v = UI2.view;
+  if (px == null) { px = r.width / 2; py = r.height / 2; }
+  const nz = clamp(v.z * f, 0.3, 2), wx = (px - v.x) / v.z, wy = (py - v.y) / v.z;
+  x2ApplyView({ z: nz, x: px - wx * nz, y: py - wy * nz });
+}
+function x2ToWorld(ev) {
+  const r = X2.canvas.getBoundingClientRect(), v = UI2.view;
+  return { x: (ev.clientX - r.left - v.x) / v.z, y: (ev.clientY - r.top - v.y) / v.z, cx: ev.clientX - r.left, cy: ev.clientY - r.top };
+}
+
+/* ---------- Moving cards ---------- */
+function x2Move(id, to, index) {
+  const fromCol = x2ColOf(id);
+  const src = x2ListOf(fromCol);
+  src.splice(src.indexOf(id), 1);
+  const dst = x2ListOf(to);
+  dst.splice(index == null ? dst.length : clamp(index, 0, dst.length), 0, id);
+  let removed = 0;
+  if (fromCol !== to) {
+    delete S2.marks[id];
+    if (to === 'tray') { const n = S2.rels.length; S2.rels = S2.rels.filter(r => r.from !== id && r.to !== id); removed = n - S2.rels.length; }
+    removed += x2PruneRels();
+    if (UI2.selected === id && to === 'tray') UI2.selected = null;
+  }
+  if (fromCol !== to) S2.solved = false;
+  x2Save();
+  x2Render();
+  const el = document.querySelector('[data-card="' + id + '"]');
+  if (el) { el.classList.add('just-dropped'); el.focus({ preventScroll: true }); }
+  if (removed) toast(removed + ' relationship' + (removed > 1 ? 's' : '') + ' removed because the item changed category.');
+}
+/** Tidy up: reorder items to limit crossing arrows, keeping categories and relationships. */
+function x2Tidy() {
+  const pos = list => { const m = {}; list.forEach((id, i) => { m[id] = i; }); return m; };
+  const sortBy = (list, score) => list.map((id, i) => ({ id, i, s: score(id) })).sort((a, b) => (a.s - b.s) || (a.i - b.i)).map(x => x.id);
+  const bary = (id, ids, idx, dir) => {
+    const ns = S2.rels.filter(r => dir === 'in' ? r.to === id : r.from === id).map(r => idx[dir === 'in' ? r.from : r.to]).filter(v => v != null);
+    return ns.length ? ns.reduce((a, b) => a + b, 0) / ns.length : Infinity;
+  };
+  for (let pass = 0; pass < 2; pass++) {
+    const pa = pos(S2.cols.actor);
+    S2.cols.activity = sortBy(S2.cols.activity, id => bary(id, null, pa, 'in'));
+    const pc = pos(S2.cols.activity);
+    S2.cols.right = sortBy(S2.cols.right, id => bary(id, null, pc, 'in'));
+    S2.cols.actor = sortBy(S2.cols.actor, id => bary(id, null, pc, 'out'));
+  }
+  const pa = pos(S2.cols.actor);
+  S2.cols.activity = sortBy(S2.cols.activity, id => bary(id, null, pa, 'in'));
+  const pc = pos(S2.cols.activity);
+  S2.cols.right = sortBy(S2.cols.right, id => bary(id, null, pc, 'in'));
+  x2Save(); x2Render();   // the zoom level and position are kept
+  toast('Items tidied up. Categories and relationships are unchanged.');
+}
+
+/* ---------- Pointer interactions ---------- */
+function x2Bind() {
+  const root = X2.root;
+  let drag = null;
+
+  const dropZoneAt = ev => {
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    if (el && el.closest('#x2-tray')) return 'tray';
+    const r = X2.canvas.getBoundingClientRect();
+    if (ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) return null;
+    if (el && el.closest('.canvas-controls')) return null;
+    const p = x2ToWorld(ev);
+    let best = null, bestD = Infinity;
+    $$('.x2-col', X2.cols).forEach(c => {
+      const cx = c.offsetLeft + c.offsetWidth / 2, d = Math.abs(p.x - cx);
+      if (d < bestD) { bestD = d; best = c.dataset.col; }
+    });
+    return best;
+  };
+  const placeholderIndex = (zone, ev) => {
+    if (zone === 'tray') {
+      const chips = $$('#x2-tray-list .x2-card').filter(c => c.dataset.card !== drag.id);
+      for (let i = 0; i < chips.length; i++) {
+        const r = chips[i].getBoundingClientRect();
+        if (ev.clientY < r.top || (ev.clientY <= r.bottom && ev.clientX < r.left + r.width / 2)) return i;
+      }
+      return chips.length;
+    }
+    const p = x2ToWorld(ev);
+    const cards = $$('.x2-col[data-col="' + zone + '"] .x2-card').filter(c => c.dataset.card !== drag.id);
+    for (let i = 0; i < cards.length; i++) { const r = x2WorldRect(cards[i]); if (p.y < r.y + r.h / 2) return i; }
+    return cards.length;
+  };
+  const showPlaceholder = (zone, index) => {
+    if (drag.zone === zone && drag.index === index) return;
+    $$('.is-drop-target', root).forEach(e => e.classList.remove('is-drop-target'));
+    if (drag.ph) drag.ph.remove();
+    drag.zone = zone; drag.index = index;
+    if (!zone) { x2DrawRels(); return; }
+    const box = zone === 'tray' ? $('#x2-tray') : $('.x2-col[data-col="' + zone + '"]', X2.cols);
+    box.classList.add('is-drop-target');
+    const list = zone === 'tray' ? $('#x2-tray-list') : $('.x2-col-list', box);
+    $$('.x2-col-empty, .x2-tray-empty', list).forEach(e => { e.hidden = true; });
+    const ph = document.createElement('div');
+    ph.className = 'x2-ph' + (zone === 'tray' ? ' x2-ph--chip' : '');
+    if (zone !== 'tray') ph.style.height = drag.h + 'px';
+    const items = $$('.x2-card', list).filter(c => c.dataset.card !== drag.id);
+    list.insertBefore(ph, items[index] || null);
+    drag.ph = ph;
+    x2DrawRels();
+  };
+  const endCardDrag = commit => {
+    const d = drag; drag = null;
+    if (d.ghost) d.ghost.remove();
+    if (d.ph) d.ph.remove();
+    $$('.is-drop-target', root).forEach(e => e.classList.remove('is-drop-target'));
+    if (commit && d.zone) x2Move(d.id, d.zone, d.index);
+    else x2Render();
+  };
+  const linkTarget = (ev, from) => {
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    const card = el && el.closest ? el.closest('.x2-col [data-card]') : null;
+    if (!card) return { el: null };
+    return { el: card, id: card.dataset.card, check: x2CanRelate(from, card.dataset.card, true) };
+  };
+  const endLink = ev => {
+    const d = drag; drag = null;
+    if (d.tip) d.tip.remove();
+    X2.link.innerHTML = '';
+    if (d.hover) d.hover.classList.remove('is-drop-ok', 'is-drop-bad');
+    UI2.selected = d.prevSel;
+    if (!ev) { x2Render(); return; }
+    const t = linkTarget(ev, d.from);
+    if (t.el && t.check.ok) {
+      x2AddRel(t.check.from, t.check.to);
+      S2.solved = false; x2Save(); x2Render();
+      toast('Relationship added: ' + x2Label(t.check.from) + ' → ' + x2Label(t.check.to) + '.', 'success');
+    } else {
+      if (t.el && t.id !== d.from) toast(t.check.reason, 'error');
+      x2Render();
+    }
+  };
+
+  root.addEventListener('pointerdown', ev => {
+    if (ev.button !== 0 || dlg.open) return;
+    const port = ev.target.closest('[data-x2-port]');
+    const cardEl = ev.target.closest('[data-card]');
+    if (UI2.checking) { if (!ev.target.closest('.x2-canvas') || cardEl || port) return; }
+    if (port) {
+      ev.preventDefault();
+      drag = { kind: 'link', from: port.dataset.x2Port, el: port, sx: ev.clientX, sy: ev.clientY, moved: false, prevSel: UI2.selected };
+      root.setPointerCapture(ev.pointerId); return;
+    }
+    if (cardEl) {
+      const r = cardEl.getBoundingClientRect();
+      drag = { kind: 'card', id: cardEl.dataset.card, el: cardEl, sx: ev.clientX, sy: ev.clientY, moved: false,
+        ox: ev.clientX - r.left, oy: ev.clientY - r.top, w: cardEl.offsetWidth, h: cardEl.offsetHeight, zone: undefined, index: undefined };
+      root.setPointerCapture(ev.pointerId); return;
+    }
+    if (ev.target.closest('button, a, input, select, details, .canvas-controls, .canvas-hint')) return;
+    if (ev.target.closest('.x2-canvas')) {
+      drag = { kind: 'pan', sx: ev.clientX, sy: ev.clientY, ox: UI2.view.x, oy: UI2.view.y, moved: false };
+      X2.canvas.classList.add('is-panning');
+      root.setPointerCapture(ev.pointerId);
+    }
+  });
+  root.addEventListener('pointermove', ev => {
+    if (!drag) return;
+    const dx = ev.clientX - drag.sx, dy = ev.clientY - drag.sy;
+    if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
+    if (!drag.moved) {
+      drag.moved = true;
+      if (drag.kind === 'card') {
+        const g = drag.el.cloneNode(true);
+        g.classList.add('x2-ghost'); g.classList.remove('is-selected', 'is-compatible', 'is-dim', 'is-linked', 'just-dropped');
+        g.removeAttribute('data-card'); g.removeAttribute('data-key'); g.removeAttribute('tabindex');
+        $$('.x2-port', g).forEach(e => e.remove());
+        g.style.width = drag.w + 'px';
+        document.body.appendChild(g);
+        drag.ghost = g;
+        drag.ox = Math.min(drag.ox / (drag.el.closest('.x2-canvas') ? UI2.view.z : 1), drag.w - 10);
+        drag.oy = Math.min(drag.oy / (drag.el.closest('.x2-canvas') ? UI2.view.z : 1), drag.h - 6);
+        drag.el.classList.add('is-drag-source');
+      } else if (drag.kind === 'link') {
+        UI2.selected = drag.from; x2RenderCols(); x2DrawRels();
+        drag.el = $('[data-x2-port="' + drag.from + '"]', X2.cols);
+        if (drag.el) drag.el.classList.add('is-active');
+        drag.tip = document.createElement('div'); drag.tip.className = 'link-tip'; X2.canvas.appendChild(drag.tip);
+        X2.canvas.classList.add('is-linking');
+      }
+    }
+    if (drag.kind === 'pan') { x2ApplyView({ z: UI2.view.z, x: drag.ox + dx, y: drag.oy + dy }); return; }
+    if (drag.kind === 'card') {
+      drag.ghost.style.left = (ev.clientX - drag.ox) + 'px';
+      drag.ghost.style.top = (ev.clientY - drag.oy) + 'px';
+      const zone = dropZoneAt(ev);
+      showPlaceholder(zone, zone ? placeholderIndex(zone, ev) : null);
+      return;
+    }
+    if (drag.kind === 'link') {
+      const p = x2ToWorld(ev), src = x2CardEl(drag.from);
+      const r = x2WorldRect(src), x1 = r.x + r.w + 10, y1 = r.y + r.h / 2;
+      const t = linkTarget(ev, drag.from);
+      if (drag.hover && drag.hover !== t.el) drag.hover.classList.remove('is-drop-ok', 'is-drop-bad');
+      drag.hover = t.el;
+      let tip = 'Drop on a compatible item (highlighted in green)', cls = '';
+      if (t.el && t.id !== drag.from) {
+        t.el.classList.toggle('is-drop-ok', t.check.ok); t.el.classList.toggle('is-drop-bad', !t.check.ok);
+        tip = t.check.ok ? 'Release to connect to ' + x2Label(t.id) : t.check.reason; cls = t.check.ok ? 'is-ok' : 'is-bad';
+      }
+      drag.tip.textContent = tip; drag.tip.className = 'link-tip ' + cls;
+      drag.tip.style.left = p.cx + 'px'; drag.tip.style.top = p.cy + 'px';
+      const ddx = Math.max(40, Math.abs(p.x - x1) / 2);
+      X2.link.innerHTML = '<path class="link-preview' + (cls === 'is-bad' ? ' is-bad' : '') + '" d="M' + x1 + ',' + y1 + ' C' + (x1 + ddx) + ',' + y1 + ' ' + (p.x - ddx) + ',' + p.y + ' ' + p.x + ',' + p.y + '" marker-end="url(#x2-arrow-link)"/>';
+    }
+  });
+  const up = ev => {
+    if (!drag) return;
+    try { root.releasePointerCapture(ev.pointerId); } catch (e) { /* ignore */ }
+    const cancel = ev.type === 'pointercancel';
+    if (drag.kind === 'pan') { X2.canvas.classList.remove('is-panning'); const moved = drag.moved; drag = null; if (!moved && UI2.selected) { UI2.selected = null; x2Render(); } return; }
+    if (drag.kind === 'card') {
+      if (!drag.moved) { const id = drag.id; drag = null; x2Activate(id); return; }
+      endCardDrag(!cancel); return;
+    }
+    if (drag.kind === 'link') {
+      X2.canvas.classList.remove('is-linking');
+      if (!drag.moved) { const id = drag.from; drag = null; x2Activate(id); return; }
+      endLink(cancel ? null : ev);
+    }
+  };
+  root.addEventListener('pointerup', up);
+  root.addEventListener('pointercancel', up);
+
+  X2.canvas.addEventListener('wheel', ev => {
+    ev.preventDefault();
+    const r = X2.canvas.getBoundingClientRect();
+    if (ev.ctrlKey || ev.metaKey) x2ZoomAt(Math.exp(-ev.deltaY * 0.0022), ev.clientX - r.left, ev.clientY - r.top);
+    else x2ApplyView({ z: UI2.view.z, x: UI2.view.x - ev.deltaX, y: UI2.view.y - ev.deltaY });
+  }, { passive: false });
+
+  root.addEventListener('click', async ev => {
+    const del = ev.target.closest('[data-rel-del]');
+    if (del && !UI2.checking) {
+      const r = S2.rels.find(x => x.id === del.dataset.relDel);
+      if (r) { S2.rels = S2.rels.filter(x => x !== r); delete S2.verified[r.id]; S2.solved = false; x2Save(); x2Render(UI2.selected ? 'card:' + UI2.selected : null); toast('Relationship removed: ' + x2Label(r.from) + ' → ' + x2Label(r.to) + '.'); }
+      return;
+    }
+    const b = ev.target.closest('[data-x2], [data-act]');
+    if (!b || b.disabled) return;
+    switch (b.dataset.x2 || b.dataset.act) {
+      case 'zoom-in': x2ZoomAt(1.2); break;
+      case 'zoom-out': x2ZoomAt(1 / 1.2); break;
+      case 'fit': x2FitView(); break;
+      case 'reset-view': x2ResetView(); break;
+      case 'arrange': if (!UI2.checking) x2Tidy(); break;
+      case 'deselect': UI2.selected = null; x2Render(); break;
+      case 'check': x2Check(); break;
+      case 'reset': {
+        const ok = await confirmDialog('Reset exercise', 'Are you sure you want to reset <strong>Exercise 2 – ' + esc(X2.sector.label) + '</strong>? Your classification and all the relationships you created will be deleted. This cannot be undone.', 'Reset exercise', 'danger');
+        if (!ok) return;
+        S2 = x2Initial(X2.sector); UI2.selected = null;
+        x2Save(); x2Render('tb:reset'); x2ResetView();
+        toast('The exercise has been reset.');
+        break;
+      }
+    }
+  });
+  // Show the × of an arrow when the pointer is close to its middle.
+  X2.canvas.addEventListener('pointermove', ev => {
+    if (drag || UI2.checking) return;
+    const p = x2ToWorld(ev);
+    $$('.x2-rel-del', X2.badges).forEach(bt => {
+      const near = Math.abs(parseFloat(bt.style.left) - p.x) < 40 && Math.abs(parseFloat(bt.style.top) - p.y) < 22;
+      bt.classList.toggle('is-hover', near);
+      if (near) bt.style.opacity = 1; else bt.style.opacity = '';
+    });
+  });
+
+  root.addEventListener('keydown', ev => {
+    if (ev.key === 'Escape' && UI2.selected && !dlg.open) { UI2.selected = null; x2Render(); return; }
+    const cardEl = ev.target.closest && ev.target.closest('[data-card]');
+    if (!cardEl || ev.target !== cardEl || UI2.checking) return;
+    const id = cardEl.dataset.card, col = x2ColOf(id);
+    const keyCols = { '1': 'actor', '2': 'activity', '3': 'right', '0': 'tray' };
+    if (keyCols[ev.key] && !ev.altKey && !ev.ctrlKey && !ev.metaKey) {
+      ev.preventDefault();
+      if (keyCols[ev.key] !== col) {
+        x2Move(id, keyCols[ev.key]);
+        const k = x2Cats().find(c => c.id === keyCols[ev.key]);
+        toast('Moved to ' + (k ? k.short : 'the banner') + '.');
+      }
+    } else if (ev.altKey && (ev.key === 'ArrowUp' || ev.key === 'ArrowDown')) {
+      ev.preventDefault();
+      const list = x2ListOf(col), i = list.indexOf(id), j = i + (ev.key === 'ArrowUp' ? -1 : 1);
+      if (j >= 0 && j < list.length) x2Move(id, col, j);
+    } else if (ev.key === 'Enter' || ev.key === ' ') {
+      ev.preventDefault(); x2Activate(id);
+    }
+  });
+  if (!UI2.resizeBound) {
+    UI2.resizeBound = true;
+    window.addEventListener('resize', () => { if (X2 && X2.root && X2.root.isConnected) { x2ApplyView(); x2DrawRels(); } });
+  }
+}
+/** Click / Enter on a card: select it, or connect it to the selected card. */
+function x2Activate(id) {
+  if (UI2.checking) return;
+  const col = x2ColOf(id);
+  if (col === 'tray') { toast('Drag this item into one of the three categories first (or focus it and press 1, 2 or 3).'); return; }
+  const sel = UI2.selected;
+  if (!sel || sel === id) { UI2.selected = sel === id ? null : id; x2Render('card:' + id); return; }
+  const c = x2CanRelate(sel, id);
+  if (c.ok) {
+    x2AddRel(c.from, c.to);
+    S2.solved = false; x2Save(); x2Render('card:' + id);
+    toast('Relationship added: ' + x2Label(c.from) + ' → ' + x2Label(c.to) + '.', 'success');
+    return;
+  }
+  UI2.selected = id; x2Render('card:' + id);
 }
 
 /* =====================================================================
