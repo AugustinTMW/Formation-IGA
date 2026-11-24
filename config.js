@@ -57,9 +57,9 @@ window.IGA_CONFIG = {
       id: 'exercise-2',
       number: 'Exercise 2',
       title: 'Profile and entitlement association',
-      description: 'Associate business profiles with the right entitlements across applications, and apply the least-privilege principle.',
+      description: 'Classify actors, activities and fine-grained rights, then connect them to build the authorization model of an organization.',
       icon: 'key',
-      available: false,
+      available: true,
       duration: '20 min'
     }
   ],

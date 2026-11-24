@@ -36,6 +36,7 @@ puis ouvrir <http://localhost:8000>.
 | `index.html` | Application complète (HTML, CSS et JavaScript). |
 | `config.js` | Catalogue : doers, applications, transitions, et parties de l'exercice 1 (consignes, bloc de départ, action préremplie). |
 | `correction.js` | Corrections attendues : `employeeArrivalSolution` et `employeeDepartureSolution` (**à compléter**, voir §4). |
+| `exercise2-data.js` | Exercice 2 : secteurs, cartes (acteurs, activités, droits fins) et relations correctes. |
 | `assets/wavestone-symbol.svg` | Logo affiché en haut à gauche (cadre blanc à contour violet). |
 | `assets/apps/` | Logos des applications (Active Directory, Office 365, Outlook pour *Mail Address*). |
 
@@ -215,3 +216,47 @@ textes de ces messages se trouvent dans la constante `MSG` au début du script d
 - Contrastes conformes WCAG AA ; animations désactivées si l'utilisateur préfère réduire les mouvements.
 - Interface responsive (usage prioritaire sur ordinateur ; le panneau passe sous le canevas sur les
   écrans étroits).
+
+## 6. Exercice 2 – Profile and entitlement association
+
+Accès : page d'accueil → *Exercise 2* → choix du secteur (`#/exercise-2`). Seul **Wavestone** est
+disponible ; *Energy* et *Public sector* sont affichés « Coming soon ».
+
+### Déroulé
+1. **Classer** les étiquettes du bandeau (ordre aléatoire) dans trois zones : *Who performs this
+   activity in my organization?*, *Activities in my organization* (colonne centrale de couleur
+   distincte) et *Fine-grained rights*, par glisser-déposer. On peut aussi déplacer une étiquette
+   d'une zone à l'autre, la réordonner ou la renvoyer dans le bandeau.
+2. **Relier** : tirer le rond à droite d'une carte vers une carte compatible, ou cliquer une carte
+   puis une carte surlignée en vert. Seuls *Actor → Activity* et *Activity → Fine-grained right* sont
+   autorisés. Le × rouge au milieu d'une flèche la supprime.
+3. **Check answer** (même barre d'actions que l'exercice 1) : actif dès 3 chaînes complètes
+   *Actor → Activity → Fine-grained right*.
+
+### Règles de correction
+- Chaque carte classée est marquée ✓ (bonne catégorie) ou ✗ (mauvaise). Les cartes encore dans le
+  bandeau ne sont pas corrigées.
+- Les flèches sont colorées en vert / rouge pendant environ 3 s, puis :
+  - *Actor → Activity* correcte : conservée ;
+  - *Activity → Right* correcte : conservée si l'activité a au moins une liaison acteur correcte (ou
+    aucune liaison acteur) ;
+  - si la liaison *Actor → Activity* d'une chaîne est fausse, toute la chaîne est supprimée, y compris
+    une liaison *Activity → Right* correcte ;
+  - toute liaison incorrecte est supprimée.
+- Un résumé indique les chaînes entièrement correctes, les liaisons acteur conservées, les connexions
+  supprimées et le nombre de cartes bien / mal classées. Aucune note sur 100.
+- On peut recommencer autant de fois que nécessaire ; quand tout est classé et que les 42 relations
+  sont correctes, la fenêtre « Exercise completed! » s'affiche.
+
+### Données (`exercise2-data.js`)
+- Chaque carte : `id` unique, `label`, `category` (`actor` | `activity` | `right`, jamais affichée
+  avant la correction), `sector`.
+- `relations` : liste `{ from, to }` vérifiée **par identifiant**, jamais par libellé.
+- `interchangeableCards` : les deux cartes *Ticketing tool – Access to WS Support email address* ont
+  des identifiants différents (une par activité). Comme le participant ne peut pas les distinguer,
+  l'une ou l'autre est acceptée, à condition que chacune ne serve qu'une fois. Supprimer ce groupe
+  pour exiger l'identifiant exact.
+- Ajouter un secteur : renseigner `cards`, `relations`, `storageKey` et passer `available: true`.
+- La progression est enregistrée par secteur (`storageKey`) ; « Reset exercise » efface le classement
+  et les relations du secteur affiché ; « Reset view » ne touche qu'au zoom et à la position.
+
