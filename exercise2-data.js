@@ -102,9 +102,9 @@
     link('a-marketing', 'act-prospect-clients'),
     link('act-prospect-clients', 'r-sf-contact-lists'),
     link('a-marketing', 'act-sale-cycle'),
-    link('act-sale-cycle', 'r-sf-customer-files-read'),
+    link('act-sale-cycle', 'r-sf-customer-file-write'),
     link('a-marketing', 'act-client-strategy'),
-    link('act-client-strategy', 'r-sf-customer-file-write'),
+    link('act-client-strategy', 'r-sf-customer-files-read'),
 
     // IT Department
     link('a-it-department', 'act-improve-tools'),
