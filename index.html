@@ -705,6 +705,8 @@ fieldset.field > legend { margin-bottom: 6px; }
 /* Sector selection */
 .sector-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 .ex-card-icon img { width: 30px; height: 30px; }
+/* Sector icons use the Wavestone logo colour, including sectors not available yet */
+.sector-grid .ex-card-icon, .sector-grid .ex-card.is-disabled .ex-card-icon { color: #451dc7; background: var(--primary-50); }
 .x2-sector-back { margin-top: 24px; }
 .x2-summary { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .x2-summary li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; background: #f6f5fa; font-size: 14px; }
