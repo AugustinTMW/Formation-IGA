@@ -63,6 +63,7 @@ button, input, select { font: inherit; color: inherit; }
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 :focus-visible { outline: none; box-shadow: var(--focus); }
+#main:focus, #main:focus-visible { box-shadow: none; outline: none; }   /* focused programmatically after navigation */
 .skip-link {
   position: absolute; left: 12px; top: -48px; z-index: 100;
   background: var(--primary); color: #fff; padding: 8px 14px; border-radius: var(--radius-sm);
@@ -863,6 +864,8 @@ const ICONS = {
   lightbulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
   chevronDown: '<path d="m6 9 6 6 6-6"/>',
   layers: '<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
+  briefcase: '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+  heartPulse: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>',
   workflow: '<rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/>'
 };
 function icon(name, cls) {
@@ -1695,7 +1698,9 @@ function route() {
   const m2 = r.match(/^exercise-2(?:\/([\w-]+))?$/);
   if (m2 && EX2) {
     PART = null; CORR = null;
-    if (changed) { if (m2[1] && x2SectorById(m2[1]) && x2SectorById(m2[1]).available) x2Mount(x2SectorById(m2[1])); else x2RenderSectors(); }
+    const sc2 = m2[1] && x2SectorById(m2[1]);
+    if (sc2 && sc2.id !== m2[1]) { location.replace('#/exercise-2/' + sc2.id); return; }
+    if (changed) { if (sc2 && sc2.available) x2Mount(sc2); else x2RenderSectors(); }
   } else if (m && PARTS.length) {
     if (!m[1] || !partById(m[1])) { location.replace('#/exercise-1/' + PARTS[0].id); return; }
     if (changed) { setPart(m[1]); UI.mode = 'mine'; UI.correction = null; mountExercise(); }
@@ -2415,7 +2420,7 @@ let X2 = null;   // { sector, byId, root, canvas, world, cols, rels, badges }
 let S2 = null;   // participant state of the current sector
 const UI2 = { selected: null, checking: false, evalCls: null, view: { x: 0, y: 0, z: 1 }, tipsOpen: false, resizeBound: false };
 
-const x2SectorById = id => EX2 && EX2.sectors.find(sc => sc.id === id);
+const x2SectorById = id => EX2 && EX2.sectors.find(sc => sc.id === id || (sc.aliases || []).includes(id));
 const x2Cats = () => EX2.categories;
 const x2Card = id => X2.byId[id];
 const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -2575,7 +2580,7 @@ async function x2Check() {
 async function x2ShowCompleted() {
   const v = await openDialog({
     title: 'Exercise completed!', icon: 'trophy', tone: 'success',
-    body: '<p>Congratulations! You have built the complete authorization model for ' + esc(X2.sector.label) + ': every item is in the right category and every relationship is correct.</p>' +
+    body: '<p>Congratulations! You have built the complete authorization model for the ' + esc(X2.sector.label) + ' sector: every item is in the right category and every relationship is correct.</p>' +
       '<div class="stats">' +
         '<div class="stat"><strong>' + S2.rels.length + '</strong><span>Correct relationships</span></div>' +
         '<div class="stat"><strong>' + x2ChainCount() + '</strong><span>Complete chains</span></div>' +
@@ -2716,7 +2721,7 @@ function x2RenderNotices() {
     html = '<div class="notice notice--correction" role="status">' + icon('link') + '<p><strong>' + esc(c.label) + '</strong> is selected. Click an item highlighted in green to connect it, or press <kbd>Esc</kbd> to cancel.</p>' +
       '<button class="btn btn--secondary btn--sm" type="button" data-x2="deselect" data-key="x2-deselect">Cancel</button></div>';
   } else if (S2.solved) {
-    html = '<div class="notice notice--success" role="status">' + icon('trophy') + '<p><strong>Well done!</strong> Your authorization model for ' + esc(X2.sector.label) + ' is complete and correct.</p></div>';
+    html = '<div class="notice notice--success" role="status">' + icon('trophy') + '<p><strong>Well done!</strong> Your authorization model for the ' + esc(X2.sector.label) + ' sector is complete and correct.</p></div>';
   } else if (Object.values(S2.marks).some(m => m === 'bad')) {
     html = '<div class="notice notice--warning" role="status">' + icon('alert') + '<p><strong>Some items are in the wrong category</strong> (red cross). Move them, then complete your relationships and check again.</p></div>';
   }

@@ -219,8 +219,8 @@ textes de ces messages se trouvent dans la constante `MSG` au début du script d
 
 ## 6. Exercice 2 – Profile and entitlement association
 
-Accès : page d'accueil → *Exercise 2* → choix du secteur (`#/exercise-2`). Seul **Wavestone** est
-disponible ; *Energy* et *Public sector* sont affichés « Coming soon ».
+Accès : page d'accueil → *Exercise 2* → choix du secteur (`#/exercise-2`). Seul **Consulting** est
+disponible ; *Energy* et *Healthcare* sont affichés « Coming soon ».
 
 ### Déroulé
 1. **Classer** les étiquettes du bandeau (ordre aléatoire) dans trois zones : *Who performs this
