@@ -9,7 +9,7 @@
  * Every card has a unique `id`. Relationships are checked with ids only,
  * never with labels (two cards may share the same label).
  *
- * To add a sector later (Energy, Public sector), fill in its `cards`,
+ * To add a sector later (Energy, Healthcare), fill in its `cards`,
  * `relations` and set `available: true`. No change to index.html needed.
  *
  * Card fields
@@ -28,10 +28,10 @@
 (function () {
   'use strict';
 
-  const SECTOR = 'wavestone';
+  const SECTOR = 'consulting';
   const card = (id, label, category) => ({ id, label, category, sector: SECTOR });
 
-  const wavestoneCards = [
+  const consultingCards = [
     /* ---------- Actors ---------- */
     card('a-hr-recruiting', 'HR Recruiting', 'actor'),
     card('a-marketing', 'Marketing', 'actor'),
@@ -92,7 +92,7 @@
 
   const link = (from, to) => ({ from, to });
 
-  const wavestoneRelations = [
+  const consultingRelations = [
     // HR Recruiting
     link('a-hr-recruiting', 'act-recruit'),
     link('act-recruit', 'r-sr-candidate-creation'),
@@ -168,14 +168,16 @@
 
     sectors: [
       {
-        id: 'wavestone',
-        label: 'Wavestone',
+        id: 'consulting',
+        aliases: ['wavestone'],   // old URL #/exercise-2/wavestone still works
+        label: 'Consulting',
         description: 'A consulting firm: HR, sales, IT and management teams, and the tools they use every day.',
         image: 'assets/wavestone-symbol.svg',
+        icon: 'briefcase',   // fallback if the image is removed
         available: true,
-        storageKey: 'cyberAcademy.iga.exercise2.wavestone.v1',
-        cards: wavestoneCards,
-        relations: wavestoneRelations,
+        storageKey: 'cyberAcademy.iga.exercise2.wavestone.v1',   // kept as is: preserves saved progress
+        cards: consultingCards,
+        relations: consultingRelations,
         interchangeableCards: [['r-ticketing-1', 'r-ticketing-2']]
       },
       {
@@ -188,10 +190,10 @@
         relations: []
       },
       {
-        id: 'public-sector',
-        label: 'Public sector',
-        description: 'A public administration: agents, citizen services and their applications.',
-        icon: 'building',
+        id: 'healthcare',
+        label: 'Healthcare',
+        description: 'A hospital: medical and administrative staff, patient services and their applications.',
+        icon: 'heartPulse',
         available: false,
         cards: [],
         relations: []
