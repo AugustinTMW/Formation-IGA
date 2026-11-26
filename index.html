@@ -180,7 +180,7 @@ button, input, select { font: inherit; color: inherit; }
   background: linear-gradient(110deg, var(--primary-800) 0%, var(--primary) 100%);
   color: #fff; padding: 18px 24px;
 }
-.instruction-inner { display: flex; gap: 16px; align-items: flex-start; max-width: 1600px; margin: 0 auto; }
+.instruction-inner { display: flex; gap: 16px; align-items: flex-start; margin: 0 auto; }
 .instruction-icon {
   width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,.14);
   display: grid; place-items: center; flex: none;
@@ -208,7 +208,7 @@ button, input, select { font: inherit; color: inherit; }
 
 .ex-layout {
   display: grid; grid-template-columns: minmax(0, 7fr) minmax(300px, 3fr); gap: 20px;
-  padding: 20px 24px 24px; max-width: 1600px; margin: 0 auto; align-items: start;
+  padding: 20px 24px 24px; margin: 0 auto; align-items: start;
 }
 .workspace { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
 .toolbar {
@@ -250,7 +250,7 @@ button, input, select { font: inherit; color: inherit; }
   position: relative; overflow: hidden; border-radius: var(--radius);
   border: 1px solid var(--line); background-color: #fcfcfe;
   background-image: radial-gradient(circle, #d4cfe2 1.1px, transparent 1.2px);
-  height: calc(100vh - var(--appbar-h) - 210px); min-height: 520px;
+  height: calc(100vh - var(--appbar-h) - 210px); min-height: 380px;   /* fallback: real height set by fitWorkspace() */
   touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab;
   box-shadow: inset 0 1px 3px rgba(29,22,48,.04);
 }
@@ -591,7 +591,7 @@ fieldset.field > legend { margin-bottom: 6px; }
 /* =====================================================================
    EXERCISE 2 – classification & relationships (reuses the tokens above)
    ===================================================================== */
-.x2-layout { max-width: 1600px; margin: 0 auto; padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 12px; }
+.x2-layout { margin: 0 auto; padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 12px; }
 .instruction-sector {
   display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 4px 6px 4px 4px; border-radius: 999px;
   background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); font-size: 13px; font-weight: 600; color: #fff;
@@ -609,13 +609,13 @@ fieldset.field > legend { margin-bottom: 6px; }
 .x2-tray-head h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 700; display: flex; align-items: center; gap: 8px; }
 .x2-tray-head .count { font-size: 12px; color: var(--primary-700); background: var(--primary-50); padding: 1px 8px; border-radius: 999px; }
 .x2-tray-head p { font-size: 13px; color: var(--muted); }
-.x2-tray-list { display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; max-height: 176px; overflow-y: auto; align-items: flex-start; padding: 4px 4px 8px 2px; }
+.x2-tray-list { display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px; max-height: clamp(92px, 16vh, 176px); overflow-y: auto; align-items: flex-start; padding: 4px 4px 8px 2px; }
 .x2-tray-empty { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; padding: 10px 4px; }
 .x2-tray-empty .ico { color: var(--success); }
 .x2-tray.is-drop-target { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-100); background: #fcfaff; }
 
 /* Canvas with the three category zones */
-.x2-canvas { height: calc(100vh - var(--appbar-h) - 250px); min-height: 560px; }
+.x2-canvas { height: calc(100vh - var(--appbar-h) - 250px); min-height: 380px; }
 .x2-cols { position: relative; display: grid; grid-template-columns: repeat(3, 320px); column-gap: 150px; align-items: start; padding: 0; }
 .x2-col {
   position: relative; background: var(--surface); border: 1px solid var(--line-2); border-radius: 16px; padding: 14px 14px 18px;
@@ -713,9 +713,7 @@ fieldset.field > legend { margin-bottom: 6px; }
 .x2-summary li strong { font-size: 20px; min-width: 34px; text-align: center; color: var(--primary-700); }
 .x2-summary li.is-good strong { color: var(--success); }
 .x2-summary li.is-bad strong { color: var(--danger); }
-.x2-help .tips ul { columns: 2; column-gap: 32px; display: block; }
-.x2-help .tips li { margin-bottom: 6px; break-inside: avoid; }
-@media (max-width: 900px) { .x2-help .tips ul { columns: 1; } }
+.x2-help-list { margin: 0; padding-left: 20px; display: grid; gap: 8px; color: var(--ink-2); }
 @media (max-width: 640px) { .x2-layout { padding: 16px; } .x2-canvas { height: 70vh; } }
 
 /* =====================================================================
@@ -935,7 +933,7 @@ function saveState() {
   try { localStorage.setItem(PART.storageKey, JSON.stringify(S)); } catch (e) { /* storage unavailable: keep working in memory */ }
 }
 let S = null;   // state of the current part (set when the part is opened)
-const UI = { mode: 'mine', correction: null, tipsOpen: false, relinkEdge: null };
+const UI = { mode: 'mine', correction: null, tipsOpen: false, relinkEdge: null, autoFit: true };
 
 /* =====================================================================
    4. CATALOG HELPERS
@@ -1810,7 +1808,8 @@ function mountExercise() {
   bindCanvas();
   main.querySelector('.exercise').addEventListener('click', onExerciseClick);
   renderExercise();
-  if (S.view) applyView(); else resetView();
+  watchWorkspace(); fitWorkspace();
+  UI.autoFit = true; fitView(undefined, 0.4);   // whole workflow visible when the part opens
 }
 /* Tabs "Part 1 / Part 2" displayed in the purple instruction banner. */
 function partTabs() { return '<nav class="part-tabs" id="part-tabs" aria-label="Parts of Exercise 1"></nav>'; }
@@ -2097,11 +2096,11 @@ function contentBox() {
   });
   return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
 }
-function fitView(maxOne) {
+function fitView(maxOne, minZ) {
   const b = contentBox(), r = canvasEl.getBoundingClientRect();
   const pad = 56;
   // Keep the text readable: below 55 % the view is aligned to the top and the participant can pan.
-  const z = clamp(Math.min((r.width - pad * 2) / b.w, (r.height - pad * 2 - 40) / b.h), 0.55, maxOne === false ? 1.2 : 1);
+  const z = clamp(Math.min((r.width - pad * 2) / b.w, (r.height - pad * 2 - 40) / b.h), minZ || 0.55, maxOne === false ? 1.2 : 1);
   applyView({ z, x: (r.width - b.w * z) / 2 - b.x * z, y: Math.max(pad / 2, (r.height - 40 - b.h * z) / 2) - b.y * z });
 }
 function resetView() {
@@ -2171,7 +2170,7 @@ function bindCanvas() {
     if (!drag.moved && (drag.kind === 'link' || drag.kind === 'relink')) startLink(drag);
     drag.moved = true;
     if (drag.kind === 'link' || drag.kind === 'relink') { updateLink(drag, ev); return; }
-    if (drag.kind === 'pan') { applyView({ z: view.z, x: drag.ox + dx, y: drag.oy + dy }); return; }
+    if (drag.kind === 'pan') { UI.autoFit = false; applyView({ z: view.z, x: drag.ox + dx, y: drag.oy + dy }); return; }
     const n = S.nodes[drag.id];
     n.x = snap(drag.ox + dx / view.z); n.y = snap(drag.oy + dy / view.z);
     drag.el.style.left = n.x + 'px'; drag.el.style.top = n.y + 'px';
@@ -2203,6 +2202,7 @@ function bindCanvas() {
   canvasEl.addEventListener('wheel', ev => {
     ev.preventDefault();
     const r = canvasEl.getBoundingClientRect();
+    UI.autoFit = false;
     if (ev.ctrlKey || ev.metaKey) zoomAt(Math.exp(-ev.deltaY * 0.0022), ev.clientX - r.left, ev.clientY - r.top);
     else applyView({ z: view.z, x: view.x - ev.deltaX, y: view.y - ev.deltaY });
   }, { passive: false });
@@ -2227,7 +2227,6 @@ function bindCanvas() {
   });
   document.addEventListener('pointerdown', ev => { if (transPop && !ev.target.closest('.trans-pop')) closeTransPop(true); }, true);
   edgesEl.addEventListener('click', ev => { const p = ev.target.closest('[data-edge-id]'); if (p) openEdgeModal(p.dataset.edgeId); });
-  window.addEventListener('resize', () => { if (inExercise() && canvasEl.isConnected) applyView(); });
 }
 /* ---------- Drawing arrows with the mouse ---------- */
 let transPop = null;
@@ -2384,10 +2383,10 @@ async function onExerciseClick(ev) {
     case 'edit': openActionModal({ mode: 'edit', nodeId: id }); break;
     case 'delete': deleteAction(id); break;
     case 'edge': openEdgeModal(b.dataset.edgeId); break;
-    case 'zoom-in': zoomAt(1.2); break;
-    case 'zoom-out': zoomAt(1 / 1.2); break;
-    case 'fit': fitView(); break;
-    case 'reset-view': resetView(); break;
+    case 'zoom-in': UI.autoFit = false; zoomAt(1.2); break;
+    case 'zoom-out': UI.autoFit = false; zoomAt(1 / 1.2); break;
+    case 'fit': UI.autoFit = true; fitView(undefined, 0.4); break;
+    case 'reset-view': UI.autoFit = false; resetView(); break;
     case 'arrange': {
       const pos = layeredLayout(S, sizeOf);
       Object.keys(pos).forEach(k => { S.nodes[k].x = pos[k].x; S.nodes[k].y = pos[k].y; });
@@ -2402,7 +2401,7 @@ async function onExerciseClick(ev) {
       const ok = await confirmDialog('Reset exercise', 'Are you sure you want to reset <strong>' + esc(PART.label + ' – ' + PART.title) + '</strong>? Your workflow, custom applications and attempts for this part will be deleted. The other part is not affected. This cannot be undone.', 'Reset exercise', 'danger');
       if (!ok) return;
       S = initialState(); UI.mode = 'mine'; UI.correction = null;
-      saveState(); renderExercise('tb:reset'); resetView();
+      saveState(); renderExercise('tb:reset'); UI.autoFit = true; fitView(undefined, 0.4);
       toast('The exercise has been reset.');
       break;
     }
@@ -2420,7 +2419,7 @@ const X2_FLOW = { actor: 'activity', activity: 'right' };   // allowed arrow dir
 const X2_CHECK_DELAY = 2800;                                // ms the green/red correction stays visible
 let X2 = null;   // { sector, byId, root, canvas, world, cols, rels, badges }
 let S2 = null;   // participant state of the current sector
-const UI2 = { selected: null, checking: false, evalCls: null, view: { x: 0, y: 0, z: 1 }, tipsOpen: false, resizeBound: false };
+const UI2 = { selected: null, checking: false, evalCls: null, view: { x: 0, y: 0, z: 1 }, tipsOpen: false, resizeBound: false, autoFit: true };
 
 const x2SectorById = id => EX2 && EX2.sectors.find(sc => sc.id === id || (sc.aliases || []).includes(id));
 const x2Cats = () => EX2.categories;
@@ -2669,22 +2668,14 @@ function x2Mount(sector) {
           '</div>' +
           '<div class="canvas-hint" aria-hidden="true">Drag the background to pan · <kbd>Ctrl</kbd> + scroll to zoom</div>' +
         '</div>' +
-        '<section class="panel-card x2-help"><details class="tips" id="x2-tips"' + (UI2.tipsOpen ? ' open' : '') + '><summary>' + icon('lightbulb') + 'How it works' + icon('chevronDown', 'chev') + '</summary><ul>' +
-          '<li><strong>Classify:</strong> drag each item from the top banner into one of the three categories. You can move it to another category, reorder it, or drag it back to the banner.</li>' +
-          '<li><strong>Connect:</strong> drag the round handle on the right of an item onto a compatible item, or click an item and then click one of the items highlighted in green.</li>' +
-          '<li>Allowed relationships: <strong>Actor → Activity</strong> and <strong>Activity → Fine-grained right</strong>. An item can have several relationships.</li>' +
-          '<li><strong>Remove a relationship:</strong> select one of its items (or hover the arrow) and click the red ×.</li>' +
-          '<li><strong>Check answer</strong> needs at least ' + EX2.minChains + ' complete chains Actor → Activity → Fine-grained right. Correct connections are kept, incorrect ones are removed; you can check as many times as you like.</li>' +
-          '<li>Keyboard: <kbd>Tab</kbd> to an item, <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to place it in a category, <kbd>0</kbd> to send it back to the banner, <kbd>Alt</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd> to reorder, <kbd>Enter</kbd> to select / connect, <kbd>Esc</kbd> to cancel.</li>' +
-        '</ul></details></section>' +
       '</div>' +
     '</div>';
   X2.root = $('#x2-root'); X2.canvas = $('#x2-canvas'); X2.world = $('#x2-world');
   X2.cols = $('#x2-cols'); X2.rels = $('#x2-rel-paths'); X2.link = $('#x2-link-layer'); X2.badges = $('#x2-badges');
-  $('#x2-tips').addEventListener('toggle', e => { UI2.tipsOpen = e.target.open; });
   x2Bind();
   x2Render();
-  if (S2.view) x2ApplyView(S2.view); else x2ResetView();
+  watchWorkspace(); fitWorkspace();
+  UI2.autoFit = true; x2FitView();   // the three categories fully visible when the exercise opens
 }
 function x2Markers() {
   return [['def', '#6b5bb5'], ['verified', '#1f9d55'], ['sel', '#5221b5'], ['ok', '#16a34a'], ['bad', '#dc2626'], ['link', '#5221b5']].map(([k, c]) =>
@@ -2707,7 +2698,8 @@ function x2RenderToolbar() {
     counterIcon: 'link',
     counterTitle: 'Complete chains Actor → Activity → Fine-grained right',
     counterHTML: '<strong>' + chains + '</strong> complete relationship' + (chains > 1 ? 's' : ''),
-    extraHTML: '<span class="counter" title="Items still to classify">' + icon('layers') + '<span><strong>' + left + '</strong> item' + (left > 1 ? 's' : '') + ' to classify</span></span>',
+    extraHTML: '<span class="counter" title="Items still to classify">' + icon('layers') + '<span><strong>' + left + '</strong> item' + (left > 1 ? 's' : '') + ' to classify</span></span>' +
+      '<button class="btn btn--ghost btn--sm" type="button" data-x2="help" data-key="x2-help">' + icon('lightbulb') + 'How it works</button>',
     checkEnabled: chains >= min,
     busy: UI2.checking,
     hint: 'Create at least ' + min + ' complete relationships to check your answer (' + Math.min(chains, min) + '/' + min + ')'
@@ -2823,9 +2815,11 @@ function x2ApplyView(v) {
   clearTimeout(x2ViewTimer); x2ViewTimer = setTimeout(x2Save, 300);
 }
 function x2Content() { return { w: X2.cols.offsetWidth, h: X2.cols.offsetHeight }; }
-function x2FitView() {
+/* minZ: lowest zoom accepted. Automatic fit keeps the text readable (50 %, the
+   view is then aligned to the top); the Focus button shows everything. */
+function x2FitView(minZ) {
   const b = x2Content(), r = X2.canvas.getBoundingClientRect(), pad = 40;
-  const z = clamp(Math.min((r.width - pad * 2) / b.w, (r.height - pad * 2 - 50) / b.h), 0.35, 1);
+  const z = clamp(Math.min((r.width - pad * 2) / b.w, (r.height - pad * 2 - 50) / b.h), minZ || 0.5, 1);
   x2ApplyView({ z, x: (r.width - b.w * z) / 2, y: pad });
 }
 function x2ResetView() {
@@ -3019,7 +3013,7 @@ function x2Bind() {
         X2.canvas.classList.add('is-linking');
       }
     }
-    if (drag.kind === 'pan') { x2ApplyView({ z: UI2.view.z, x: drag.ox + dx, y: drag.oy + dy }); return; }
+    if (drag.kind === 'pan') { UI2.autoFit = false; x2ApplyView({ z: UI2.view.z, x: drag.ox + dx, y: drag.oy + dy }); return; }
     if (drag.kind === 'card') {
       drag.ghost.style.left = (ev.clientX - drag.ox) + 'px';
       drag.ghost.style.top = (ev.clientY - drag.oy) + 'px';
@@ -3065,6 +3059,7 @@ function x2Bind() {
   X2.canvas.addEventListener('wheel', ev => {
     ev.preventDefault();
     const r = X2.canvas.getBoundingClientRect();
+    UI2.autoFit = false;
     if (ev.ctrlKey || ev.metaKey) x2ZoomAt(Math.exp(-ev.deltaY * 0.0022), ev.clientX - r.left, ev.clientY - r.top);
     else x2ApplyView({ z: UI2.view.z, x: UI2.view.x - ev.deltaX, y: UI2.view.y - ev.deltaY });
   }, { passive: false });
@@ -3079,18 +3074,19 @@ function x2Bind() {
     const b = ev.target.closest('[data-x2], [data-act]');
     if (!b || b.disabled) return;
     switch (b.dataset.x2 || b.dataset.act) {
-      case 'zoom-in': x2ZoomAt(1.2); break;
-      case 'zoom-out': x2ZoomAt(1 / 1.2); break;
-      case 'fit': x2FitView(); break;
-      case 'reset-view': x2ResetView(); break;
+      case 'zoom-in': UI2.autoFit = false; x2ZoomAt(1.2); break;
+      case 'zoom-out': UI2.autoFit = false; x2ZoomAt(1 / 1.2); break;
+      case 'fit': UI2.autoFit = false; x2FitView(0.3); break;
+      case 'reset-view': UI2.autoFit = false; x2ResetView(); break;
       case 'arrange': if (!UI2.checking) x2Tidy(); break;
       case 'deselect': UI2.selected = null; x2Render(); break;
+      case 'help': x2ShowHelp(); break;
       case 'check': x2Check(); break;
       case 'reset': {
         const ok = await confirmDialog('Reset exercise', 'Are you sure you want to reset <strong>Exercise 2 – ' + esc(X2.sector.label) + '</strong>? Your classification and all the relationships you created will be deleted. This cannot be undone.', 'Reset exercise', 'danger');
         if (!ok) return;
         S2 = x2Initial(X2.sector); UI2.selected = null;
-        x2Save(); x2Render('tb:reset'); x2ResetView();
+        x2Save(); x2Render('tb:reset'); UI2.autoFit = true; x2FitView();
         toast('The exercise has been reset.');
         break;
       }
@@ -3128,10 +3124,21 @@ function x2Bind() {
       ev.preventDefault(); x2Activate(id);
     }
   });
-  if (!UI2.resizeBound) {
-    UI2.resizeBound = true;
-    window.addEventListener('resize', () => { if (X2 && X2.root && X2.root.isConnected) { x2ApplyView(); x2DrawRels(); } });
-  }
+}
+function x2ShowHelp() {
+  openDialog({
+    title: 'How it works', icon: 'lightbulb', size: 'lg',
+    body: '<ul class="x2-help-list">' +
+      '<li><strong>Classify:</strong> drag each item from the top banner into one of the three categories. You can move it to another category, reorder it, or drag it back to the banner.</li>' +
+      '<li><strong>Connect:</strong> drag the round handle on the right of an item onto a compatible item, or click an item and then click one of the items highlighted in green.</li>' +
+      '<li>Allowed relationships: <strong>Actor → Activity</strong> and <strong>Activity → Fine-grained right</strong>. An item can have several relationships.</li>' +
+      '<li><strong>Remove a relationship:</strong> select one of its items (or hover the arrow) and click the red ×.</li>' +
+      '<li><strong>Check answer</strong> needs at least ' + EX2.minChains + ' complete chains Actor → Activity → Fine-grained right. Correct connections are kept, incorrect ones are removed; you can check as many times as you like.</li>' +
+      '<li><strong>View:</strong> zoom in and out, <strong>Focus</strong> to see everything, <strong>Reset view</strong> to go back to 100 %, <strong>Tidy up</strong> to reorder the items and limit crossing arrows.</li>' +
+      '<li>Keyboard: <kbd>Tab</kbd> to an item, <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to place it in a category, <kbd>0</kbd> to send it back to the banner, <kbd>Alt</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd> to reorder, <kbd>Enter</kbd> to select / connect, <kbd>Esc</kbd> to cancel.</li>' +
+      '</ul>',
+    actions: [{ label: 'Got it', variant: 'primary', submit: true }]
+  });
 }
 /** Click / Enter on a card: select it, or connect it to the selected card. */
 function x2Activate(id) {
@@ -3149,6 +3156,48 @@ function x2Activate(id) {
   }
   UI2.selected = id; x2Render('card:' + id);
 }
+
+/* =====================================================================
+   17b. WORKSPACE SIZE – the canvas fills the screen below the top part
+   (app bar, instruction banner, action bar, notices, Exercise 2 banner)
+   so that the whole work area and its controls are visible without
+   scrolling. Shared by Exercise 1 (both parts) and Exercise 2.
+   ===================================================================== */
+const WS_MARGIN = 16, WS_MIN = 380;
+function fitWorkspace() {
+  const canvas = $('#canvas') || $('#x2-canvas');
+  if (!canvas || !canvas.isConnected) return false;
+  // side panel first (Exercise 1): it must not push the page down
+  const panel = $('#panel');
+  if (panel) {
+    if (window.matchMedia('(max-width: 1100px)').matches) panel.style.maxHeight = '';
+    else {
+      const pt = panel.getBoundingClientRect().top + window.scrollY;
+      panel.style.maxHeight = Math.max(WS_MIN, Math.floor(window.innerHeight - pt - 24)) + 'px';
+    }
+  }
+  const before = canvas.offsetHeight;
+  const cr = canvas.getBoundingClientRect();
+  const top = cr.top + window.scrollY;
+  // space used under the canvas inside the page (layout padding, panels below it…)
+  const below = Math.max(WS_MARGIN, ($('#main').getBoundingClientRect().bottom - cr.bottom));
+  canvas.style.height = Math.max(WS_MIN, Math.floor(window.innerHeight - top - below)) + 'px';
+  return canvas.offsetHeight !== before;
+}
+/* Recompute when something above the canvas changes height (notice, long
+   instruction, wrapped toolbar…). The view itself is only re-fitted on a
+   window resize, so the content does not jump when a notice appears. */
+const wsObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => requestAnimationFrame(fitWorkspace)) : null;
+function watchWorkspace() {
+  if (!wsObserver) return;
+  wsObserver.disconnect();
+  ['.instruction', '#toolbar', '#notices', '#x2-tray', '#panel'].forEach(sel => { const el = $(sel); if (el) wsObserver.observe(el); });
+}
+window.addEventListener('resize', () => {
+  fitWorkspace();
+  if (inExercise() && canvasEl && canvasEl.isConnected) { if (UI.autoFit) fitView(undefined, 0.4); else applyView(); }
+  if (X2 && X2.root && X2.root.isConnected) { if (UI2.autoFit) x2FitView(); else x2ApplyView(); x2DrawRels(); }
+});
 
 /* =====================================================================
    17. BOOT

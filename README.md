@@ -195,6 +195,17 @@ textes de ces messages se trouvent dans la constante `MSG` au début du script d
 
 ## 5. Accessibilité et ergonomie
 
+- **Zone de travail ajustée à l'écran :** dans l'exercice 1 (deux parties) et l'exercice 2, la zone de
+  travail prend toute la largeur et la hauteur restante sous la partie haute (en-tête, consigne, barre
+  d'actions, messages, bandeau d'étiquettes), contrôles de zoom compris, sans défilement de la page.
+  Elle se recalcule quand la fenêtre change de taille ou qu'un message apparaît (`fitWorkspace()`).
+  En dessous d'environ 380 px disponibles (petits écrans, téléphone), une hauteur minimale est gardée et
+  la page défile.
+- **Ajustement du contenu à l'ouverture :** le workflow (exercice 1) ou les trois catégories
+  (exercice 2) sont zoomés pour tenir dans la zone (au minimum 40 % pour l'exercice 1, 50 % pour
+  l'exercice 2 afin de rester lisible). *Focus* montre tout le contenu ; dès que l'on zoome ou déplace
+  la vue, elle n'est plus réajustée automatiquement au redimensionnement.
+
 - **Fenêtre d'action :** elle ne contient que le nom, le doer et l'application. L'étape précédente
   et le type de transition se choisissent sur la flèche : en la traçant, via « Add an action » (petit
   menu Manual / Automatic avant la fenêtre), en cliquant sur son étiquette ou en déplaçant son bout.
