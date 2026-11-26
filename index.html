@@ -259,7 +259,7 @@ button, input, select { font: inherit; color: inherit; }
 .world { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
 .edges { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; pointer-events: none; }
 .edges .edge-hit { pointer-events: stroke; cursor: pointer; }
-.edges path.edge { fill: none; stroke-width: 2.4; }
+.edges path.edge { fill: none; stroke-width: 2.4; stroke-linejoin: miter; stroke-linecap: butt; }
 .edge--manual { stroke: var(--manual); }
 .edge--automatic { stroke: var(--auto); }
 .edge--unknown { stroke: #8f8aa3; stroke-dasharray: 6 5; }
@@ -2018,6 +2018,17 @@ function portHTML(n, name) {
     ' aria-label="Add a connection from ' + esc(name) + '. Drag onto another step, or press Enter to choose"' +
     ' title="Drag to another step to draw an arrow (or into empty space to create a new action). Click to choose from a list.">' + icon('plus') + '</button>';
 }
+/** Polyline with right angles; the label goes in the middle of the longest vertical segment. */
+function orthoPath(pts) {
+  const d = 'M' + pts.map(p => Math.round(p[0] * 2) / 2 + ',' + Math.round(p[1] * 2) / 2).join(' L');
+  let best = null, len = -1;
+  for (let i = 1; i < pts.length; i++) {
+    const [x1, y1] = pts[i - 1], [x2, y2] = pts[i];
+    const l = Math.abs(y2 - y1) + (x1 === x2 ? 0 : Math.abs(x2 - x1) * 0.5);   // prefer vertical segments
+    if (l > len) { len = l; best = { x: (x1 + x2) / 2, y: (y1 + y2) / 2 }; }
+  }
+  return { d, mid: best || { x: pts[0][0], y: pts[0][1] } };
+}
 function edgeGeometry(e, g) {
   const a = g.nodes[e.from], b = g.nodes[e.to];
   if (!a || !b) return null;
@@ -2032,18 +2043,24 @@ function edgeGeometry(e, g) {
   const ins = inEdges(b.id, g).slice().sort((p, q) => cx(g.nodes[p.from]) - cx(g.nodes[q.from]));
   const j = ins.indexOf(e), m = ins.length;
   const tx = b.x + sb.w * (j + 1) / (m + 1), ty = b.y - 2;
-  let d, mid;
+  // Straight arrows with right angles (orthogonal routing).
+  let pts;
   if (ty - sy > 40) {
-    const dy = Math.max(36, (ty - sy) / 2);
-    d = 'M' + sx + ',' + sy + ' C' + sx + ',' + (sy + dy) + ' ' + tx + ',' + (ty - dy) + ' ' + tx + ',' + ty;
-    mid = { x: (sx + 3 * sx + 3 * tx + tx) / 8, y: (sy + 3 * (sy + dy) + 3 * (ty - dy) + ty) / 8 };
+    if (Math.abs(sx - tx) < 2) pts = [[sx, sy], [sx, ty]];
+    else {
+      // Fan-out (several arrows leaving the source): turn close to the source.
+      // Merge (several arrows entering the target): turn close to the target.
+      const turn = Math.min(32, (ty - sy) / 2);
+      const midY = k > 1 ? sy + turn : m > 1 ? ty - turn : (sy + ty) / 2;
+      pts = [[sx, sy], [sx, midY], [tx, midY], [tx, ty]];
+    }
   } else {
     // Target above (or level with) the source: route around on the right.
     const ox = Math.max(a.x + sa.w, b.x + sb.w) + 48;
     const y1 = sy + 24, y2 = ty - 24;
-    d = 'M' + sx + ',' + sy + ' L' + sx + ',' + y1 + ' L' + ox + ',' + y1 + ' L' + ox + ',' + y2 + ' L' + tx + ',' + y2 + ' L' + tx + ',' + ty;
-    mid = { x: ox, y: (y1 + y2) / 2 };
+    pts = [[sx, sy], [sx, y1], [ox, y1], [ox, y2], [tx, y2], [tx, ty]];
   }
+  const { d, mid } = orthoPath(pts);
   return { d, mid, sx, sy, tx, ty };
 }
 function renderEdges() {
@@ -2284,8 +2301,8 @@ function updateLink(d, ev) {
   d.tip.textContent = tip;
   d.tip.className = 'link-tip ' + cls;
   d.tip.style.left = p.cx + 'px'; d.tip.style.top = p.cy + 'px';
-  const dy = Math.max(30, Math.abs(p.y - s0.y) / 2);
-  $('#link-layer').innerHTML = '<path class="link-preview' + (cls === 'is-bad' ? ' is-bad' : '') + '" d="M' + s0.x + ',' + s0.y + ' C' + s0.x + ',' + (s0.y + dy) + ' ' + p.x + ',' + (p.y - dy) + ' ' + p.x + ',' + p.y + '"/>';
+  const midY = p.y > s0.y + 30 ? (s0.y + p.y) / 2 : s0.y + 24;
+  $('#link-layer').innerHTML = '<path class="link-preview' + (cls === 'is-bad' ? ' is-bad' : '') + '" d="' + orthoPath([[s0.x, s0.y], [s0.x, midY], [p.x, midY], [p.x, p.y]]).d + '"/>';
 }
 function clearLinkVisuals(d, keepPreview) {
   canvasEl.classList.remove('is-linking');
