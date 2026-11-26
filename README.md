@@ -107,10 +107,9 @@ uniquement la partie affichée.
 
 ### Fin de l'exercice
 
-- Partie correcte : fenêtre « Congratulations! » propre à la partie, avec un bouton vers la partie
-  restante si elle n'est pas encore réussie.
-- Les deux parties correctes : fenêtre « Exercise completed! » (Employee Arrival / Employee
-  Departure – Completed), avec « Review exercise » et « Back to home » (bouton principal).
+- « Check answer » ouvre la comparaison avec la proposition de correction (voir §4). Une partie
+  vérifiée est marquée comme terminée dans les onglets et sur la page d'accueil.
+- Part 1 → « Continue to Part 2 » ; Part 2 → « Back to Home ».
 - La carte de l'exercice 1 sur la page d'accueil affiche l'avancement de chaque partie, et
   « Start exercise » ouvre la première partie non terminée.
 
@@ -143,55 +142,47 @@ Pour en ajouter une, insérer son tracé SVG (24×24) dans l'objet `ICONS` de `i
 > Les `id` sont utilisés par `correction.js`. On peut modifier un libellé librement, mais un `id`
 > modifié doit aussi l'être dans la correction.
 
-## 4. Configurer la correction attendue
+## 4. Correction de l'exercice 1 – proposition de correction
 
-La correction se configure dans **`correction.js`**, qui contient deux solutions indépendantes :
+Il n'existe pas une réponse unique : chaque partie est comparée à **une proposition de correction**
+(`correction.js` : `employeeArrivalSolution` et `employeeDepartureSolution`, issues des slides de la
+formation).
 
-- `employeeArrivalSolution` – Part 1 ;
-- `employeeDepartureSolution` – Part 2.
+### Déroulé
+1. « Check answer » reste désactivé tant que la checklist structurelle n'est pas complète.
+2. Au clic, la page affiche **côte à côte** « Your answer » (le workflow du participant, inchangé) et
+   « Proposed correction », dans le même style de cartes, avec le message *« This is one possible
+   solution. Other workflows may also be valid if they follow a coherent business logic. »*
+3. Les boutons de la barre d'actions deviennent :
+   - Part 1 : **Edit my workflow** et **Continue to Part 2** ;
+   - Part 2 : **Edit my workflow** et **Back to Home**.
+   « Edit my workflow » revient à l'édition ; on peut corriger puis relancer « Check answer ».
 
-Les deux ont exactement la même structure (décrite ci-dessous). Elles contiennent volontairement des
-valeurs **TODO** : aucune correction métier n'est intégrée au code.
+### Comparaison
+- Chaque action du participant est rapprochée de l'étape de la proposition qui a le **même sens**
+  (couple numéroté n°1, n°2… des deux côtés). Les libellés sont comparés par concepts : synonymes,
+  anglais / français, formulations plus ou moins détaillées (ex. *Disable Active Directory account* ≈
+  *Deactivate AD account* ; *Send departure notification to employee* ≈ *Notifier l'employé de son
+  départ*). Le lexique est la constante `SEMANTIC_LEXICON` de `index.html` (on peut y ajouter des
+  mots) ; `acceptedVariants` et `keywords` dans `correction.js` complètent la reconnaissance.
+- Une fois le couple trouvé, **Action**, **Doer** et **Application** sont comparés séparément :
+  - **vert** : cohérent / équivalent à la proposition ;
+  - **orange** : différent de la proposition (l'info-bulle indique la valeur de l'autre côté) ;
+  - **cadre orange en pointillés** : action absente de la proposition (« Not in the proposed
+    correction ») ou étape de la proposition non retrouvée (« Potentially missing from your workflow »).
+  Pas de rouge : la proposition n'est pas une correction absolue.
+- Un résumé indique le nombre d'actions cohérentes, avec différences, potentiellement manquantes et
+  hors proposition.
+- Réglages (`matching` dans `correction.js`) : `threshold` (similarité minimale, 0,5) et
+  `thresholdWithSameApp` (seuil plus bas si l'application est la même, 0,3).
 
-Tant qu'une étape porte `todo: true`, le bouton « Check answer » vérifie uniquement la **structure**
-du workflow et indique au participant que la correction n'est pas encore configurée.
-
-Pour chaque étape :
-
-| Champ | Description |
-|---|---|
-| `id` | Identifiant unique, utilisé par `parent`. |
-| `name` | Libellé de référence. |
-| `acceptedVariants` | Autres formulations acceptées. |
-| `keywords` | Facultatif. Groupes de synonymes : si l'intitulé contient un mot de chaque groupe, il est accepté. Ex. `[['create','provision'],['account']]`. |
-| `doer` | `id` du doer attendu (ou tableau d'`id`, ou `null` pour ne pas vérifier). |
-| `application` | `id` de l'application attendue (ou tableau, ou `null`). |
-| `transition` | Type de la flèche **entrante** : `'manual'` ou `'automatic'`. |
-| `parent` | `'START'`, `'AND'` ou l'`id` de l'étape précédente. |
-| `position` | `'before-and'` ou `'after-and'`. |
-| `transitionToEnd` | Facultatif, pour la dernière étape d'une branche : type de la flèche vers END. |
-
-Autres réglages :
-
-- `maxAttemptsBeforeCorrection` : nombre de tentatives avant d'afficher « Show correction » (3 par défaut).
-- `andNode.parent` / `andNode.transition` : étape qui mène au nœud AND et type de la flèche.
-- `nameMatching.threshold` : seuil de similarité (0 à 1, 0,72 par défaut).
-- `nameMatching.ignoredWords` : mots ignorés lors de la comparaison.
-
-### Comparaison des libellés
-
-Les libellés sont comparés après normalisation : majuscules/minuscules, accents, ponctuation et
-espaces superflus ignorés, mots vides retirés, pluriels et formes en *-ed/-ing* rapprochés. Le score
-combine la similarité par mots (tolérante aux fautes de frappe) et la distance d'édition sur la phrase
-entière. Le nom est accepté si ce score atteint le seuil, s'il correspond exactement à une variante, ou
-si les mots-clés configurés sont tous présents.
-
-### Retours affichés au participant
-
-En cas de réponse partiellement correcte, le participant reçoit des messages génériques (action
-manquante, doer, application, type de transition, branche AND incomplète, action non reliée à END…),
-et les actions concernées sont surlignées en orange, **sans que la bonne réponse soit révélée**. Les
-textes de ces messages se trouvent dans la constante `MSG` au début du script de `index.html`.
+### Modifier la proposition
+Chaque étape : `name`, `acceptedVariants`, `keywords`, `doer`, `application` (identifiant, tableau,
+ou libellé d'une application ajoutée avec « Other »), `transition` (`null` si la slide ne montre pas
+de flèche), `parent` (`'START'`, `'AND'`, un identifiant ou un tableau d'identifiants), `position`,
+`transitionToEnd`, `note` (minuteries, période de grâce…). `notes` affiche des remarques au-dessus de
+la proposition (ex. réactivation de l'identité pendant la période de grâce, boucle non représentable
+dans le workflow).
 
 ## 5. Accessibilité et ergonomie
 

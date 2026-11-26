@@ -718,6 +718,65 @@ fieldset.field > legend { margin-bottom: 6px; }
 .x2-help-list { margin: 0; padding-left: 20px; display: grid; gap: 8px; color: var(--ink-2); }
 @media (max-width: 640px) { .x2-layout { padding: 16px; } .x2-canvas { height: 70vh; } }
 
+
+/* =====================================================================
+   EXERCISE 1 – COMPARISON WITH THE PROPOSED CORRECTION
+   ===================================================================== */
+.ex-layout.is-comparing { grid-template-columns: minmax(0, 1fr); }
+.ex-layout.is-comparing .panel, .ex-layout.is-comparing #canvas { display: none; }
+.compare { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.cmp-summary {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 10px 14px; box-shadow: var(--shadow-sm); font-size: 13px; color: var(--ink-2);
+}
+.cmp-summary strong { color: var(--ink); }
+.cmp-chips, .cmp-legend { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.cmp-legend { margin-left: auto; color: var(--muted); }
+.cmp-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 1.5px solid transparent; }
+.cmp-chip .ico { width: 14px; height: 14px; }
+.cmp-chip--ok { background: var(--success-bg); color: var(--success); }
+.cmp-chip--diff { background: #fff1dc; color: #8a4b00; }
+.cmp-chip--missing { background: #fff; color: #8a4b00; border-style: dashed; border-color: #e8a33d; }
+.cmp-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.cmp-pane { display: flex; flex-direction: column; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+.cmp-pane--ref { border-color: #d6c4f7; }
+.cmp-head { padding: 12px 16px; border-bottom: 1px solid var(--line); display: grid; gap: 2px; }
+.cmp-pane--ref .cmp-head { background: var(--primary-50); }
+.cmp-head h2 { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.cmp-head h2 .ico { width: 18px; height: 18px; color: var(--primary); }
+.cmp-head p { font-size: 13px; color: var(--ink-2); }
+.cmp-head .cmp-note { font-size: 12.5px; color: var(--muted); display: flex; gap: 6px; align-items: flex-start; margin-top: 4px; }
+.cmp-head .cmp-note .ico { width: 14px; height: 14px; margin-top: 2px; flex: none; }
+.cmp-body {
+  position: relative; overflow: auto; height: 520px; background-color: #fcfcfe;
+  background-image: radial-gradient(circle, #d4cfe2 1.1px, transparent 1.2px); background-size: 20px 20px;
+}
+.cmp-sizer { position: relative; }
+.cmp-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.cmp-world .node, .cmp-world .node--action { cursor: default; }
+.cmp-f { position: relative; }
+.card-title.cmp-f { display: flex; gap: 6px; align-items: flex-start; }
+.card-title.cmp-f .cmp-text { flex: 1; }
+.card-meta li.cmp-f { border-radius: 6px; padding: 2px 4px; margin: 0 -4px; }
+.cmp-ok { background: #e7f6ec; }
+.cmp-diff { background: #fff1dc; }
+.cmp-mark { flex: none; display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; margin-left: auto; }
+.cmp-mark .ico { width: 11px; height: 11px; stroke-width: 3; }
+.cmp-mark--ok { background: var(--success); color: #fff; }
+.cmp-mark--diff { background: #e8a33d; color: #fff; }
+.cmp-card--ok .card { border-color: #86cfa0; box-shadow: 0 0 0 2px #d3f0dc, var(--shadow); }
+.cmp-card--partial .card { border-color: #f0b25a; box-shadow: 0 0 0 2px #ffe7c2, var(--shadow); }
+.cmp-card--extra .card, .cmp-card--missing .card { border: 2px dashed #e8a33d; box-shadow: none; }
+.cmp-card--missing .card { background: #fffaf2; }
+.cmp-num {
+  position: absolute; top: -11px; left: -11px; z-index: 6; min-width: 24px; height: 24px; border-radius: 999px; padding: 0 6px;
+  background: var(--primary); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; box-shadow: var(--shadow-sm);
+}
+.card-status--diff { background: #fff4e0; color: #7a3a04; border-color: #f6d29e; }
+.card-note { display: flex; gap: 6px; align-items: center; padding: 6px 12px; font-size: 12px; color: var(--muted); border-top: 1px solid #efedf4; background: #fbfafd; }
+.card-note .ico { width: 13px; height: 13px; }
+@media (max-width: 900px) { .cmp-grid { grid-template-columns: minmax(0, 1fr); } .cmp-legend { margin-left: 0; } }
+
 /* =====================================================================
    RESPONSIVE
    ===================================================================== */
@@ -1155,6 +1214,245 @@ function grade() {
   return { correct, nodeIssues, globals, a2s, s2a, stepState };
 }
 
+
+/* =====================================================================
+   6b. SEMANTIC COMPARISON WITH THE PROPOSED CORRECTION
+   There is no single exact answer: the participant's workflow is compared
+   with ONE proposed workflow, by meaning. Wordings are reduced to
+   "concepts" (English / French synonyms, business verbs, systems), then
+   compared; doer and application are compared separately.
+   ===================================================================== */
+const SEMANTIC_LEXICON = {
+  // Business verbs
+  CREATE: ['create', 'creation', 'created', 'creates', 'creating', 'provision', 'provisioning', 'provisioned', 'generate', 'generated', 'generation', 'setup', 'open', 'opening', 'add', 'added', 'make', 'build', 'issue', 'issued', 'créer', 'creer', 'création', 'crée', 'cree', 'créé', 'générer', 'generer', 'génération', 'généré', 'ouvrir', 'ouverture', 'ajouter', 'ajout', 'provisionner', 'provisionnement', 'fabriquer'],
+  DISABLE: ['disable', 'disabled', 'disabling', 'deactivate', 'deactivated', 'deactivation', 'suspend', 'suspended', 'suspension', 'block', 'blocked', 'lock', 'locked', 'close', 'closed', 'closure', 'désactiver', 'desactiver', 'désactivé', 'desactive', 'désactivation', 'desactivation', 'bloquer', 'bloqué', 'suspendre', 'verrouiller', 'fermer', 'fermeture', 'clôturer', 'cloturer'],
+  DELETE: ['delete', 'deleted', 'deletion', 'remove', 'removed', 'removal', 'erase', 'purge', 'purged', 'revoke', 'revoked', 'revocation', 'withdraw', 'withdrawn', 'supprimer', 'suppression', 'supprimé', 'supprime', 'effacer', 'retirer', 'retrait', 'révoquer', 'revoquer', 'révocation', 'purger'],
+  REACTIVATE: ['reactivate', 'reactivated', 'reactivation', 'restore', 'restored', 'réactiver', 'reactiver', 'réactivation', 'restaurer'],
+  NOTIFY: ['notify', 'notified', 'notification', 'inform', 'informed', 'information', 'alert', 'alerted', 'warn', 'warned', 'send', 'sent', 'sending', 'message', 'notifier', 'notifié', 'informer', 'prévenir', 'prevenir', 'avertir', 'envoyer', 'envoi', 'alerter'],
+  ENTER: ['enter', 'entered', 'entry', 'input', 'register', 'registered', 'registration', 'record', 'recorded', 'fill', 'filled', 'set', 'encode', 'encoded', 'declare', 'declared', 'saisir', 'saisi', 'saisie', 'enregistrer', 'enregistré', 'enregistrement', 'renseigner', 'renseigné', 'inscrire', 'inscrit', 'encoder', 'déclarer', 'declarer'],
+  GET: ['get', 'gets', 'got', 'retrieve', 'retrieved', 'fetch', 'fetched', 'collect', 'collected', 'import', 'imported', 'sync', 'synchronize', 'synchronise', 'synchronized', 'synchronization', 'detect', 'detected', 'receive', 'received', 'récupérer', 'recuperer', 'récupération', 'importer', 'synchroniser', 'synchronisation', 'détecter', 'detecter', 'recevoir', 'remonter', 'remontée'],
+  VERIFY: ['verify', 'verified', 'verification', 'check', 'checked', 'checking', 'control', 'controlled', 'validate', 'validated', 'validation', 'namesake', 'namesakes', 'homonym', 'homonyms', 'duplicate', 'duplicates', 'unique', 'uniqueness', 'vérifier', 'verifier', 'vérification', 'contrôler', 'controler', 'contrôle', 'controle', 'valider', 'homonyme', 'homonymie', 'doublon', 'unicité', 'unicite'],
+  REACH: ['reach', 'reached', 'reaching', 'due', 'expire', 'expired', 'expiration', 'atteindre', 'atteint', 'atteinte', 'échéance', 'echeance'],
+  // People
+  EMPLOYEE: ['employee', 'user', 'staff', 'worker', 'beneficiary', 'person', 'collaborator', 'member', 'employé', 'employe', 'salarié', 'salarie', 'bénéficiaire', 'beneficiaire', 'collaborateur', 'utilisateur', 'agent', 'personne'],
+  NEWCOMER: ['newcomer', 'joiner', 'hire', 'recruit', 'arrivant', 'recrue', 'embauché'],
+  MANAGER: ['manager', 'supervisor', 'boss', 'hierarchy', 'responsable', 'chef', 'hiérarchie', 'hierarchie', 'encadrant'],
+  // Objects
+  ACCOUNT: ['account', 'login', 'compte', 'identifiant'],
+  IDENTITY: ['identity', 'identité', 'identite'],
+  PROFILE: ['profile', 'file', 'profil', 'dossier', 'fiche'],
+  RIGHTS: ['right', 'rights', 'access', 'accesses', 'entitlement', 'permission', 'privilege', 'authorization', 'authorisation', 'habilitation', 'droit', 'droits', 'accès', 'acces', 'autorisation', 'group', 'groupe'],
+  DATE: ['date', 'day', 'deadline', 'jour', 'enddate'],
+  DEPARTURE: ['departure', 'leave', 'leaving', 'left', 'exit', 'offboarding', 'termination', 'end', 'départ', 'depart', 'sortie', 'fin', 'quitter'],
+  ARRIVAL: ['arrival', 'joining', 'onboarding', 'start', 'arrivée', 'arrivee', 'embauche', 'entrée', 'entree', 'intégration', 'integration'],
+  NAMING: ['template', 'format', 'rule', 'convention', 'lastname', 'firstname', 'name', 'nom', 'prénom', 'prenom', 'modèle', 'modele', 'pattern'],
+  // Systems
+  AD: ['ad', 'activedirectory', 'annuaire', 'ldap', 'directory'],
+  AZURE: ['azure', 'entra', 'aad', 'azuread', 'entraid', 'cloud'],
+  O365: ['office', '365', 'office365', 'o365', 'm365', 'microsoft365', 'teams', 'exchange'],
+  MAIL: ['email', 'mail', 'address', 'adresse', 'courriel', 'outlook', 'messagerie', 'mailbox'],
+  BADGE: ['badge', 'card', 'premises', 'building', 'physical', 'door', 'carte', 'locaux', 'bâtiment', 'batiment', 'porte'],
+  IGA: ['iga', 'iam', 'igatool', 'governance', 'gouvernance'],
+  SIRH: ['sirh', 'hris', 'sap', 'wavekeeper', 'workday', 'hrsource', 'payroll', 'paie'],
+  HR: ['hr', 'rh', 'humanresources']
+};
+const SEMANTIC_PHRASES = [
+  ['azure active directory', 'azuread'], ['active directory', 'activedirectory'], ['azure ad', 'azuread'], ['entra id', 'entraid'],
+  ['office 365', 'office365'], ['microsoft 365', 'microsoft365'], ['human resources', 'humanresources'], ['ressources humaines', 'humanresources'],
+  ['hr source', 'hrsource'], ['iga tool', 'igatool'], ['end date', 'enddate'], ['date de fin', 'enddate'], ['e mail', 'email'],
+  ['new employee', 'newcomer'], ['new hire', 'newcomer'], ['new joiner', 'newcomer'], ['nouvel arrivant', 'newcomer'], ['nouveau collaborateur', 'newcomer'],
+  ['set up', 'setup'], ['access card', 'badge'], ['carte d acces', 'badge'], ['last name', 'lastname'], ['first name', 'firstname']
+];
+const SEMANTIC_STOP = new Set(('the a an of in into on to for is are be been was were and or with by from their his her its this that these those at as it after before when then new up about ' +
+  'le la les l un une des du de d en au aux et ou pour par sur dans avec son sa ses leur leurs ce cet cette qui que est sont lors apres avant nouveau nouvelle nouvel s').split(' '));
+const SEMANTIC_WEIGHT = { CREATE: 1.4, DISABLE: 1.4, DELETE: 1.4, REACTIVATE: 1.4, NOTIFY: 1.4, ENTER: 1.4, GET: 1.4, VERIFY: 1.4, REACH: 1.4,
+  AD: 1.2, AZURE: 1.2, O365: 1.2, MAIL: 1.2, BADGE: 1.2, IGA: 1.2, SIRH: 1.2, EMPLOYEE: 0.7, ACCOUNT: 0.7, DATE: 0.8 };
+const SEMANTIC_SYSTEMS = new Set(['AD', 'AZURE', 'O365', 'MAIL', 'BADGE', 'IGA', 'SIRH']);
+function semStem(w) {
+  if (/^\d+$/.test(w) || w.length <= 3) return w;
+  for (const suf of ['ations', 'ation', 'ements', 'ement', 'ions', 'ion', 'ing', 'ies', 'ied', 'ed', 'er', 'es', 's', 'e', 'y']) {
+    if (w.length - suf.length >= 3 && w.endsWith(suf)) return w.slice(0, -suf.length);
+  }
+  return w;
+}
+const semNorm = t => ' ' + String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9+]+/g, ' ').trim() + ' ';
+const SEMANTIC_INDEX = (() => {
+  const idx = {};
+  Object.keys(SEMANTIC_LEXICON).forEach(c => SEMANTIC_LEXICON[c].forEach(w => {
+    semNorm(w).trim().split(' ').forEach(t => { if (t) (idx[semStem(t)] = idx[semStem(t)] || new Set()).add(c); });
+  }));
+  return idx;
+})();
+/** Concepts (with weights) carried by a wording. */
+function semConcepts(text) {
+  let n = semNorm(text);
+  SEMANTIC_PHRASES.forEach(([a, b]) => { n = n.split(' ' + semNorm(a).trim() + ' ').join(' ' + b + ' '); });
+  const out = new Map();
+  n.trim().split(' ').forEach(t => {
+    if (!t || SEMANTIC_STOP.has(t)) return;
+    const st = semStem(t);
+    const cs = SEMANTIC_INDEX[st];
+    if (cs) cs.forEach(c => out.set(c, SEMANTIC_WEIGHT[c] || 1));
+    else if (t.length > 2) out.set('w:' + st, 0.6);    // unknown word: kept with a low weight
+  });
+  return out;
+}
+/** Similarity of meaning between two wordings (0..1). */
+function semSimilarity(a, b) {
+  const A = semConcepts(a), B = semConcepts(b);
+  if (!A.size || !B.size) return 0;
+  let inter = 0, sa = 0, sb = 0;
+  A.forEach((w, c) => { sa += w; if (B.has(c)) inter += w; });
+  B.forEach(w => { sb += w; });
+  let sim = (2 * inter) / (sa + sb);
+  // Two different systems (e.g. AD vs Office 365) => clearly not the same action.
+  const sysA = [...A.keys()].filter(c => SEMANTIC_SYSTEMS.has(c)), sysB = [...B.keys()].filter(c => SEMANTIC_SYSTEMS.has(c));
+  if (sysA.length && sysB.length && !sysA.some(c => sysB.includes(c))) sim *= 0.55;
+  return sim;
+}
+function stepSimilarity(text, step) {
+  let best = 0;
+  [step.name].concat(step.acceptedVariants || []).forEach(c => { best = Math.max(best, semSimilarity(text, c)); });
+  if (Array.isArray(step.keywords) && step.keywords.length) {
+    const have = semConcepts(text);
+    const all = step.keywords.every(group => (Array.isArray(group) ? group : [group]).some(k => [...semConcepts(k).keys()].some(c => have.has(c))));
+    if (all) best = Math.max(best, 0.9);
+  }
+  return best;
+}
+const firstOf = v => Array.isArray(v) ? v[0] : v;
+const labelOfDoer = id => (doerById(id) || {}).label || id || 'Not set';
+const labelOfApp = id => (appById(id) || {}).label || id || 'Not set';
+
+/** Compares the participant's workflow with the proposed correction. */
+function compareWorkflows() {
+  const m = CORR.matching || {};
+  const thr = m.threshold != null ? m.threshold : 0.5;
+  const thrApp = m.thresholdWithSameApp != null ? m.thresholdWithSameApp : 0.3;
+  const steps = CORR.steps;
+  const actions = Object.values(S.nodes).filter(n => n.type === 'action');
+  const pairs = [];
+  actions.forEach(a => steps.forEach(st => {
+    const sim = stepSimilarity(a.name, st);
+    const appEq = matchesId(a.app, st.application), doerEq = matchesId(a.doer, st.doer);
+    if (sim < thr && !(appEq && sim >= thrApp)) return;
+    const pos = (isAfterAnd(a.id) ? 'after-and' : 'before-and') === st.position;
+    pairs.push({ a, st, sim, appEq, doerEq, score: sim + (appEq ? 0.2 : 0) + (doerEq ? 0.1 : 0) + (pos ? 0.05 : 0) });
+  }));
+  pairs.sort((x, y) => y.score - x.score);
+  const user = {}, ref = {};
+  pairs.forEach(p => {
+    if (user[p.a.id] || ref[p.st.id]) return;
+    const res = {
+      status: 'match', name: p.sim >= thr ? 'ok' : 'diff', doer: p.doerEq ? 'ok' : 'diff', app: p.appEq ? 'ok' : 'diff',
+      a: p.a, st: p.st
+    };
+    user[p.a.id] = res; ref[p.st.id] = res;
+  });
+  // numbering follows the order of the proposed correction
+  let num = 0;
+  steps.forEach(st => { if (ref[st.id]) ref[st.id].num = ++num; });
+  actions.forEach(a => { if (!user[a.id]) user[a.id] = { status: 'extra' }; });
+  steps.forEach(st => { if (!ref[st.id]) ref[st.id] = { status: 'missing' }; });
+  const matched = Object.values(ref).filter(r => r.status === 'match');
+  return {
+    user, ref,
+    equivalent: matched.filter(r => r.name === 'ok' && r.doer === 'ok' && r.app === 'ok').length,
+    different: matched.filter(r => !(r.name === 'ok' && r.doer === 'ok' && r.app === 'ok')).length,
+    extra: actions.filter(a => user[a.id].status === 'extra').length,
+    missing: steps.filter(st => ref[st.id].status === 'missing').length,
+    total: steps.length
+  };
+}
+/** Graph of the proposed correction (layout computed when rendered). */
+function buildProposedGraph(cmp) {
+  const nodes = {
+    start: { id: 'start', type: 'start', x: 0, y: 0, readonly: true },
+    and: { id: 'and', type: 'and', x: 0, y: 0, readonly: true },
+    end: { id: 'end', type: 'end', x: 0, y: 0, readonly: true }
+  };
+  const key = r => r === 'START' ? 'start' : r === 'AND' ? 'and' : 'ref-' + r;
+  const edges = [];
+  CORR.steps.forEach(st => {
+    nodes['ref-' + st.id] = { id: 'ref-' + st.id, type: 'action', x: 0, y: 0, name: st.name, doer: firstOf(st.doer), app: firstOf(st.application),
+      note: st.note, readonly: true, cmpSide: 'ref', cmp: cmp.ref[st.id] };
+    (Array.isArray(st.parent) ? st.parent : st.parent ? [st.parent] : []).forEach((pr, i) =>
+      edges.push({ id: 'pe-' + st.id + '-' + i, from: key(pr), to: 'ref-' + st.id, type: st.transition || null }));
+  });
+  if (CORR.andNode && CORR.andNode.parent) edges.push({ id: 'pe-and', from: key(CORR.andNode.parent), to: 'and', type: CORR.andNode.transition || null });
+  const parents = new Set();
+  CORR.steps.forEach(st => (Array.isArray(st.parent) ? st.parent : [st.parent]).forEach(pr => parents.add(pr)));
+  if (CORR.andNode) parents.add(CORR.andNode.parent);
+  CORR.steps.forEach(st => { if (!parents.has(st.id) && st.position === 'after-and') edges.push({ id: 'pe-end-' + st.id, from: 'ref-' + st.id, to: 'end', type: st.transitionToEnd || null }); });
+  return { nodes, edges, readonly: true };
+}
+function buildUserGraph(cmp) {
+  const nodes = {};
+  Object.values(S.nodes).forEach(n => { nodes[n.id] = Object.assign({}, n, { readonly: true, cmpSide: 'user', cmp: n.type === 'action' ? cmp.user[n.id] : null }); });
+  return { nodes, edges: S.edges, readonly: true };
+}
+/** Renders a read-only workflow into a comparison pane, scaled to fit its width. */
+function renderPane(body, g, prefix, autoLayout) {
+  body.innerHTML = '<div class="cmp-sizer"><div class="world cmp-world">' +
+    '<svg class="edges" aria-hidden="true"><defs>' + markerDefs(prefix) + '</defs><g class="cmp-edges"></g></svg>' +
+    '<div class="cmp-nodes"></div><div class="cmp-badges"></div></div></div>';
+  const world = $('.cmp-world', body), box = $('.cmp-nodes', body);
+  box.innerHTML = Object.values(g.nodes).sort((a, b) => a.y - b.y || a.x - b.x).map(n => nodeHTML(n, g, null)).join('');
+  Object.keys(sizes).forEach(k => delete sizes[k]);
+  $$('.node', box).forEach(el => { sizes[el.dataset.id] = { w: el.offsetWidth, h: el.offsetHeight }; });
+  if (autoLayout) {
+    const pos = layeredLayout(g, sizeOf);
+    $$('.node', box).forEach(el => {
+      const ps = pos[el.dataset.id]; if (!ps) return;
+      g.nodes[el.dataset.id].x = ps.x; g.nodes[el.dataset.id].y = ps.y;
+      el.style.left = ps.x + 'px'; el.style.top = ps.y + 'px';
+    });
+  }
+  const mk = edgesMarkup(g, prefix);
+  $('.cmp-edges', body).innerHTML = mk.paths;
+  $('.cmp-badges', body).innerHTML = mk.badges;
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  Object.values(g.nodes).forEach(n => { const z = sizeOf(n); x1 = Math.min(x1, n.x); y1 = Math.min(y1, n.y); x2 = Math.max(x2, n.x + z.w); y2 = Math.max(y2, n.y + z.h); });
+  // Show as much as possible while keeping the text readable (>= 60 %), centred; the pane scrolls vertically.
+  const pad = 28, bw = x2 - x1, bh = y2 - y1;
+  const sc = clamp(Math.min((body.clientWidth - pad * 2) / bw, Math.max((body.clientHeight - pad * 2) / bh, 0.6)), 0.45, 1);
+  const ox = Math.max(pad, (body.clientWidth - bw * sc) / 2);
+  world.style.transform = 'translate(' + (ox - x1 * sc) + 'px,' + (pad - y1 * sc) + 'px) scale(' + sc + ')';
+  const sizer = $('.cmp-sizer', body);
+  sizer.style.width = Math.max(body.clientWidth, bw * sc + pad * 2) + 'px';
+  sizer.style.height = (bh * sc + pad * 2) + 'px';
+}
+function renderCompare() {
+  const box = $('#compare');
+  if (!box || UI.mode !== 'compare') return;
+  const cmp = compareWorkflows();
+  UI.cmp = cmp;
+  const chip = (cls, ic, n, label) => '<span class="cmp-chip cmp-chip--' + cls + '">' + icon(ic) + '<strong>' + n + '</strong> ' + esc(label) + '</span>';
+  $('#cmp-summary').innerHTML =
+    '<div class="cmp-chips">' +
+      chip('ok', 'circleCheck', cmp.equivalent, 'consistent with the proposal') +
+      chip('diff', 'alert', cmp.different, 'with differences') +
+      chip('missing', 'circle', cmp.missing, 'potentially missing') +
+      chip('missing', 'plus', cmp.extra, 'not in the proposal') +
+    '</div>' +
+    '<div class="cmp-legend"><span class="cmp-chip cmp-chip--ok">' + icon('check') + 'Equivalent / consistent</span>' +
+      '<span class="cmp-chip cmp-chip--diff">' + icon('alert') + 'Different from the proposal</span>' +
+      '<span class="cmp-chip cmp-chip--missing">Missing / additional</span></div>';
+  fitWorkspace();
+  renderPane($('#cmp-user'), buildUserGraph(cmp), 'cmpu', true);   // same tidy layout on both sides
+  renderPane($('#cmp-ref'), buildProposedGraph(cmp), 'cmpr', true);
+  // Scroll both panes together (proportionally) so that matching steps stay side by side.
+  const panes = [$('#cmp-user'), $('#cmp-ref')];
+  panes.forEach((pane, i) => {
+    pane.onscroll = () => {
+      if (pane._syncing) { pane._syncing = false; return; }
+      const other = panes[1 - i], max = pane.scrollHeight - pane.clientHeight;
+      other._syncing = true;
+      other.scrollTop = max > 0 ? (pane.scrollTop / max) * (other.scrollHeight - other.clientHeight) : 0;
+    };
+  });
+}
+
 /* =====================================================================
    7. AUTOMATIC LAYOUT (layered, top-down)
    ===================================================================== */
@@ -1565,7 +1863,7 @@ function clearIssues(id) {
    12. CHECK ANSWER / FEEDBACK / CORRECTION
    ===================================================================== */
 const maxAttempts = () => (CORR && CORR.maxAttemptsBeforeCorrection) || 3;
-const canShowCorrection = () => correctionConfigured() && (S.attempts >= maxAttempts() || S.solved);
+const canShowCorrection = () => false;   // replaced by the side-by-side comparison (Check answer)
 async function checkAnswer() {
   if (!structuralStatus().complete) return;
   if (!correctionConfigured()) {
@@ -1577,16 +1875,14 @@ async function checkAnswer() {
     });
     return;
   }
-  const res = grade();
+  // Side-by-side comparison with the proposed correction (no right / wrong verdict).
   S.attempts++;
-  if (res.correct) {
-    S.solved = true; S.feedback = null; commit();
-    showCongrats();
-  } else {
-    S.feedback = { nodes: res.nodeIssues, globals: res.globals, attempt: S.attempts };
-    commit();
-    showFeedback();
-  }
+  S.solved = true;          // "checked": the part is marked as done on the home page and in the tabs
+  S.feedback = null;
+  saveState();
+  UI.mode = 'compare';
+  renderExercise('tb:edit');
+  window.scrollTo(0, 0);
 }
 async function showCongrats() {
   const allSolved = PARTS.every(p => p === PART ? S.solved : !!(loadState(p) || {}).solved);
@@ -1802,6 +2098,18 @@ function mountExercise() {
             '</div>' +
             '<div class="canvas-hint" aria-hidden="true">Drag the background to pan · <kbd>Ctrl</kbd> + scroll to zoom</div>' +
           '</div>' +
+          '<section class="compare" id="compare" hidden aria-label="Comparison with the proposed correction">' +
+            '<div class="cmp-summary" id="cmp-summary"></div>' +
+            '<div class="cmp-grid">' +
+              '<div class="cmp-pane cmp-pane--user"><header class="cmp-head"><h2>' + icon('user') + 'Your answer</h2>' +
+                '<p>Your workflow, compared action by action: action, doer and application.</p></header>' +
+                '<div class="cmp-body" id="cmp-user"></div></div>' +
+              '<div class="cmp-pane cmp-pane--ref"><header class="cmp-head"><h2>' + icon('lightbulb') + 'Proposed correction</h2>' +
+                '<p>This is one possible solution. Other workflows may also be valid if they follow a coherent business logic.</p>' +
+                ((CORR && CORR.notes) || []).map(t => '<p class="cmp-note">' + icon('info') + esc(t) + '</p>').join('') + '</header>' +
+                '<div class="cmp-body" id="cmp-ref"></div></div>' +
+            '</div>' +
+          '</section>' +
         '</section>' +
         '<aside class="panel" id="panel" aria-label="Available elements and legend"></aside>' +
       '</div>' +
@@ -1826,15 +2134,19 @@ function renderPartTabs() {
       '<span><span class="part-tab-label">' + esc(p.label) + '</span>' + esc(p.title) + (solved ? '<span class="sr-only"> (completed)</span>' : '') + '</span></a>';
   }).join('');
 }
-function markerDefs() {
+function markerDefs(prefix) {
   return ['manual', 'automatic', 'unknown'].map(t =>
-    '<marker id="arrow-' + t + '" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto">' +
+    '<marker id="' + (prefix || 'arrow') + '-' + t + '" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto">' +
     '<path d="M1 1 L11 6 L1 11 Z" fill="' + (t === 'manual' ? '#1d4ed8' : t === 'automatic' ? '#c81e1e' : '#8f8aa3') + '"/></marker>').join('');
 }
 function renderExercise(focusKey) {
   const active = document.activeElement;
   const key = focusKey || (active && active.dataset ? active.dataset.key : null);
+  const comparing = UI.mode === 'compare';
+  $('.ex-layout').classList.toggle('is-comparing', comparing);
+  $('#compare').hidden = !comparing;
   renderPartTabs(); renderToolbar(); renderNotices(); renderPanel(); renderCanvas();
+  if (comparing) renderCompare();
   if (key && !dlg.open) {
     const el = document.querySelector('[data-key="' + key + '"]');
     if (el && el !== document.activeElement) el.focus({ preventScroll: true });
@@ -1849,7 +2161,7 @@ function toolbarHTML(o) {
     '<span class="counter" title="' + esc(o.counterTitle) + '">' + icon(o.counterIcon || 'layers') + '<span>' + o.counterHTML + '</span></span>' +
     (o.extraHTML || '') +
     '<span class="toolbar-spacer"></span>' +
-    (o.readonly ? '' :
+    (o.rightHTML != null ? o.rightHTML : o.readonly ? '' :
     '<button class="btn btn--secondary" type="button" data-act="reset" data-key="tb:reset"' + (o.busy ? ' disabled' : '') + '>' + icon('rotate') + 'Reset exercise</button>' +
     '<div class="check-wrap">' +
       (o.checkEnabled ? '' : '<span class="check-hint" id="check-hint">' + esc(o.hint) + '</span>') +
@@ -1860,7 +2172,13 @@ function renderToolbar() {
   const st = structuralStatus();
   const corr = UI.mode === 'correction';
   const n = actionCount();
+  const next = PARTS[PARTS.indexOf(PART) + 1];
   $('#toolbar').innerHTML = toolbarHTML({
+    rightHTML: UI.mode === 'compare'
+      ? '<button class="btn btn--secondary" type="button" data-act="edit-workflow" data-key="tb:edit">' + icon('pencil') + 'Edit my workflow</button>' +
+        (next ? '<a class="btn btn--primary" href="#/exercise-1/' + esc(next.id) + '" data-key="tb:next">Continue to ' + esc(next.label) + icon('arrowRight') + '</a>'
+              : '<a class="btn btn--primary" href="#/" data-key="tb:next">' + icon('arrowLeft') + 'Back to Home</a>')
+      : null,
     counterTitle: 'Number of actions in your workflow (including the pre-filled one)',
     counterHTML: '<strong>' + n + '</strong> action' + (n > 1 ? 's' : ''),
     extraHTML: canShowCorrection() ? '<div class="segmented" role="group" aria-label="Displayed workflow">' +
@@ -1877,11 +2195,11 @@ function renderNotices() {
   if (UI.mode === 'correction') {
     html = '<div class="notice notice--correction" role="status">' + icon('eye') + '<p><strong>Correction view (read-only).</strong> Green cards show the expected workflow; the status under each card compares it with your answer.</p>' +
       '<button class="btn btn--secondary btn--sm" type="button" data-act="mode-mine" data-key="nt:back">' + icon('arrowLeft') + 'Back to my workflow</button></div>';
+  } else if (UI.mode === 'compare') {
+    html = '';
   } else if (S.solved) {
-    const todo = PARTS.find(p => p !== PART && !(loadState(p) || {}).solved);
-    html = '<div class="notice notice--success" role="status">' + icon('trophy') + '<p><strong>Well done!</strong> Your ' + esc(PART.title.toLowerCase()) + ' workflow is correct.' +
-      (todo ? ' Continue with ' + esc(todo.label + ' – ' + todo.title) + ' to complete the exercise.' : ' You have completed Exercise 1.') + '</p>' +
-      (todo ? '<a class="btn btn--secondary btn--sm" href="#/exercise-1/' + esc(todo.id) + '" data-key="nt:next">Go to ' + esc(todo.label) + icon('arrowRight') + '</a>' : '') + '</div>';
+    html = '<div class="notice notice--success" role="status">' + icon('listChecks') + '<p><strong>You have compared this part with the proposed correction.</strong> You can improve your workflow and check it again.</p>' +
+      '<button class="btn btn--secondary btn--sm" type="button" data-act="view-compare" data-key="nt:cmp"' + (structuralStatus().complete ? '' : ' disabled') + '>' + icon('eye') + 'View comparison</button></div>';
   } else if (S.feedback && (Object.keys(S.feedback.nodes || {}).length || (S.feedback.globals || []).length)) {
     const count = Object.keys(S.feedback.nodes || {}).filter(id => S.nodes[id]).length;
     html = '<div class="notice notice--warning" role="status">' + icon('alert') + '<p><strong>Some elements need to be reviewed.</strong> ' +
@@ -1992,6 +2310,23 @@ function nodeHTML(n, g, fromStart) {
     const m = map[n.status];
     footer = '<div class="card-status card-status--' + m[0] + '">' + icon(m[1]) + m[2] + '</div>';
   }
+  // Comparison with the proposed correction (green = consistent, orange = different)
+  const c = ro ? n.cmp : null;
+  const userSide = n.cmpSide === 'user';
+  const allOk = c && c.status === 'match' && c.name === 'ok' && c.doer === 'ok' && c.app === 'ok';
+  const cmpCls = c ? ' cmp-card cmp-card--' + (c.status === 'match' ? (allOk ? 'ok' : 'partial') : c.status) : '';
+  const fld = (k, other) => c && c.status === 'match' ? ' cmp-f cmp-' + c[k] + '"' + (c[k] === 'diff' ? ' title="' + esc((userSide ? 'Proposed correction: ' : 'Your answer: ') + other) + '"' : '') : '"';
+  const mark = k => c && c.status === 'match' ? '<span class="cmp-mark cmp-mark--' + c[k] + '" aria-label="' + (c[k] === 'ok' ? 'consistent' : 'different') + '">' + icon(c[k] === 'ok' ? 'check' : 'alert') + '</span>' : '';
+  if (c) {
+    const diffs = c.status === 'match' ? ['name', 'doer', 'app'].filter(k => c[k] === 'diff').map(k => ({ name: 'action', doer: 'doer', app: 'application' })[k]) : [];
+    const txt = c.status === 'extra' ? 'Not in the proposed correction'
+      : c.status === 'missing' ? 'Potentially missing from your workflow'
+      : allOk ? (userSide ? 'Consistent with the proposed correction' : 'Found in your workflow')
+      : 'Different from the proposal: ' + diffs.join(', ');
+    footer = '<div class="card-status card-status--' + (allOk ? 'ok' : 'diff') + '">' + icon(allOk ? 'circleCheck' : c.status === 'match' ? 'alert' : c.status === 'missing' ? 'circle' : 'plus') + esc(txt) + '</div>';
+  }
+  if (ro && n.note) footer = '<div class="card-note">' + icon('clock') + esc(n.note) + '</div>' + footer;
+  const other = c && c.status === 'match' ? (userSide ? { name: c.st.name, doer: labelOfDoer(firstOf(c.st.doer)), app: labelOfApp(firstOf(c.st.application)) } : { name: c.a.name, doer: labelOfDoer(c.a.doer), app: labelOfApp(c.a.app) }) : {};
   let handle = '';
   if (!ro) {
     handle = portHTML(n, name) + (outs ? '' :
@@ -2000,12 +2335,13 @@ function nodeHTML(n, g, fromStart) {
   }
   const aria = 'Action: ' + name + '. Doer: ' + (doer ? doer.label : 'not set') + '. Application: ' + (app ? app.label : (n.app || 'not set')) + '. ' +
     (ins.length && inType !== 'unknown' ? 'Incoming transition: ' + transLabel(inType) + '. ' : ins.length ? '' : 'Not connected. ') + (issues.length ? 'To review: ' + issues.join(' ') : '');
-  return '<div class="node node--action' + (inType ? ' in-' + inType : '') + (isolated ? ' is-isolated' : '') + (issues.length ? ' has-issue' : '') + (n.expected ? ' node--expected' : '') + (ro ? ' node--readonly' : '') + '" ' + common + ' role="group" aria-label="' + esc(aria) + '">' +
+  return '<div class="node node--action' + (inType ? ' in-' + inType : '') + (isolated ? ' is-isolated' : '') + (issues.length ? ' has-issue' : '') + (n.expected ? ' node--expected' : '') + (ro ? ' node--readonly' : '') + cmpCls + '" ' + common + ' role="group" aria-label="' + esc(aria) + '">' +
+    (c && c.num ? '<span class="cmp-num" title="Matching pair n°' + c.num + ' between your answer and the proposed correction">' + c.num + '</span>' : '') +
     (tools ? '<div class="card-head">' + tools + '</div>' : '') + '<div class="card">' +
-    '<p class="card-title">' + esc(name) + '</p>' +
+    '<p class="card-title' + fld('name', other.name) + '><span class="cmp-text">' + esc(name) + '</span>' + mark('name') + '</p>' +
     '<ul class="card-meta">' +
-      '<li><span class="meta-ico">' + icon(doer ? doer.icon : 'user') + '</span><span class="meta-label">Doer</span><span class="txt">' + esc(doer ? doer.label : 'Not set') + '</span></li>' +
-      '<li><span class="meta-ico meta-ico--app' + (app && app.image ? ' has-logo' : '') + '">' + appIcon(app) + '</span><span class="meta-label">App</span><span class="txt">' + esc(app ? app.label : (n.app || 'Not set')) + '</span></li>' +
+      '<li class="' + fld('doer', other.doer) + '><span class="meta-ico">' + icon(doer ? doer.icon : 'user') + '</span><span class="meta-label">Doer</span><span class="txt">' + esc(doer ? doer.label : 'Not set') + '</span>' + mark('doer') + '</li>' +
+      '<li class="' + fld('app', other.app) + '><span class="meta-ico meta-ico--app' + (app && app.image ? ' has-logo' : '') + '">' + appIcon(app) + '</span><span class="meta-label">App</span><span class="txt">' + esc(app ? app.label : (n.app || 'Not set')) + '</span>' + mark('app') + '</li>' +
     '</ul>' + footer + '</div>' + handle + '</div>';
 }
 
@@ -2062,7 +2398,12 @@ function edgeGeometry(e, g) {
   return { d, mid, sx, sy, tx, ty };
 }
 function renderEdges() {
-  const g = currentGraph();
+  const mk = edgesMarkup(currentGraph(), 'arrow');
+  edgesEl.innerHTML = mk.paths;
+  badgesEl.innerHTML = mk.badges;
+}
+/** SVG paths and labels of a graph's arrows (prefix: id prefix of the arrow markers). */
+function edgesMarkup(g, prefix) {
   let paths = '', badges = '';
   g.edges.forEach(e => {
     const geo = edgeGeometry(e, g);
@@ -2072,15 +2413,14 @@ function renderEdges() {
     if (!g.readonly && !e.locked) badges += '<span class="edge-end edge-end--' + t + '" data-edge-end="' + esc(e.id) + '" style="left:' + geo.tx + 'px;top:' + (geo.ty - 4) + 'px" title="Drag to connect this arrow to another step" aria-hidden="true"></span>';
     const label = e.type ? transLabel(e.type) : 'Transition not specified';
     const desc = label + ': ' + nodeLabel(g.nodes[e.from]) + ' to ' + nodeLabel(g.nodes[e.to]);
-    paths += '<path class="edge edge--' + t + '" d="' + geo.d + '" marker-end="url(#arrow-' + t + ')"><title>' + esc(desc) + '</title></path>';
+    paths += '<path class="edge edge--' + t + '" d="' + geo.d + '" marker-end="url(#' + prefix + '-' + t + ')"><title>' + esc(desc) + '</title></path>';
     if (!g.readonly) paths += '<path class="edge-hit" data-edge-id="' + esc(e.id) + '" d="' + geo.d + '" stroke="transparent" stroke-width="14" fill="none"><title>' + esc(desc) + ' – click to edit</title></path>';
     const inner = icon(e.type ? transIcon(e.type) : 'info') + '<span>' + esc(e.type ? transShort(e.type) : '?') + '</span>';
     badges += g.readonly
       ? '<span class="edge-badge edge-badge--' + t + '" style="left:' + geo.mid.x + 'px;top:' + geo.mid.y + 'px" role="img" aria-label="' + esc(desc) + '" title="' + esc(label) + '">' + inner + '</span>'
       : '<button type="button" class="edge-badge edge-badge--' + t + '" style="left:' + geo.mid.x + 'px;top:' + geo.mid.y + 'px" data-act="edge" data-edge-id="' + esc(e.id) + '" data-key="edge:' + esc(e.id) + '" aria-label="' + esc(desc) + '. Edit connection" title="' + esc(label) + ' – click to edit">' + inner + '</button>';
   });
-  edgesEl.innerHTML = paths;
-  badgesEl.innerHTML = badges;
+  return { paths, badges };
 }
 
 /* =====================================================================
@@ -2411,6 +2751,8 @@ async function onExerciseClick(ev) {
     case 'check': checkAnswer(); break;
     case 'feedback': showFeedback(); break;
     case 'mode-correction': setMode('correction'); break;
+    case 'view-compare': checkAnswer(); break;
+    case 'edit-workflow': UI.mode = 'mine'; renderExercise('tb:check'); fitWorkspace(); if (S.view) applyView(); else fitView(undefined, 0.4); break;
     case 'mode-mine': setMode('mine'); break;
     case 'reset': {
       const ok = await confirmDialog('Reset exercise', 'Are you sure you want to reset <strong>' + esc(PART.label + ' – ' + PART.title) + '</strong>? Your workflow, custom applications and attempts for this part will be deleted. The other part is not affected. This cannot be undone.', 'Reset exercise', 'danger');
@@ -3180,6 +3522,14 @@ function x2Activate(id) {
    ===================================================================== */
 const WS_MARGIN = 16, WS_MIN = 380;
 function fitWorkspace() {
+  const cmpBodies = $$('#compare:not([hidden]) .cmp-body');
+  if (cmpBodies.length) {
+    const r = cmpBodies[0].getBoundingClientRect();
+    const below = Math.max(WS_MARGIN, $('#main').getBoundingClientRect().bottom - r.bottom);
+    const h = Math.max(WS_MIN, Math.floor(window.innerHeight - (r.top + window.scrollY) - below)) + 'px';
+    cmpBodies.forEach(b => { b.style.height = h; });
+    return false;
+  }
   const canvas = $('#canvas') || $('#x2-canvas');
   if (!canvas || !canvas.isConnected) return false;
   // side panel first (Exercise 1): it must not push the page down
@@ -3206,10 +3556,11 @@ const wsObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(()
 function watchWorkspace() {
   if (!wsObserver) return;
   wsObserver.disconnect();
-  ['.instruction', '#toolbar', '#notices', '#x2-tray', '#panel'].forEach(sel => { const el = $(sel); if (el) wsObserver.observe(el); });
+  ['.instruction', '#toolbar', '#notices', '#x2-tray', '#panel', '#cmp-summary'].forEach(sel => { const el = $(sel); if (el) wsObserver.observe(el); });
 }
 window.addEventListener('resize', () => {
   fitWorkspace();
+  if (inExercise() && UI.mode === 'compare') { renderCompare(); return; }
   if (inExercise() && canvasEl && canvasEl.isConnected) { if (UI.autoFit) fitView(undefined, 0.4); else applyView(); }
   if (X2 && X2.root && X2.root.isConnected) { if (UI2.autoFit) x2FitView(); else x2ApplyView(); x2DrawRels(); }
 });

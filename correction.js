@@ -1,70 +1,61 @@
 /*
- * Cyber Academy – IGA exercises
+ * Cyber AcaDimy – IGA exercises
  * ------------------------------------------------------------------
- * EXPECTED ANSWERS (CORRECTIONS) – EXERCISE 1
+ * PROPOSED CORRECTIONS – EXERCISE 1
  *
- * Two independent solutions:
+ * There is no single exact answer to this exercise: each workflow below
+ * is ONE PROPOSED SOLUTION. When the participant clicks "Check answer",
+ * their workflow is shown next to the proposal ("Your answer" /
+ * "Proposed correction") and each action is compared element by element
+ * (action meaning, doer, application) with a green / orange colour code.
+ *
  *   employeeArrivalSolution    Part 1 – Employee arrival
  *   employeeDepartureSolution  Part 2 – Employee departure
  * (names referenced by config.js > exercise1.parts[].solutionKey)
  *
- * TODO (trainer): fill in the expected workflows below.
- * Every step marked `todo: true` is a PLACEHOLDER. As long as at least
- * one placeholder remains, "Check answer" only validates the structure
- * of the participant's workflow and tells them that the reference
- * answer has not been configured yet.
+ * Source: reference slides of the Cyber AcaDimy training.
  *
  * Step fields
  * -----------
  *  id               Unique identifier, used by `parent` references.
- *  name             Reference wording of the action.
- *  acceptedVariants Other accepted wordings. Matching ignores case,
- *                   accents, punctuation, extra spaces, common filler
- *                   words, and tolerates small typos.
- *  keywords         Optional. Array of groups of synonyms; if the
- *                   participant's wording contains at least one word of
- *                   EVERY group, the name is accepted.
- *                   e.g. [['create', 'provision'], ['account']]
- *  doer             Doer id from config.js ('hr', 'auto'), an array of
- *                   accepted ids, or null to skip the check.
+ *  name             Wording shown in the proposed correction.
+ *  acceptedVariants Other wordings with the same meaning (any language).
+ *                   Wordings are compared by MEANING: synonyms, English /
+ *                   French, more or less detailed sentences are accepted
+ *                   (see SEMANTIC_LEXICON in index.html).
+ *  keywords         Optional. Groups of synonyms; if the participant's
+ *                   wording contains one word of EVERY group, it is
+ *                   considered equivalent. e.g. [['disable'], ['ad']]
+ *  doer             Doer id from config.js ('hr', 'auto') or an array.
  *  application      Application id from config.js ('sirh', 'iga', 'o365',
- *                   'ad', 'mail', 'card'), an array, or null.
- *  transition       Type of the arrow coming INTO this step from its
- *                   parent: 'manual' | 'automatic' | null.
- *  parent           'START' (Employee arrival), 'AND' (a branch of the
- *                   AND node) or the id of another step.
+ *                   'ad', 'mail', 'card'), an array, or the label of an
+ *                   application the participant may add with "Other".
+ *  transition       Arrow coming INTO the step: 'manual' | 'automatic' |
+ *                   null when the reference slide shows no arrow.
+ *  parent           'START', 'AND', the id of another step, or an array of
+ *                   ids when several arrows enter the step.
  *  position         'before-and' | 'after-and'.
- *  transitionToEnd  Optional. For the last step of a branch: type of the
- *                   arrow going to END ('manual' | 'automatic'). Leave
- *                   null to only check that the step is linked to END.
- *  todo             true = placeholder, remove once the step is filled.
+ *  transitionToEnd  For the last step: arrow going to END.
+ *  note             Optional remark shown under the step in the proposal
+ *                   (timers, grace period…).
  */
 window.IGA_CORRECTION = {
   /* ================= PART 1 – EMPLOYEE ARRIVAL ================= */
   employeeArrivalSolution: {
-    /* Number of failed attempts before "Show correction" is offered. */
-    maxAttemptsBeforeCorrection: 3,
-
-    nameMatching: {
-      /* 0..1 – minimum similarity for a wording to be accepted. */
-      threshold: 0.72,
-      /* Words ignored when comparing wordings. */
-      ignoredWords: ['the', 'a', 'an', 'of', 'in', 'into', 'on', 'to', 'for', 'is', 'are', 'be', 'and', 'with', 'by', 'from', 'their', 'his', 'her', 'its', 'new']
+    matching: {
+      /* 0..1 – minimum similarity of meaning to pair two actions. */
+      threshold: 0.5,
+      /* Lower similarity accepted when the application is the same. */
+      thresholdWithSameApp: 0.3
     },
 
-    /* Arrow going INTO the AND node. */
-    andNode: {
-      parent: 'TODO_step_before_and', // TODO: id of the last step before AND
-      transition: null                // TODO: 'manual' | 'automatic'
-    },
+    andNode: { parent: 'arr-address-check', transition: 'automatic' },
 
     steps: [
       {
-        // Pre-filled step (matches config.js > exercise1.firstAction).
-        id: 'profile-sirh',
-        name: "Employee's profile entered in SAP (SIRH)",
-        acceptedVariants: ['Employee profile entered in SAP', 'Profile entered in the SIRH', 'Employee profile created in SAP'],
-        keywords: [['profile'], ['sap', 'sirh']],
+        id: 'arr-profile',
+        name: "Employee's profile entered in Wavekeeper (SIRH)",
+        acceptedVariants: ['Employee profile created in the HR system', 'Newcomer registered in the SIRH'],
         doer: 'hr',
         application: 'sirh',
         transition: 'manual',
@@ -72,131 +63,197 @@ window.IGA_CORRECTION = {
         position: 'before-and'
       },
       {
-        id: 'TODO_step_before_and',
-        todo: true,                   // TODO: remove once filled
-        name: 'TODO – action between the HR entry and the AND node',
-        acceptedVariants: [],
-        doer: null,                   // TODO
-        application: null,            // TODO
-        transition: null,             // TODO
-        parent: 'profile-sirh',
+        id: 'arr-iga-identity',
+        name: 'IGA tool gets the newcomer and creates the identity',
+        acceptedVariants: ['Identity created in the IGA tool', 'Newcomer imported into the IGA tool'],
+        doer: 'auto',
+        application: 'iga',
+        transition: 'manual',
+        parent: 'arr-profile',
         position: 'before-and'
       },
       {
-        id: 'TODO_branch_1',
-        todo: true,
-        name: 'TODO – first parallel action',
-        acceptedVariants: [],
-        doer: null,
-        application: null,
-        transition: null,
-        parent: 'AND',
-        position: 'after-and',
-        transitionToEnd: null
+        id: 'arr-email',
+        name: 'Email address generated with the « lastname/firstname » template',
+        acceptedVariants: ['Email address created from the first name and last name', 'Generate the email address'],
+        doer: 'auto',
+        application: 'iga',
+        transition: 'automatic',
+        parent: 'arr-iga-identity',
+        position: 'before-and'
       },
       {
-        id: 'TODO_branch_2',
-        todo: true,
-        name: 'TODO – second parallel action',
-        acceptedVariants: [],
-        doer: null,
-        application: null,
-        transition: null,
-        parent: 'AND',
-        position: 'after-and',
-        transitionToEnd: null
+        id: 'arr-address-check',
+        name: 'Address verification (namesake)',
+        acceptedVariants: ['Check that the email address is unique', 'Homonym check'],
+        doer: 'auto',
+        application: 'iga',
+        transition: 'automatic',
+        parent: 'arr-email',
+        position: 'before-and'
       },
       {
-        id: 'TODO_branch_3',
-        todo: true,
-        name: 'TODO – third parallel action',
-        acceptedVariants: [],
-        doer: null,
-        application: null,
-        transition: null,
+        id: 'arr-ad',
+        name: 'Account creation in AD',
+        acceptedVariants: ['Create the Active Directory account'],
+        doer: 'auto',
+        application: 'ad',
+        transition: 'automatic',
         parent: 'AND',
+        position: 'after-and'
+      },
+      {
+        id: 'arr-o365',
+        name: 'Office 365 account creation with email address',
+        acceptedVariants: ['Create the Office 365 mailbox'],
+        doer: 'auto',
+        application: 'o365',
+        transition: 'automatic',
+        parent: 'AND',
+        position: 'after-and'
+      },
+      {
+        id: 'arr-badge',
+        name: 'Creation of the badge account for access to company premises',
+        acceptedVariants: ['Create the access card', 'Badge creation'],
+        doer: 'auto',
+        application: 'card',
+        transition: 'automatic',
+        parent: 'AND',
+        position: 'after-and'
+      },
+      {
+        id: 'arr-notify',
+        name: 'Notification to manager and beneficiary',
+        acceptedVariants: ['Notify the manager and the new employee', 'Send the accesses to the manager and the newcomer'],
+        doer: 'auto',
+        application: 'mail',
+        transition: 'automatic',
+        parent: ['arr-ad', 'arr-o365', 'arr-badge'],
         position: 'after-and',
-        transitionToEnd: null
+        transitionToEnd: 'manual'
       }
-      // Add more steps as needed, e.g. a second action in branch 1:
-      // { id: 'branch-1b', name: '...', doer: 'auto', application: 'ad',
-      //   transition: 'automatic', parent: 'TODO_branch_1', position: 'after-and' }
     ]
   },
 
   /* ================= PART 2 – EMPLOYEE DEPARTURE ================= */
   employeeDepartureSolution: {
-    maxAttemptsBeforeCorrection: 3,
+    matching: { threshold: 0.5, thresholdWithSameApp: 0.3 },
 
-    nameMatching: {
-      threshold: 0.72,
-      ignoredWords: ['the', 'a', 'an', 'of', 'in', 'into', 'on', 'to', 'for', 'is', 'are', 'be', 'and', 'with', 'by', 'from', 'their', 'his', 'her', 'its']
-    },
+    andNode: { parent: 'dep-date-reached', transition: 'automatic' },
 
-    andNode: {
-      parent: 'TODO_departure_before_and', // TODO: id of the last step before AND
-      transition: null                     // TODO: 'manual' | 'automatic'
-    },
+    /* Shown above the proposed correction. */
+    notes: [
+      'Grace period: if the employee comes back before the identity is deleted, the identity is reactivated (back to “Get departure date in IGA Tool”).'
+    ],
 
     steps: [
       {
-        // Pre-filled step (matches config.js > exercise1.parts[1].firstAction).
-        id: 'end-date-hr',
-        todo: true,                   // TODO: remove once doer/application/transition are filled
+        id: 'dep-end-date',
         name: 'End date for employee is set in HR source',
-        acceptedVariants: [],
-        doer: null,                   // TODO
-        application: null,            // TODO
-        transition: null,             // TODO
+        acceptedVariants: ['Departure date entered in the SIRH'],
+        doer: 'hr',
+        application: 'sirh',
+        transition: 'manual',
         parent: 'START',
         position: 'before-and'
       },
       {
-        id: 'TODO_departure_before_and',
-        todo: true,
-        name: 'TODO – action between the HR end date and the AND node',
-        acceptedVariants: [],
-        doer: null,
-        application: null,
-        transition: null,
-        parent: 'end-date-hr',
+        id: 'dep-get-date',
+        name: 'Get departure date in IGA Tool',
+        acceptedVariants: ['IGA tool retrieves the end date', 'Departure date imported into the IGA tool'],
+        doer: 'auto',
+        application: 'iga',
+        transition: 'manual',
+        parent: 'dep-end-date',
         position: 'before-and'
       },
       {
-        id: 'TODO_departure_branch_1',
-        todo: true,
-        name: 'TODO – first parallel action',
-        acceptedVariants: [],
-        doer: null,
-        application: null,
+        id: 'dep-notify-departure',
+        name: 'Notification of the employee departure',
+        acceptedVariants: ['Send departure notification to employee', 'Notify the employee of the departure'],
+        doer: 'auto',
+        application: 'mail',
         transition: null,
-        parent: 'AND',
-        position: 'after-and',
-        transitionToEnd: null
+        parent: 'dep-get-date',
+        position: 'before-and',
+        note: '15 days – 7 days – 1 day before the departure'
       },
       {
-        id: 'TODO_departure_branch_2',
-        todo: true,
-        name: 'TODO – second parallel action',
-        acceptedVariants: [],
-        doer: null,
-        application: null,
-        transition: null,
-        parent: 'AND',
-        position: 'after-and',
-        transitionToEnd: null
+        id: 'dep-date-reached',
+        name: 'Departure date is reached',
+        acceptedVariants: ['End date reached', 'Last working day'],
+        doer: 'auto',
+        application: 'iga',
+        transition: 'manual',
+        parent: 'dep-notify-departure',
+        position: 'before-and'
       },
       {
-        id: 'TODO_departure_branch_3',
-        todo: true,
-        name: 'TODO – third parallel action',
-        acceptedVariants: [],
-        doer: null,
-        application: null,
-        transition: null,
+        id: 'dep-ad',
+        name: 'Account disabled in AD',
+        acceptedVariants: ['Deactivate the Active Directory account'],
+        doer: 'auto',
+        application: 'ad',
+        transition: 'automatic',
         parent: 'AND',
+        position: 'after-and'
+      },
+      {
+        id: 'dep-azure',
+        name: 'Account disabled in Azure AD',
+        acceptedVariants: ['Deactivate the Entra ID account', 'Disable the cloud account'],
+        doer: 'auto',
+        // No "Azure AD" in the list: Active Directory or an application
+        // added with "Other" (Azure AD / Entra ID) are accepted.
+        application: ['ad', 'Azure AD', 'Azure Active Directory', 'Entra ID', 'Microsoft Entra ID'],
+        transition: 'automatic',
+        parent: 'AND',
+        position: 'after-and'
+      },
+      {
+        id: 'dep-badge',
+        name: 'Badge account disabled',
+        acceptedVariants: ['Deactivate the access card'],
+        doer: 'auto',
+        application: 'card',
+        transition: 'automatic',
+        parent: 'AND',
+        position: 'after-and'
+      },
+      {
+        id: 'dep-notify-manager',
+        name: 'Notify manager about account deactivation',
+        acceptedVariants: ['Send a notification to the manager'],
+        doer: 'auto',
+        application: 'mail',
+        transition: 'automatic',
+        parent: ['dep-ad', 'dep-azure', 'dep-badge'],
         position: 'after-and',
-        transitionToEnd: null
+        note: 'Start of the grace period'
+      },
+      {
+        id: 'dep-rights-removed',
+        name: 'Rights removed',
+        acceptedVariants: ['Remove the accesses', 'Entitlements revoked'],
+        doer: 'auto',
+        application: 'iga',
+        transition: null,
+        parent: 'dep-notify-manager',
+        position: 'after-and',
+        note: '30 days later (grace period)'
+      },
+      {
+        id: 'dep-identity-deleted',
+        name: 'Identity deleted',
+        acceptedVariants: ['Delete the identity'],
+        doer: 'auto',
+        application: 'iga',
+        transition: null,
+        parent: 'dep-rights-removed',
+        position: 'after-and',
+        transitionToEnd: 'automatic',
+        note: '60 days later'
       }
     ]
   }
