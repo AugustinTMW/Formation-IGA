@@ -315,7 +315,9 @@ span.edge-badge { cursor: default; }
 .node--action.is-isolated .card { border-style: dashed; border-top-style: solid; background: #fdfcff; }
 .node--action.has-issue .card { border-color: var(--warning-line); box-shadow: 0 0 0 3px #ffe2b3, var(--shadow); }
 .node--fixed.has-issue { box-shadow: 0 0 0 4px #ffc56b, var(--shadow); }
-.card-head { display: flex; align-items: center; gap: 6px; padding: 8px 8px 0 12px; min-height: 38px; }
+.card { position: relative; }
+/* Edit / delete buttons float in the top-right corner (no transition label above the name) */
+.card-head { position: absolute; top: -15px; right: 10px; z-index: 5; display: flex; align-items: center; gap: 6px; }
 .incoming {
   display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700;
   padding: 2px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em;
@@ -325,10 +327,10 @@ span.edge-badge { cursor: default; }
 .incoming--automatic { background: var(--auto-bg); color: var(--auto); }
 .incoming--none { background: #f1f0f5; color: var(--muted); }
 .incoming--required { background: var(--primary-50); color: var(--primary-700); }
-.card-tools { margin-left: auto; display: flex; gap: 2px; opacity: 0; transition: opacity .15s; }
+.card-tools { display: flex; gap: 2px; opacity: 0; transition: opacity .15s; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; box-shadow: var(--shadow-sm); padding: 1px; }
 .node--action:hover .card-tools, .node--action:focus-within .card-tools, .node--action:focus .card-tools { opacity: 1; }
 @media (hover: none) { .card-tools { opacity: 1; } }
-.card-title { padding: 4px 12px 8px; font-weight: 700; font-size: 14.5px; line-height: 1.35; color: var(--ink); word-break: break-word; }
+.card-title { padding: 12px 12px 10px; font-weight: 700; font-size: 14.5px; line-height: 1.35; color: var(--ink); word-break: break-word; }
 .card-title.is-empty { color: var(--danger); font-style: italic; font-weight: 600; }
 .card-meta { list-style: none; margin: 0; padding: 8px 12px 10px; display: grid; gap: 6px; border-top: 1px solid #efedf4; background: #fbfafd; }
 .card-meta li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); min-width: 0; }
@@ -352,7 +354,7 @@ span.edge-badge { cursor: default; }
 .card-status--missing { background: #fdecec; color: var(--danger); border-color: #f6c4c4; }
 .node--expected .card { border-color: #7fcf9b; border-style: solid; }
 .node--expected .card-head .expected-tag {
-  font-size: 11px; font-weight: 700; color: var(--success); text-transform: uppercase; letter-spacing: .04em; margin-left: auto; padding-right: 4px;
+  font-size: 10.5px; font-weight: 700; color: var(--success); text-transform: uppercase; letter-spacing: .04em; background: #fff; padding: 1px 6px; border-radius: 999px;
 }
 .node--readonly { cursor: default; }
 
@@ -1977,10 +1979,6 @@ function nodeHTML(n, g, fromStart) {
   const outs = outEdges(n.id, g).length;
   const doer = doerById(n.doer), app = appById(n.app);
   const isolated = !ro && !fromStart.has(n.id);
-  let inChip;
-  if (!ins.length) inChip = '<span class="incoming incoming--none">' + icon('alert') + 'Not connected</span>';
-  else if (inType === 'unknown') inChip = '<span class="incoming incoming--none" title="Transition type not set">' + icon('alert') + 'Transition not set</span>';
-  else inChip = '<span class="incoming incoming--' + inType + '" title="Incoming transition: ' + esc(transLabel(inType)) + '">' + icon(transIcon(inType)) + esc(transShort(inType)) + '</span>';
   const name = nodeLabel(n);
   const tools = ro ? (n.expected ? '<span class="expected-tag">Expected</span>' : '') :
     '<div class="card-tools">' +
@@ -2003,7 +2001,7 @@ function nodeHTML(n, g, fromStart) {
   const aria = 'Action: ' + name + '. Doer: ' + (doer ? doer.label : 'not set') + '. Application: ' + (app ? app.label : (n.app || 'not set')) + '. ' +
     (ins.length && inType !== 'unknown' ? 'Incoming transition: ' + transLabel(inType) + '. ' : ins.length ? '' : 'Not connected. ') + (issues.length ? 'To review: ' + issues.join(' ') : '');
   return '<div class="node node--action' + (inType ? ' in-' + inType : '') + (isolated ? ' is-isolated' : '') + (issues.length ? ' has-issue' : '') + (n.expected ? ' node--expected' : '') + (ro ? ' node--readonly' : '') + '" ' + common + ' role="group" aria-label="' + esc(aria) + '">' +
-    '<div class="card"><div class="card-head">' + inChip + tools + '</div>' +
+    (tools ? '<div class="card-head">' + tools + '</div>' : '') + '<div class="card">' +
     '<p class="card-title">' + esc(name) + '</p>' +
     '<ul class="card-meta">' +
       '<li><span class="meta-ico">' + icon(doer ? doer.icon : 'user') + '</span><span class="meta-label">Doer</span><span class="txt">' + esc(doer ? doer.label : 'Not set') + '</span></li>' +
