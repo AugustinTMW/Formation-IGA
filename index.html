@@ -856,6 +856,16 @@ button.part-tab { font: inherit; cursor: pointer; text-align: left; }
 button.part-tab:disabled { opacity: .55; cursor: not-allowed; }
 @media (max-width: 1100px) { .x2-table { grid-template-columns: minmax(180px, 1fr) minmax(250px, 1.5fr) minmax(300px, 2fr); } }
 
+
+/* Exercise 1 work sheet (delimited, adaptive) */
+#canvas { background-color: #ecebf2; background-image: none; }
+.ws-sheet {
+  position: absolute; z-index: 0; border-radius: 18px; border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(29,22,48,.08);
+  background-color: #fcfcfe; background-image: radial-gradient(circle, #d4cfe2 1.1px, transparent 1.2px); background-size: 20px 20px;
+  transition: left .12s, top .12s, width .12s, height .12s;
+}
+.node.is-dragging ~ .ws-sheet, .canvas.is-panning .ws-sheet { transition: none; }
+
 /* =====================================================================
    RESPONSIVE
    ===================================================================== */
@@ -2162,6 +2172,7 @@ function mountExercise() {
           '<div id="notices"></div>' +
           '<div class="canvas" id="canvas" aria-label="Workflow canvas. Use Tab to move between steps, arrow keys to move a step, Enter to edit and Delete to remove an action.">' +
             '<div class="world" id="world">' +
+              '<div class="ws-sheet" id="ws-sheet" aria-hidden="true"></div>' +
               '<svg class="edges" id="edges" aria-hidden="true"><defs>' + markerDefs() + '</defs><g id="edge-paths"></g><g id="link-layer"></g></svg>' +
               '<div id="nodes"></div><div id="badges"></div>' +
             '</div>' +
@@ -2175,7 +2186,7 @@ function mountExercise() {
               '<span class="sep" id="arrange-sep"></span>' +
               '<button class="btn btn--ghost btn--sm" type="button" data-act="arrange" data-key="vc:arrange" id="arrange-btn" title="Automatically tidy up the layout">' + icon('sparkles') + 'Tidy up</button>' +
             '</div>' +
-            '<div class="canvas-hint" aria-hidden="true">Drag the background to pan · <kbd>Ctrl</kbd> + scroll to zoom</div>' +
+            '<div class="canvas-hint" aria-hidden="true">Drag the sheet to move around · <kbd>Ctrl</kbd> + scroll to zoom</div>' +
           '</div>' +
           '<section class="compare" id="compare" hidden aria-label="Comparison with the proposed correction">' +
             '<div class="cmp-summary" id="cmp-summary"></div>' +
@@ -2334,6 +2345,7 @@ function renderCanvas() {
   nodesEl.innerHTML = list.map(n => nodeHTML(n, g, fromStart)).join('');
   Object.keys(sizes).forEach(k => delete sizes[k]);
   $$('.node', nodesEl).forEach(el => { sizes[el.dataset.id] = { w: el.offsetWidth, h: el.offsetHeight }; });
+  renderSheet();
   renderEdges();
 }
 function nodeHTML(n, g, fromStart) {
@@ -2507,8 +2519,53 @@ function edgesMarkup(g, prefix) {
    ===================================================================== */
 let view = { x: 0, y: 0, z: 1 };
 let viewSaveTimer = null;
+/* =====================================================================
+   Work sheet: the workflow is built on a delimited sheet (like the fixed
+   table of Exercise 2) instead of an infinite space. The sheet adapts to
+   the workflow: it is the bounding box of the steps plus a margin, so it
+   grows when the workflow grows. The view cannot leave the sheet, and a
+   step cannot be dragged further than SHEET_REACH from the other steps.
+   ===================================================================== */
+const SHEET_PAD = 140, SHEET_MIN = { w: 900, h: 640 }, SHEET_REACH = 360, ZOOM_MAX = 1.6;
+function sheetBox() {
+  const b = contentBox();
+  let x = b.x - SHEET_PAD, y = b.y - SHEET_PAD, w = b.w + SHEET_PAD * 2, h = b.h + SHEET_PAD * 2;
+  if (w < SHEET_MIN.w) { x -= (SHEET_MIN.w - w) / 2; w = SHEET_MIN.w; }
+  if (h < SHEET_MIN.h) { h = SHEET_MIN.h; }
+  return { x, y, w, h };
+}
+function renderSheet() {
+  const el = $('#ws-sheet');
+  if (!el || !S) return;
+  const b = sheetBox();
+  el.style.left = b.x + 'px'; el.style.top = b.y + 'px'; el.style.width = b.w + 'px'; el.style.height = b.h + 'px';
+}
+/** Keeps the view on the sheet: no infinite panning, no zooming out beyond the whole sheet. */
+function clampView(v) {
+  if (!canvasEl || !S || UI.mode === 'compare') return v;
+  const r = canvasEl.getBoundingClientRect();
+  if (!r.width || !r.height) return v;
+  const b = sheetBox();
+  const zMin = clamp(Math.min(r.width / b.w, r.height / b.h), 0.25, 1);
+  const z = clamp(v.z, zMin, ZOOM_MAX);
+  const axis = (pos, start, size, viewSize) => {
+    const a = -start * z, c = viewSize - (start + size) * z;   // sheet edge on the left / on the right
+    return size * z <= viewSize ? clamp(pos, a, c) : clamp(pos, c, a);
+  };
+  return { z, x: axis(v.x, b.x, b.w, r.width), y: axis(v.y, b.y, b.h, r.height) };
+}
+/** Keeps a dragged step within SHEET_REACH of the rest of the workflow. */
+function clampNodePos(n, x, y) {
+  const others = Object.values(S.nodes).filter(o => o.id !== n.id);
+  if (!others.length) return { x, y };
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  others.forEach(o => { const z = sizeOf(o); x1 = Math.min(x1, o.x); y1 = Math.min(y1, o.y); x2 = Math.max(x2, o.x + z.w); y2 = Math.max(y2, o.y + z.h); });
+  const s = sizeOf(n);
+  return { x: clamp(x, x1 - SHEET_REACH, x2 + SHEET_REACH - s.w), y: clamp(y, y1 - SHEET_REACH, y2 + SHEET_REACH - s.h) };
+}
 function applyView(v) {
-  if (v) view = v; else if (UI.mode !== 'correction' && S.view) view = S.view;
+  if (v) view = clampView(v); else if (UI.mode !== 'correction' && S.view) view = clampView(S.view);
+  else view = clampView(view);
   worldEl.style.transform = 'translate(' + view.x + 'px,' + view.y + 'px) scale(' + view.z + ')';
   canvasEl.style.backgroundSize = (GRID * view.z) + 'px ' + (GRID * view.z) + 'px';
   canvasEl.style.backgroundPosition = view.x + 'px ' + view.y + 'px';
@@ -2544,7 +2601,7 @@ function resetView() {
 function zoomAt(factor, px, py) {
   const r = canvasEl.getBoundingClientRect();
   if (px == null) { px = r.width / 2; py = r.height / 2; }
-  const nz = clamp(view.z * factor, 0.3, 2);
+  const nz = clamp(view.z * factor, 0.25, ZOOM_MAX);   // final limits applied by clampView
   const wx = (px - view.x) / view.z, wy = (py - view.y) / view.z;
   applyView({ z: nz, x: px - wx * nz, y: py - wy * nz });
 }
@@ -2606,7 +2663,9 @@ function bindCanvas() {
     if (drag.kind === 'link' || drag.kind === 'relink') { updateLink(drag, ev); return; }
     if (drag.kind === 'pan') { UI.autoFit = false; applyView({ z: view.z, x: drag.ox + dx, y: drag.oy + dy }); return; }
     const n = S.nodes[drag.id];
-    n.x = snap(drag.ox + dx / view.z); n.y = snap(drag.oy + dy / view.z);
+    const cp = clampNodePos(n, snap(drag.ox + dx / view.z), snap(drag.oy + dy / view.z));
+    n.x = cp.x; n.y = cp.y;
+    renderSheet();
     drag.el.style.left = n.x + 'px'; drag.el.style.top = n.y + 'px';
     drag.el.classList.add('is-dragging');
     renderEdges();
@@ -2648,7 +2707,9 @@ function bindCanvas() {
     const moves = { ArrowUp: [0, -step], ArrowDown: [0, step], ArrowLeft: [-step, 0], ArrowRight: [step, 0] };
     if (moves[ev.key]) {
       ev.preventDefault();
-      n.x = snap(n.x + moves[ev.key][0]); n.y = snap(n.y + moves[ev.key][1]);
+      const cp = clampNodePos(n, snap(n.x + moves[ev.key][0]), snap(n.y + moves[ev.key][1]));
+      n.x = cp.x; n.y = cp.y;
+      renderSheet();
       nodeEl.style.left = n.x + 'px'; nodeEl.style.top = n.y + 'px';
       renderEdges(); ensureVisible(n.id); saveState();
     } else if (ev.key === 'Enter' && n.type === 'action') { ev.preventDefault(); openActionModal({ mode: 'edit', nodeId: n.id }); }
