@@ -224,16 +224,29 @@ dans le workflow).
 Accès : page d'accueil → *Exercise 2* → choix du secteur (`#/exercise-2`). Seul **Consulting** est
 disponible ; *Energy* et *Healthcare* sont affichés « Coming soon ».
 
-### Déroulé
-1. **Classer** les étiquettes du bandeau (ordre aléatoire) dans trois zones : *Who performs this
-   activity in my organization?*, *Activities in my organization* (colonne centrale de couleur
-   distincte) et *Fine-grained rights*, par glisser-déposer. On peut aussi déplacer une étiquette
-   d'une zone à l'autre, la réordonner ou la renvoyer dans le bandeau.
-2. **Relier** : tirer le rond à droite d'une carte vers une carte compatible, ou cliquer une carte
-   puis une carte surlignée en vert. Seuls *Actor → Activity* et *Activity → Fine-grained right* sont
-   autorisés. Le × rouge au milieu d'une flèche la supprime.
-3. **Check answer** (même barre d'actions que l'exercice 1) : actif dès 3 chaînes complètes
-   *Actor → Activity → Fine-grained right*.
+### Déroulé (deux parties successives sur le même tableau)
+Le tableau est fixe (trois colonnes, pas de zone libre ni de zoom), inspiré de la slide de
+référence : *Who performs this activity in my organization?* (cartes blanches à bord noir),
+*Activities in my organization* (colonne violette), *Fine-grained rights* (colonne grise, cartes à
+bord violet). Il occupe la hauteur disponible et défile à l'intérieur s'il y a beaucoup d'éléments.
+
+1. **Part 1 — Classify the items** : glisser-déposer les étiquettes du bandeau (ordre aléatoire)
+   dans les colonnes, les réordonner, les changer de colonne ou les renvoyer au bandeau. Aucune
+   relation n'est possible. **Continue to Part 2** s'active quand chaque colonne contient au moins
+   3 éléments (indicateurs *Who / Activities / Rights x/3* dans la barre d'actions et dans les
+   en-têtes de colonnes).
+2. **Part 2 — Create the relationships** : même tableau, classement conservé et verrouillé (le
+   bandeau d'étiquettes est masqué). On tire une flèche depuis le rond à droite d'un élément vers un
+   élément de la colonne suivante (ou clic sur un élément puis sur un élément surligné en vert).
+   - Sens imposé : *Who → Activity → Fine-grained right* (pas de *Who → Right*).
+   - **1:1 et 1:N autorisés, N:1 et N:N refusés** : un élément peut pointer vers plusieurs
+     éléments de la colonne suivante, mais n'en reçoit qu'un seul de la colonne précédente.
+   - **Check answer** s'active à partir de 3 associations complètes *Who → Activity → Right*
+     (les relations partielles ne comptent pas).
+   - **Back to Part 1** permet de revoir le classement (les relations devenues invalides sont
+     retirées) ; **Tidy up** réordonne les cartes pour limiter les croisements.
+- Les flèches passent derrière les cartes (aucun libellé masqué) ; celles de l'élément sélectionné
+  et celles de la correction passent au premier plan.
 
 ### Règles de correction
 - Chaque carte classée est marquée ✓ (bonne catégorie) ou ✗ (mauvaise). Les cartes encore dans le
