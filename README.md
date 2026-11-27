@@ -186,8 +186,8 @@ dans le workflow).
 
 ## 5. Accessibilité et ergonomie
 
-- **Feuille de travail délimitée (exercice 1) :** le workflow se construit sur une feuille blanche
-  quadrillée posée sur un fond gris, au lieu d'un espace infini. La feuille s'adapte au workflow
+- **Feuille de travail délimitée (exercice 1) :** le workflow se construit dans un espace blanc
+  quadrillé délimité (une « feuille » invisible), au lieu d'un espace infini. La feuille s'adapte au workflow
   (boîte englobante des étapes + marge de 140 px, au minimum 900 × 640 px) et s'agrandit quand le
   workflow grandit. La vue ne peut pas sortir de la feuille (déplacement et molette bornés), le
   zoom va de « feuille entière visible » à 160 %, et une étape ne peut pas être éloignée de plus de

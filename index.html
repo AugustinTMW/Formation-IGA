@@ -857,14 +857,9 @@ button.part-tab:disabled { opacity: .55; cursor: not-allowed; }
 @media (max-width: 1100px) { .x2-table { grid-template-columns: minmax(180px, 1fr) minmax(250px, 1.5fr) minmax(300px, 2fr); } }
 
 
-/* Exercise 1 work sheet (delimited, adaptive) */
-#canvas { background-color: #ecebf2; background-image: none; }
-.ws-sheet {
-  position: absolute; z-index: 0; border-radius: 18px; border: 1px solid var(--line-2); box-shadow: 0 1px 3px rgba(29,22,48,.08);
-  background-color: #fcfcfe; background-image: radial-gradient(circle, #d4cfe2 1.1px, transparent 1.2px); background-size: 20px 20px;
-  transition: left .12s, top .12s, width .12s, height .12s;
-}
-.node.is-dragging ~ .ws-sheet, .canvas.is-panning .ws-sheet { transition: none; }
+/* Exercise 1 work sheet (delimited, adaptive): a single white dotted background everywhere;
+   the sheet itself is invisible, it only defines the limits of the view and of the steps. */
+.ws-sheet { position: absolute; z-index: 0; pointer-events: none; }
 
 /* =====================================================================
    RESPONSIVE
@@ -2186,7 +2181,7 @@ function mountExercise() {
               '<span class="sep" id="arrange-sep"></span>' +
               '<button class="btn btn--ghost btn--sm" type="button" data-act="arrange" data-key="vc:arrange" id="arrange-btn" title="Automatically tidy up the layout">' + icon('sparkles') + 'Tidy up</button>' +
             '</div>' +
-            '<div class="canvas-hint" aria-hidden="true">Drag the sheet to move around · <kbd>Ctrl</kbd> + scroll to zoom</div>' +
+            '<div class="canvas-hint" aria-hidden="true">Drag the background to move around · <kbd>Ctrl</kbd> + scroll to zoom</div>' +
           '</div>' +
           '<section class="compare" id="compare" hidden aria-label="Comparison with the proposed correction">' +
             '<div class="cmp-summary" id="cmp-summary"></div>' +
