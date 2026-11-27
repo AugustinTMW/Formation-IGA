@@ -156,7 +156,9 @@
 
   window.IGA_EXERCISE2 = {
     title: 'Exercise 2 – Profile and entitlement association',
-    instruction: 'Classify the items into the three categories, then connect them to build meaningful relationships between actors, activities, and fine-grained rights. Create at least 3 relationships to check your answer.',
+    /* Part 1 — Classify the items / Part 2 — Create the relationships */
+    instructionPart1: 'Drag and drop each item into the appropriate column: Who performs this activity in my organization, Activities in my organization, or Fine-grained rights. Classify at least 3 items in each column to continue to Part 2.',
+    instructionPart2: 'Connect the classified items to build meaningful relationships. Draw connections from Who → Activity and then from Activity → Fine-grained right. One item can be connected to multiple items in the next column. Create at least 3 complete Who → Activity → Fine-grained right relationships to check your answer.',
     minChains: 3,
 
     /* The three categories (columns), from left to right. */

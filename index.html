@@ -777,6 +777,85 @@ fieldset.field > legend { margin-bottom: 6px; }
 .card-note .ico { width: 13px; height: 13px; }
 @media (max-width: 900px) { .cmp-grid { grid-template-columns: minmax(0, 1fr); } .cmp-legend { margin-left: 0; } }
 
+
+/* =====================================================================
+   EXERCISE 2 – fixed table, two successive parts
+   ===================================================================== */
+.x2-board {
+  position: relative; overflow: auto; border-radius: var(--radius); border: 1px solid var(--line-2);
+  background: var(--surface); box-shadow: var(--shadow-sm); min-height: 380px;
+}
+.x2-table { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(330px, 1.75fr) minmax(470px, 2.9fr); min-height: 100%; }
+.x2-board .x2-col { border: 0; border-radius: 0; box-shadow: none; border-top: 0; padding: 14px 22px 22px; }
+.x2-board .x2-col-head { display: block; text-align: center; margin-bottom: 14px; }
+.x2-board .x2-col-head h2 { font-size: 17px; line-height: 1.25; font-weight: 800; }
+.x2-col-count { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.x2-col-count .ico { width: 13px; height: 13px; }
+.x2-col-count.is-ok { color: var(--success); }
+.x2-board .x2-col-list { display: grid; gap: 12px 14px; align-content: start; min-height: 140px; padding: 6px; }
+.x2-board .x2-col--actor .x2-col-list { grid-template-columns: minmax(0, 1fr); }
+.x2-board .x2-col--activity .x2-col-list { grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); }
+.x2-board .x2-col--right .x2-col-list { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+/* Who: white column, dark outlined cards */
+.x2-board .x2-col--actor { background: #fcfcfd; --x2-accent: #1d1630; border-right: 1px solid var(--line); }
+.x2-board .x2-col--actor .x2-col-head h2 { color: var(--ink); }
+/* Activities: purple column, white outlined cards */
+.x2-board .x2-col--activity { background: #4a1fc4; --x2-accent: #ffffff; }
+.x2-board .x2-col--activity .x2-col-head h2 { color: #fff; }
+.x2-board .x2-col--activity .x2-col-count { color: #e3d6ff; }
+.x2-board .x2-col--activity .x2-col-count.is-ok { color: #b9f5cf; }
+/* Fine-grained rights: light grey column, purple outlined cards */
+.x2-board .x2-col--right { background: #f6f5f8; --x2-accent: #8b2cf5; border-left: 1px solid var(--line); }
+.x2-board .x2-col--right .x2-col-head h2 { color: #5b21d6; }
+.x2-board .x2-card, .x2-ghost {
+  border-radius: 4px; text-align: center; font-style: italic; font-weight: 700; font-size: 13.5px; line-height: 1.3;
+  padding: 10px 12px; min-height: 48px; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow-sm);
+}
+.x2-board .x2-col--actor .x2-card, .x2-ghost--actor { background: #f8f8fa; border: 2.5px solid #1d1630; color: var(--ink); }
+.x2-board .x2-col--activity .x2-card, .x2-ghost--activity { background: #4a1fc4; border: 2.5px solid #fff; color: #fff; }
+.x2-board .x2-col--right .x2-card, .x2-ghost--right { background: #fff; border: 2.5px solid #8b2cf5; color: #4a1fc4; }
+.x2-board .x2-col--right .x2-card .x2-card-app, .x2-ghost--right .x2-card-app { color: #8b5cf6; font-style: normal; }
+.x2-board .x2-col--activity .x2-card-app { color: #e3d6ff; }
+.x2-board .x2-card:hover { box-shadow: var(--shadow); }
+.x2-board .x2-col--activity .x2-card:hover { border-color: #e3d6ff; }
+.x2-board .x2-col-empty { border-color: currentColor; opacity: .7; }
+.x2-board .x2-col--activity .x2-col-empty { color: #e3d6ff; }
+.x2-board .x2-col.is-drop-target { box-shadow: inset 0 0 0 3px var(--primary-200); }
+.x2-board .x2-col--activity.is-drop-target { box-shadow: inset 0 0 0 3px #c4b5fd; }
+.x2-board .x2-col.is-drop-target .x2-col-list { border-color: var(--x2-accent); background: rgba(255,255,255,.12); }
+.x2-board .x2-col--activity .x2-ph { border-color: #e3d6ff; background: rgba(255,255,255,.12); }
+/* marks and states without changing the card colours */
+.x2-board .x2-card.mark-ok { box-shadow: 0 0 0 3px #86efac; }
+.x2-board .x2-card.mark-bad { box-shadow: 0 0 0 3px #fca5a5; }
+.x2-board .x2-card.is-selected { box-shadow: 0 0 0 4px #fbbf24; }
+.x2-board .x2-card.is-compatible { box-shadow: 0 0 0 4px #4ade80; cursor: pointer; }
+.x2-board .x2-card.is-linked { box-shadow: 0 0 0 3px #c4b5fd; }
+.x2-board .x2-col--activity .x2-port { background: #fff; border-color: #fff; color: #4a1fc4; }
+.x2-board .x2-col--actor .x2-port { border-color: #1d1630; color: #1d1630; }
+.x2-part1 .x2-board .x2-card { cursor: grab; }
+.x2-part2 .x2-board .x2-card { cursor: pointer; }
+.x2-board.is-linking, .x2-board.is-linking .x2-card { cursor: crosshair; }
+/* arrows run behind the cards (visible in the gaps, never over a label) */
+.x2-board .x2-rels { z-index: 1; }
+.x2-board .x2-rels--top { z-index: 3; }
+.x2-board .x2-card { z-index: 2; }
+.x2-board .x2-col-head { position: relative; z-index: 2; }
+.x2-rel-halo { fill: none; stroke: rgba(255,255,255,.85); stroke-width: 5.5; }
+.x2-board .link-tip { position: absolute; }
+.x2-board #x2-badges { position: absolute; left: 0; top: 0; }
+/* progress chips (Part 1) and connection steps (Part 2) */
+.x2-progress { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.x2-progress-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #f3f2f7; color: var(--ink-2); }
+.x2-progress-chip .ico { width: 14px; height: 14px; color: #a7a2b8; }
+.x2-progress-chip.is-ok { background: var(--success-bg); color: var(--success); }
+.x2-progress-chip.is-ok .ico { color: var(--success); }
+.x2-steps { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.x2-steps li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #f3edff; }
+.x2-steps li span { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,.2); display: grid; place-items: center; font-weight: 700; font-size: 12px; flex: none; }
+button.part-tab { font: inherit; cursor: pointer; text-align: left; }
+button.part-tab:disabled { opacity: .55; cursor: not-allowed; }
+@media (max-width: 1100px) { .x2-table { grid-template-columns: minmax(180px, 1fr) minmax(250px, 1.5fr) minmax(300px, 2fr); } }
+
 /* =====================================================================
    RESPONSIVE
    ===================================================================== */
@@ -2774,9 +2853,9 @@ async function onExerciseClick(ev) {
 const EX2 = window.IGA_EXERCISE2 || null;
 const X2_FLOW = { actor: 'activity', activity: 'right' };   // allowed arrow directions
 const X2_CHECK_DELAY = 2800;                                // ms the green/red correction stays visible
-let X2 = null;   // { sector, byId, root, canvas, world, cols, rels, badges }
+let X2 = null;   // { sector, byId, root, board, cols, svg, rels, link, badges }
 let S2 = null;   // participant state of the current sector
-const UI2 = { selected: null, checking: false, evalCls: null, view: { x: 0, y: 0, z: 1 }, tipsOpen: false, resizeBound: false, autoFit: true };
+const UI2 = { selected: null, checking: false, evalCls: null };
 
 const x2SectorById = id => EX2 && EX2.sectors.find(sc => sc.id === id || (sc.aliases || []).includes(id));
 const x2Cats = () => EX2.categories;
@@ -2790,8 +2869,8 @@ function x2Shuffle(list) {
 
 /* ---------- State ---------- */
 function x2Initial(sector) {
-  return { version: 1, tray: x2Shuffle(sector.cards.map(c => c.id)), cols: { actor: [], activity: [], right: [] },
-    rels: [], marks: {}, verified: {}, attempts: 0, solved: false, view: null, seq: 1 };
+  return { version: 1, part: 1, tray: x2Shuffle(sector.cards.map(c => c.id)), cols: { actor: [], activity: [], right: [] },
+    rels: [], marks: {}, verified: {}, attempts: 0, solved: false, seq: 1 };
 }
 /** Loads the saved state and reconciles it with the current data (new / removed cards). */
 function x2Load(sector) {
@@ -2807,6 +2886,7 @@ function x2Load(sector) {
     sector.cards.forEach(c => { if (!seen.has(c.id)) st.tray.push(c.id); });
     st.rels = (st.rels || []).filter(r => ids.has(r.from) && ids.has(r.to));
     st.marks = st.marks || {}; st.verified = st.verified || {};
+    st.part = st.part === 2 ? 2 : 1;
     return st;
   } catch (e) { return null; }
 }
@@ -2836,6 +2916,9 @@ function x2CanRelate(a, b, strict) {
     return { ok: false, reason: 'Arrows go from left to right: Actor → Activity → Fine-grained right.' };
   }
   if (S2.rels.some(r => r.from === from && r.to === to)) return { ok: false, reason: 'These items are already connected.' };
+  // 1:1 and 1:N only: an item receives at most one connection from the previous column.
+  const taken = S2.rels.find(r => r.to === to && x2ColOf(r.from) === x2ColOf(from));
+  if (taken) return { ok: false, reason: '“' + x2Label(to) + '” is already connected to “' + x2Label(taken.from) + '”. An item can receive only one connection from the previous column (remove it first).' };
   return { ok: true, from, to };
 }
 /** Number of complete chains Actor → Activity → Fine-grained right. */
@@ -2985,59 +3068,52 @@ function x2RenderSectors() {
     '</div>';
 }
 
-/* ---------- Exercise page ---------- */
+/* ---------- Exercise page ----------
+   Two successive parts on the SAME fixed table:
+   Part 1 – classify the items (drag & drop only, no relationships);
+   Part 2 – create the relationships (classification locked). */
+const X2_MIN_PER_COL = 3;
+const x2PartReady = () => x2Cats().every(k => S2.cols[k.id].length >= X2_MIN_PER_COL);
 function x2Mount(sector) {
   const byId = {};
   sector.cards.forEach(c => { byId[c.id] = c; });
   X2 = { sector, byId };
   S2 = x2Load(sector) || x2Initial(sector);
+  if (S2.part === 2 && !x2PartReady()) S2.part = 1;
   UI2.selected = null; UI2.checking = false; UI2.evalCls = null;
   document.title = EX2.title + ' – ' + sector.label + ' · Cyber AcaDimy';
   $('#crumb').innerHTML = '<span>Exercises</span>' + icon('arrowRight') + '<a href="#/exercise-2" style="color:inherit">Exercise 2</a>' + icon('arrowRight') + '<strong>' + esc(sector.label) + '</strong>';
   main.innerHTML =
     '<div class="exercise exercise--x2" id="x2-root">' +
-      '<section class="instruction" aria-labelledby="ins-title"><div class="instruction-inner">' +
-        '<span class="instruction-icon">' + icon('lightbulb') + '</span>' +
-        '<div class="instruction-text"><p class="instruction-eyebrow">' + esc(EX2.title) + '</p>' +
-          '<h1 id="ins-title">Build the authorization model</h1><p>' + esc(EX2.instruction) + '</p>' +
-          '<span class="instruction-sector">' + (sector.image ? '<img src="' + esc(sector.image) + '" alt="">' : icon(sector.icon || 'building')) + 'Sector: ' + esc(sector.label) +
-            '<a href="#/exercise-2" data-key="x2-change-sector">Change sector</a></span></div>' +
-      '</div></section>' +
+      '<section class="instruction" aria-labelledby="ins-title"><div class="instruction-inner" id="x2-banner"></div></section>' +
       '<div class="x2-layout">' +
         '<div class="toolbar" id="toolbar"></div>' +
         '<div id="notices" aria-live="polite"></div>' +
         '<section class="x2-tray" id="x2-tray" aria-labelledby="x2-tray-title"></section>' +
-        '<div class="canvas x2-canvas" id="x2-canvas" aria-label="Categories and relationships. Drag items between categories; drag the round handle of an item, or select it, to create a relationship.">' +
-          '<div class="world" id="x2-world">' +
-            '<div class="x2-cols" id="x2-cols"></div>' +
-            '<svg class="x2-rels" aria-hidden="true"><defs>' + x2Markers() + '</defs><g id="x2-rel-paths"></g><g id="x2-link-layer"></g></svg>' +
-            '<div id="x2-badges"></div>' +
-          '</div>' +
-          '<div class="canvas-controls" role="toolbar" aria-label="View controls">' +
-            '<button class="icon-btn" type="button" data-x2="zoom-out" data-key="vc:out" aria-label="Zoom out" title="Zoom out">' + icon('zoomOut') + '</button>' +
-            '<span class="zoom-label" id="x2-zoom" aria-live="polite">100%</span>' +
-            '<button class="icon-btn" type="button" data-x2="zoom-in" data-key="vc:in" aria-label="Zoom in" title="Zoom in">' + icon('zoomIn') + '</button>' +
-            '<span class="sep"></span>' +
-            '<button class="icon-btn" type="button" data-x2="fit" data-key="vc:fit" aria-label="Focus: fit everything in the view" title="Focus: fit everything in the view">' + icon('fit') + '</button>' +
-            '<button class="btn btn--ghost btn--sm" type="button" data-x2="reset-view" data-key="vc:reset">' + icon('rotate') + 'Reset view</button>' +
-            '<span class="sep"></span>' +
-            '<button class="btn btn--ghost btn--sm" type="button" data-x2="arrange" data-key="vc:arrange" title="Reorder the items to limit crossing arrows (categories and relationships are kept)">' + icon('sparkles') + 'Tidy up</button>' +
-          '</div>' +
-          '<div class="canvas-hint" aria-hidden="true">Drag the background to pan · <kbd>Ctrl</kbd> + scroll to zoom</div>' +
+        '<div class="x2-board" id="x2-board">' +
+          '<div class="x2-table" id="x2-cols"></div>' +
+          '<svg class="x2-rels" aria-hidden="true"><defs>' + x2Markers() + '</defs><g id="x2-rel-paths"></g></svg>' +
+          '<svg class="x2-rels x2-rels--top" aria-hidden="true"><g id="x2-rel-top"></g><g id="x2-link-layer"></g></svg>' +
+          '<div id="x2-badges"></div>' +
         '</div>' +
       '</div>' +
     '</div>';
-  X2.root = $('#x2-root'); X2.canvas = $('#x2-canvas'); X2.world = $('#x2-world');
-  X2.cols = $('#x2-cols'); X2.rels = $('#x2-rel-paths'); X2.link = $('#x2-link-layer'); X2.badges = $('#x2-badges');
+  X2.root = $('#x2-root'); X2.board = $('#x2-board'); X2.cols = $('#x2-cols'); X2.svgs = $$('svg.x2-rels', X2.board);
+  X2.rels = $('#x2-rel-paths'); X2.relsTop = $('#x2-rel-top'); X2.link = $('#x2-link-layer'); X2.badges = $('#x2-badges');
   x2Bind();
   x2Render();
-  watchWorkspace(); fitWorkspace();
-  UI2.autoFit = true; x2FitView();   // the three categories fully visible when the exercise opens
+  watchWorkspace(); fitWorkspace(); x2DrawRels();
 }
 function x2Markers() {
   return [['def', '#6b5bb5'], ['verified', '#1f9d55'], ['sel', '#5221b5'], ['ok', '#16a34a'], ['bad', '#dc2626'], ['link', '#5221b5']].map(([k, c]) =>
     '<marker id="x2-arrow-' + k + '" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">' +
     '<path d="M1 1 L11 6 L1 11 Z" fill="' + c + '"/></marker>').join('');
+}
+function x2SetPart(part) {
+  if (part === 2 && !x2PartReady()) return;
+  S2.part = part; UI2.selected = null;
+  x2Save(); x2Render(part === 2 ? 'tb:check' : 'tb:to-part2');
+  window.scrollTo(0, 0);
 }
 
 /* ---------- Rendering ---------- */
@@ -3045,36 +3121,91 @@ function x2Render(focusKey) {
   if (!X2 || !X2.root || !X2.root.isConnected) return;
   const active = document.activeElement;
   const key = focusKey || (active && active.dataset ? active.dataset.key : null);
-  x2RenderToolbar(); x2RenderNotices(); x2RenderTray(); x2RenderCols(); x2DrawRels();
+  X2.root.classList.toggle('x2-part1', S2.part !== 2);
+  X2.root.classList.toggle('x2-part2', S2.part === 2);
+  x2RenderBanner(); x2RenderToolbar(); x2RenderNotices(); x2RenderTray(); x2RenderCols();
+  fitWorkspace(); x2DrawRels();
   if (key && !dlg.open) { const el = document.querySelector('[data-key="' + key + '"]'); if (el && el !== document.activeElement) el.focus({ preventScroll: true }); }
 }
+function x2RenderBanner() {
+  const p2 = S2.part === 2, ready = x2PartReady();
+  const sector = X2.sector;
+  const steps = p2 ? '<ol class="x2-steps" aria-label="How to create a relationship">' +
+      '<li><span>1</span>Grab the round handle on the right of an item</li>' +
+      '<li><span>2</span>Hold and drag the connection</li>' +
+      '<li><span>3</span>Drop it on an item of the next column</li></ol>' : '';
+  $('#x2-banner').innerHTML =
+    '<span class="instruction-icon">' + icon(p2 ? 'link' : 'layers') + '</span>' +
+    '<div class="instruction-text"><p class="instruction-eyebrow">' + esc(EX2.title) + '</p>' +
+      '<h1 id="ins-title">' + (p2 ? 'Part 2 — Create the relationships' : 'Part 1 — Classify the items') + '</h1>' +
+      '<p>' + esc(p2 ? EX2.instructionPart2 : EX2.instructionPart1) + '</p>' + steps +
+      '<span class="instruction-sector">' + (sector.image ? '<img src="' + esc(sector.image) + '" alt="">' : icon(sector.icon || 'building')) + 'Sector: ' + esc(sector.label) +
+        '<a href="#/exercise-2" data-key="x2-change-sector">Change sector</a></span></div>' +
+    '<nav class="part-tabs" aria-label="Parts of Exercise 2">' +
+      '<button type="button" class="part-tab' + (p2 ? '' : ' is-current') + '" data-x2="part1" data-key="x2-tab1"' + (p2 ? '' : ' aria-current="step"') + '>' +
+        '<span class="part-tab-state">' + icon(ready ? 'circleCheck' : 'layers') + '</span><span><span class="part-tab-label">Part 1</span>Classify the items</span></button>' +
+      '<button type="button" class="part-tab' + (p2 ? ' is-current' : '') + '" data-x2="part2" data-key="x2-tab2"' + (p2 ? ' aria-current="step"' : '') + (ready ? '' : ' disabled title="Classify at least 3 items in each column first"') + '>' +
+        '<span class="part-tab-state">' + icon(S2.solved ? 'circleCheck' : ready ? 'link' : 'lock') + '</span><span><span class="part-tab-label">Part 2</span>Create the relationships</span></button>' +
+    '</nav>';
+}
+function x2ColProgress() {
+  return x2Cats().map(k => ({ k, n: S2.cols[k.id].length, ok: S2.cols[k.id].length >= X2_MIN_PER_COL }));
+}
 function x2RenderToolbar() {
-  const chains = x2ChainCount(), min = EX2.minChains;
+  const p2 = S2.part === 2;
   const left = S2.tray.length;
+  if (!p2) {
+    const prog = x2ColProgress(), ready = prog.every(x => x.ok);
+    const short = { actor: 'Who', activity: 'Activities', right: 'Rights' };
+    $('#toolbar').innerHTML = toolbarHTML({
+      counterIcon: 'layers',
+      counterTitle: 'Items still to classify',
+      counterHTML: '<strong>' + left + '</strong> item' + (left > 1 ? 's' : '') + ' to classify',
+      extraHTML: '<span class="x2-progress" aria-label="Items classified per column (minimum 3)">' + prog.map(x =>
+        '<span class="x2-progress-chip' + (x.ok ? ' is-ok' : '') + '">' + icon(x.ok ? 'circleCheck' : 'circle') + short[x.k.id] + ' <strong>' + Math.min(x.n, X2_MIN_PER_COL) + '/' + X2_MIN_PER_COL + '</strong></span>').join('') + '</span>' +
+        '<button class="btn btn--ghost btn--sm" type="button" data-x2="help" data-key="x2-help">' + icon('lightbulb') + 'How it works</button>',
+      rightHTML:
+        '<button class="btn btn--secondary" type="button" data-act="reset" data-key="tb:reset">' + icon('rotate') + 'Reset exercise</button>' +
+        '<div class="check-wrap">' +
+          (ready ? '' : '<span class="check-hint" id="x2-p1-hint">Classify at least 3 items in each column to continue</span>') +
+          '<button class="btn btn--primary" type="button" data-x2="to-part2" data-key="tb:to-part2"' + (ready ? '' : ' disabled aria-describedby="x2-p1-hint"') + '>Continue to Part 2' + icon('arrowRight') + '</button>' +
+        '</div>'
+    });
+    return;
+  }
+  const chains = x2ChainCount(), min = EX2.minChains;
+  const enabled = chains >= min;
   $('#toolbar').innerHTML = toolbarHTML({
     counterIcon: 'link',
-    counterTitle: 'Complete chains Actor → Activity → Fine-grained right',
+    counterTitle: 'Complete relationships Who → Activity → Fine-grained right',
     counterHTML: '<strong>' + chains + '</strong> complete relationship' + (chains > 1 ? 's' : ''),
-    extraHTML: '<span class="counter" title="Items still to classify">' + icon('layers') + '<span><strong>' + left + '</strong> item' + (left > 1 ? 's' : '') + ' to classify</span></span>' +
-      '<button class="btn btn--ghost btn--sm" type="button" data-x2="help" data-key="x2-help">' + icon('lightbulb') + 'How it works</button>',
-    checkEnabled: chains >= min,
-    busy: UI2.checking,
-    hint: 'Create at least ' + min + ' complete relationships to check your answer (' + Math.min(chains, min) + '/' + min + ')'
+    extraHTML: '<button class="btn btn--ghost btn--sm" type="button" data-x2="help" data-key="x2-help">' + icon('lightbulb') + 'How it works</button>' +
+      '<button class="btn btn--ghost btn--sm" type="button" data-x2="arrange" data-key="x2-tidy" title="Reorder the items in each column to limit crossing arrows (columns and relationships are kept)"' + (UI2.checking ? ' disabled' : '') + '>' + icon('sparkles') + 'Tidy up</button>',
+    rightHTML:
+      '<button class="btn btn--secondary" type="button" data-act="reset" data-key="tb:reset"' + (UI2.checking ? ' disabled' : '') + '>' + icon('rotate') + 'Reset exercise</button>' +
+      '<button class="btn btn--secondary" type="button" data-x2="part1" data-key="tb:part1"' + (UI2.checking ? ' disabled' : '') + '>' + icon('arrowLeft') + 'Back to Part 1</button>' +
+      '<div class="check-wrap">' +
+        (enabled ? '' : '<span class="check-hint" id="check-hint">Create at least ' + min + ' complete relationships to check your answer (' + Math.min(chains, min) + '/' + min + ')</span>') +
+        '<button class="btn btn--primary" type="button" data-act="check" data-key="tb:check"' + (enabled && !UI2.checking ? '' : ' disabled') + (enabled ? '' : ' aria-describedby="check-hint"') + '>' + icon('circleCheck') + 'Check answer</button>' +
+      '</div>'
   });
 }
 function x2RenderNotices() {
   const box = $('#notices');
+  const bad = Object.values(S2.marks).some(m => m === 'bad');
   let html = '';
   if (UI2.checking) {
     html = '<div class="notice notice--warning" role="status">' + icon('listChecks') + '<p><strong>Checking your answer…</strong> Correct connections are shown in green; connections in red will be removed.</p></div>';
-  } else if (UI2.selected) {
+  } else if (S2.part === 2 && UI2.selected) {
     const c = x2Card(UI2.selected);
     html = '<div class="notice notice--correction" role="status">' + icon('link') + '<p><strong>' + esc(c.label) + '</strong> is selected. Click an item highlighted in green to connect it, or press <kbd>Esc</kbd> to cancel.</p>' +
       '<button class="btn btn--secondary btn--sm" type="button" data-x2="deselect" data-key="x2-deselect">Cancel</button></div>';
   } else if (S2.solved) {
     html = '<div class="notice notice--success" role="status">' + icon('trophy') + '<p><strong>Well done!</strong> Your authorization model for the ' + esc(X2.sector.label) + ' sector is complete and correct.</p></div>';
-  } else if (Object.values(S2.marks).some(m => m === 'bad')) {
-    html = '<div class="notice notice--warning" role="status">' + icon('alert') + '<p><strong>Some items are in the wrong category</strong> (red cross). Move them, then complete your relationships and check again.</p></div>';
+  } else if (bad) {
+    html = '<div class="notice notice--warning" role="status">' + icon('alert') + '<p><strong>Some items are in the wrong column</strong> (red cross). ' +
+      (S2.part === 2 ? 'Go back to Part 1 to move them, then complete your relationships and check again.' : 'Move them to the right column, then continue to Part 2.') + '</p>' +
+      (S2.part === 2 ? '<button class="btn btn--secondary btn--sm" type="button" data-x2="part1" data-key="nt:part1">' + icon('arrowLeft') + 'Back to Part 1</button>' : '') + '</div>';
   }
   box.innerHTML = html;
 }
@@ -3083,7 +3214,7 @@ function x2CardHTML(id, where) {
   const parts = c.label.split(' – ');
   const text = parts.length > 1 ? '<span class="x2-card-app">' + esc(parts[0]) + '</span>' + esc(parts.slice(1).join(' – ')) : esc(c.label);
   const mark = where !== 'tray' ? S2.marks[id] : null;
-  const sel = UI2.selected;
+  const p2 = S2.part === 2, sel = p2 ? UI2.selected : null;
   let cls = 'x2-card' + (where === 'tray' ? ' x2-card--chip' : '');
   if (mark) cls += ' mark-' + mark;
   if (sel && where !== 'tray') {
@@ -3095,49 +3226,63 @@ function x2CardHTML(id, where) {
   const nRels = S2.rels.filter(r => r.from === id || r.to === id).length;
   const catTitle = where === 'tray' ? 'not classified yet' : 'in ' + x2Cats().find(k => k.id === where).short;
   const aria = c.label + ', ' + catTitle + (nRels ? ', ' + nRels + ' relationship' + (nRels > 1 ? 's' : '') : '') +
-    (mark === 'ok' ? ', right category' : mark === 'bad' ? ', wrong category' : '') + (id === sel ? ', selected' : '');
-  const port = (where === 'actor' || where === 'activity') && !UI2.checking
-    ? '<button type="button" class="x2-port" data-x2-port="' + esc(id) + '" tabindex="-1" aria-hidden="true" title="Drag onto a compatible item to create a relationship">' + icon('plus') + '</button>' : '';
-  return '<div class="' + cls + '" data-card="' + esc(id) + '" data-key="card:' + esc(id) + '" tabindex="0" role="button" aria-pressed="' + (id === sel) + '" aria-label="' + esc(aria) + '">' +
-    text + (mark ? '<span class="x2-mark x2-mark--' + mark + '" title="' + (mark === 'ok' ? 'Right category' : 'Wrong category') + '">' + icon(mark === 'ok' ? 'check' : 'x') + '</span>' : '') + port + '</div>';
+    (mark === 'ok' ? ', right column' : mark === 'bad' ? ', wrong column' : '') + (id === sel ? ', selected' : '');
+  const port = p2 && (where === 'actor' || where === 'activity') && !UI2.checking
+    ? '<button type="button" class="x2-port" data-x2-port="' + esc(id) + '" tabindex="-1" aria-hidden="true" title="Hold and drag onto an item of the next column to create a relationship">' + icon('plus') + '</button>' : '';
+  return '<div class="' + cls + '" data-card="' + esc(id) + '" data-key="card:' + esc(id) + '" tabindex="0" role="button"' + (p2 ? ' aria-pressed="' + (id === sel) + '"' : '') + ' aria-label="' + esc(aria) + '">' +
+    text + (mark ? '<span class="x2-mark x2-mark--' + mark + '" title="' + (mark === 'ok' ? 'Right column' : 'Wrong column') + '">' + icon(mark === 'ok' ? 'check' : 'x') + '</span>' : '') + port + '</div>';
 }
 function x2RenderTray() {
+  const tray = $('#x2-tray');
+  tray.hidden = S2.part === 2;
+  if (tray.hidden) return;
   const n = S2.tray.length;
-  $('#x2-tray').innerHTML =
+  tray.innerHTML =
     '<div class="x2-tray-head"><h2 id="x2-tray-title">' + icon('layers') + 'Items to classify<span class="count">' + n + '</span></h2>' +
-      '<p>' + (n ? 'Drag each item into one of the three categories below.' : '') + '</p></div>' +
+      '<p>' + (n ? 'Drag each item into the appropriate column of the table below.' : '') + '</p></div>' +
     '<div class="x2-tray-list" id="x2-tray-list" data-drop="tray">' +
       (n ? S2.tray.map(id => x2CardHTML(id, 'tray')).join('')
          : '<p class="x2-tray-empty">' + icon('circleCheck') + 'All items are classified. You can drag an item back here at any time.</p>') +
     '</div>';
 }
 function x2RenderCols() {
+  const p2 = S2.part === 2;
   X2.cols.innerHTML = x2Cats().map(k => {
-    const list = S2.cols[k.id];
+    const list = S2.cols[k.id], ok = list.length >= X2_MIN_PER_COL;
     return '<section class="x2-col x2-col--' + k.id + '" data-col="' + k.id + '" aria-labelledby="x2-col-' + k.id + '">' +
-      '<header class="x2-col-head"><span class="x2-col-icon">' + icon(k.icon) + '</span><div><h2 id="x2-col-' + k.id + '">' + esc(k.title) + '</h2>' +
-        '<span class="count">' + list.length + ' item' + (list.length > 1 ? 's' : '') + '</span></div></header>' +
+      '<header class="x2-col-head"><h2 id="x2-col-' + k.id + '">' + esc(k.title) + '</h2>' +
+        '<span class="x2-col-count' + (!p2 && ok ? ' is-ok' : '') + '">' + list.length + ' item' + (list.length > 1 ? 's' : '') +
+          (!p2 ? ' · ' + (ok ? icon('check') + 'min. 3 reached' : 'min. 3') : '') + '</span></header>' +
       '<div class="x2-col-list" data-drop="' + k.id + '">' +
-        (list.length ? list.map(id => x2CardHTML(id, k.id)).join('') : '<p class="x2-col-empty">Drop items here</p>') +
+        (list.length ? list.map(id => x2CardHTML(id, k.id)).join('') : '<p class="x2-col-empty">' + (p2 ? 'No item' : 'Drop items here') + '</p>') +
       '</div></section>';
   }).join('');
 }
-function x2WorldRect(el) {
-  const wr = X2.world.getBoundingClientRect(), r = el.getBoundingClientRect(), z = UI2.view.z;
-  return { x: (r.left - wr.left) / z, y: (r.top - wr.top) / z, w: r.width / z, h: r.height / z };
+/* Position of an element in the board's scrollable content (px). */
+function x2BoardRect(el) {
+  const br = X2.board.getBoundingClientRect(), r = el.getBoundingClientRect();
+  return { x: r.left - br.left + X2.board.scrollLeft, y: r.top - br.top + X2.board.scrollTop, w: r.width, h: r.height };
+}
+function x2BoardPoint(ev) {
+  const br = X2.board.getBoundingClientRect();
+  return { x: ev.clientX - br.left + X2.board.scrollLeft, y: ev.clientY - br.top + X2.board.scrollTop };
 }
 function x2CardEl(id) { return X2.cols.querySelector('[data-card="' + id + '"]'); }
+function x2RelPath(x1, y1, x2, y2) {
+  const dx = Math.max(30, (x2 - x1) / 2);
+  return 'M' + x1 + ',' + y1 + ' C' + (x1 + dx) + ',' + y1 + ' ' + (x2 - dx) + ',' + y2 + ' ' + x2 + ',' + y2;
+}
 function x2DrawRels() {
-  if (!X2 || !X2.rels) return;
+  if (!X2 || !X2.rels || !X2.root.isConnected) return;
+  X2.svgs.forEach(svg => { svg.setAttribute('width', X2.board.scrollWidth); svg.setAttribute('height', X2.board.scrollHeight); });
   const sel = UI2.selected, ev = UI2.evalCls;
-  let paths = '', badges = '';
-  S2.rels.forEach(r => {
+  let paths = '', top = '', badges = '';
+  if (S2.part === 2) S2.rels.forEach(r => {
     const a = x2CardEl(r.from), b = x2CardEl(r.to);
     if (!a || !b) return;
-    const ra = x2WorldRect(a), rb = x2WorldRect(b);
+    const ra = x2BoardRect(a), rb = x2BoardRect(b);
     const x1 = ra.x + ra.w + 10, y1 = ra.y + ra.h / 2, x2 = rb.x - 3, y2 = rb.y + rb.h / 2;
-    const dx = Math.max(40, (x2 - x1) / 2);
-    const d = 'M' + x1 + ',' + y1 + ' C' + (x1 + dx) + ',' + y1 + ' ' + (x2 - dx) + ',' + y2 + ' ' + x2 + ',' + y2;
+    const d = x2RelPath(x1, y1, x2, y2);
     let cls = 'x2-rel', mk = 'def';
     const touches = sel && (r.from === sel || r.to === sel);
     if (ev) { cls += ' eval-' + ev.cls[r.id]; mk = ev.cls[r.id]; }
@@ -3148,55 +3293,23 @@ function x2DrawRels() {
     }
     const label = x2Label(r.from) + ' → ' + x2Label(r.to);
     const title = ev ? (ev.cls[r.id] === 'ok' ? 'Correct: ' : 'Incorrect: ') + label + (ev.why[r.id] ? ' – ' + ev.why[r.id] : '') : label + (S2.verified[r.id] ? ' (checked: correct)' : '');
-    paths += '<path class="' + cls + '" d="' + d + '" marker-end="url(#x2-arrow-' + mk + ')"><title>' + esc(title) + '</title></path>';
+    const svgPath = '<path class="x2-rel-halo" d="' + d + '"/><path class="' + cls + '" d="' + d + '" marker-end="url(#x2-arrow-' + mk + ')"><title>' + esc(title) + '</title></path>';
+    // Normally behind the cards; in front of them for the selected item and during the correction.
+    if (ev || touches) top += svgPath; else paths += svgPath;
     if (!ev) {
-      const mx = (x1 + 3 * (x1 + dx) + 3 * (x2 - dx) + x2) / 8, my = (y1 + y2) / 2;
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
       badges += '<button type="button" class="x2-rel-del' + (touches ? ' is-visible' : '') + '" style="left:' + mx + 'px;top:' + my + 'px" data-rel-del="' + esc(r.id) + '" data-key="rel:' + esc(r.id) + '" aria-label="Remove the relationship ' + esc(label) + '" title="Remove this relationship">' + icon('x') + '</button>';
     }
   });
   X2.rels.innerHTML = paths;
+  X2.relsTop.innerHTML = top;
   X2.badges.innerHTML = badges;
   X2.root.classList.toggle('x2-checking', UI2.checking);
 }
 
-/* ---------- View (same behaviour as Exercise 1) ---------- */
-let x2ViewTimer = null;
-function x2ApplyView(v) {
-  if (v) UI2.view = { x: v.x, y: v.y, z: v.z };
-  const view = UI2.view;
-  X2.world.style.transform = 'translate(' + view.x + 'px,' + view.y + 'px) scale(' + view.z + ')';
-  X2.canvas.style.backgroundSize = (GRID * view.z) + 'px ' + (GRID * view.z) + 'px';
-  X2.canvas.style.backgroundPosition = view.x + 'px ' + view.y + 'px';
-  $('#x2-zoom').textContent = Math.round(view.z * 100) + '%';
-  S2.view = Object.assign({}, view);
-  clearTimeout(x2ViewTimer); x2ViewTimer = setTimeout(x2Save, 300);
-}
-function x2Content() { return { w: X2.cols.offsetWidth, h: X2.cols.offsetHeight }; }
-/* minZ: lowest zoom accepted. Automatic fit keeps the text readable (50 %, the
-   view is then aligned to the top); the Focus button shows everything. */
-function x2FitView(minZ) {
-  const b = x2Content(), r = X2.canvas.getBoundingClientRect(), pad = 40;
-  const z = clamp(Math.min((r.width - pad * 2) / b.w, (r.height - pad * 2 - 50) / b.h), minZ || 0.5, 1);
-  x2ApplyView({ z, x: (r.width - b.w * z) / 2, y: pad });
-}
-function x2ResetView() {
-  const b = x2Content(), r = X2.canvas.getBoundingClientRect();
-  const z = r.width < b.w + 48 ? clamp((r.width - 32) / b.w, 0.35, 1) : 1;
-  x2ApplyView({ z, x: Math.max(16, (r.width - b.w * z) / 2), y: 24 });
-}
-function x2ZoomAt(f, px, py) {
-  const r = X2.canvas.getBoundingClientRect(), v = UI2.view;
-  if (px == null) { px = r.width / 2; py = r.height / 2; }
-  const nz = clamp(v.z * f, 0.3, 2), wx = (px - v.x) / v.z, wy = (py - v.y) / v.z;
-  x2ApplyView({ z: nz, x: px - wx * nz, y: py - wy * nz });
-}
-function x2ToWorld(ev) {
-  const r = X2.canvas.getBoundingClientRect(), v = UI2.view;
-  return { x: (ev.clientX - r.left - v.x) / v.z, y: (ev.clientY - r.top - v.y) / v.z, cx: ev.clientX - r.left, cy: ev.clientY - r.top };
-}
-
-/* ---------- Moving cards ---------- */
+/* ---------- Moving cards (Part 1) ---------- */
 function x2Move(id, to, index) {
+  if (S2.part === 2) return;
   const fromCol = x2ColOf(id);
   const src = x2ListOf(fromCol);
   src.splice(src.indexOf(id), 1);
@@ -3207,36 +3320,31 @@ function x2Move(id, to, index) {
     delete S2.marks[id];
     if (to === 'tray') { const n = S2.rels.length; S2.rels = S2.rels.filter(r => r.from !== id && r.to !== id); removed = n - S2.rels.length; }
     removed += x2PruneRels();
-    if (UI2.selected === id && to === 'tray') UI2.selected = null;
+    S2.solved = false;
   }
-  if (fromCol !== to) S2.solved = false;
   x2Save();
   x2Render();
   const el = document.querySelector('[data-card="' + id + '"]');
   if (el) { el.classList.add('just-dropped'); el.focus({ preventScroll: true }); }
-  if (removed) toast(removed + ' relationship' + (removed > 1 ? 's' : '') + ' removed because the item changed category.');
+  if (removed) toast(removed + ' relationship' + (removed > 1 ? 's' : '') + ' removed because the item changed column.');
 }
-/** Tidy up: reorder items to limit crossing arrows, keeping categories and relationships. */
+/** Tidy up (Part 2): reorder items to limit crossing arrows, keeping columns and relationships. */
 function x2Tidy() {
   const pos = list => { const m = {}; list.forEach((id, i) => { m[id] = i; }); return m; };
   const sortBy = (list, score) => list.map((id, i) => ({ id, i, s: score(id) })).sort((a, b) => (a.s - b.s) || (a.i - b.i)).map(x => x.id);
-  const bary = (id, ids, idx, dir) => {
+  const bary = (id, idx, dir) => {
     const ns = S2.rels.filter(r => dir === 'in' ? r.to === id : r.from === id).map(r => idx[dir === 'in' ? r.from : r.to]).filter(v => v != null);
     return ns.length ? ns.reduce((a, b) => a + b, 0) / ns.length : Infinity;
   };
   for (let pass = 0; pass < 2; pass++) {
-    const pa = pos(S2.cols.actor);
-    S2.cols.activity = sortBy(S2.cols.activity, id => bary(id, null, pa, 'in'));
-    const pc = pos(S2.cols.activity);
-    S2.cols.right = sortBy(S2.cols.right, id => bary(id, null, pc, 'in'));
-    S2.cols.actor = sortBy(S2.cols.actor, id => bary(id, null, pc, 'out'));
+    S2.cols.activity = sortBy(S2.cols.activity, id => bary(id, pos(S2.cols.actor), 'in'));
+    S2.cols.right = sortBy(S2.cols.right, id => bary(id, pos(S2.cols.activity), 'in'));
+    S2.cols.actor = sortBy(S2.cols.actor, id => bary(id, pos(S2.cols.activity), 'out'));
   }
-  const pa = pos(S2.cols.actor);
-  S2.cols.activity = sortBy(S2.cols.activity, id => bary(id, null, pa, 'in'));
-  const pc = pos(S2.cols.activity);
-  S2.cols.right = sortBy(S2.cols.right, id => bary(id, null, pc, 'in'));
-  x2Save(); x2Render();   // the zoom level and position are kept
-  toast('Items tidied up. Categories and relationships are unchanged.');
+  S2.cols.activity = sortBy(S2.cols.activity, id => bary(id, pos(S2.cols.actor), 'in'));
+  S2.cols.right = sortBy(S2.cols.right, id => bary(id, pos(S2.cols.activity), 'in'));
+  x2Save(); x2Render();
+  toast('Items tidied up. Columns and relationships are unchanged.');
 }
 
 /* ---------- Pointer interactions ---------- */
@@ -3246,49 +3354,43 @@ function x2Bind() {
 
   const dropZoneAt = ev => {
     const el = document.elementFromPoint(ev.clientX, ev.clientY);
-    if (el && el.closest('#x2-tray')) return 'tray';
-    const r = X2.canvas.getBoundingClientRect();
-    if (ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) return null;
-    if (el && el.closest('.canvas-controls')) return null;
-    const p = x2ToWorld(ev);
-    let best = null, bestD = Infinity;
-    $$('.x2-col', X2.cols).forEach(c => {
-      const cx = c.offsetLeft + c.offsetWidth / 2, d = Math.abs(p.x - cx);
-      if (d < bestD) { bestD = d; best = c.dataset.col; }
-    });
-    return best;
+    if (!el) return null;
+    if (el.closest('#x2-tray')) return 'tray';
+    const col = el.closest('.x2-col');
+    return col ? col.dataset.col : null;
   };
+  // Insertion index in a list or a grid: before / after the nearest item.
   const placeholderIndex = (zone, ev) => {
-    if (zone === 'tray') {
-      const chips = $$('#x2-tray-list .x2-card').filter(c => c.dataset.card !== drag.id);
-      for (let i = 0; i < chips.length; i++) {
-        const r = chips[i].getBoundingClientRect();
-        if (ev.clientY < r.top || (ev.clientY <= r.bottom && ev.clientX < r.left + r.width / 2)) return i;
-      }
-      return chips.length;
-    }
-    const p = x2ToWorld(ev);
-    const cards = $$('.x2-col[data-col="' + zone + '"] .x2-card').filter(c => c.dataset.card !== drag.id);
-    for (let i = 0; i < cards.length; i++) { const r = x2WorldRect(cards[i]); if (p.y < r.y + r.h / 2) return i; }
-    return cards.length;
+    const list = zone === 'tray' ? $('#x2-tray-list') : $('.x2-col[data-col="' + zone + '"] .x2-col-list', X2.cols);
+    const items = $$('.x2-card', list).filter(c => c.dataset.card !== drag.id);
+    if (!items.length) return 0;
+    let best = 0, bestD = Infinity;
+    items.forEach((c, i) => {
+      const r = c.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const d = Math.hypot((ev.clientX - cx) / 2, ev.clientY - cy);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    const r = items[best].getBoundingClientRect();
+    const after = (zone === 'actor') ? ev.clientY > r.top + r.height / 2
+      : (ev.clientY > r.bottom) || (ev.clientY >= r.top && ev.clientX > r.left + r.width / 2);
+    return best + (after ? 1 : 0);
   };
   const showPlaceholder = (zone, index) => {
     if (drag.zone === zone && drag.index === index) return;
     $$('.is-drop-target', root).forEach(e => e.classList.remove('is-drop-target'));
     if (drag.ph) drag.ph.remove();
     drag.zone = zone; drag.index = index;
-    if (!zone) { x2DrawRels(); return; }
+    if (!zone) return;
     const box = zone === 'tray' ? $('#x2-tray') : $('.x2-col[data-col="' + zone + '"]', X2.cols);
     box.classList.add('is-drop-target');
     const list = zone === 'tray' ? $('#x2-tray-list') : $('.x2-col-list', box);
     $$('.x2-col-empty, .x2-tray-empty', list).forEach(e => { e.hidden = true; });
     const ph = document.createElement('div');
     ph.className = 'x2-ph' + (zone === 'tray' ? ' x2-ph--chip' : '');
-    if (zone !== 'tray') ph.style.height = drag.h + 'px';
+    if (zone !== 'tray') ph.style.minHeight = drag.h + 'px';
     const items = $$('.x2-card', list).filter(c => c.dataset.card !== drag.id);
     list.insertBefore(ph, items[index] || null);
     drag.ph = ph;
-    x2DrawRels();
   };
   const endCardDrag = commit => {
     const d = drag; drag = null;
@@ -3308,6 +3410,7 @@ function x2Bind() {
     const d = drag; drag = null;
     if (d.tip) d.tip.remove();
     X2.link.innerHTML = '';
+    X2.board.classList.remove('is-linking');
     if (d.hover) d.hover.classList.remove('is-drop-ok', 'is-drop-bad');
     UI2.selected = d.prevSel;
     if (!ev) { x2Render(); return; }
@@ -3323,25 +3426,18 @@ function x2Bind() {
   };
 
   root.addEventListener('pointerdown', ev => {
-    if (ev.button !== 0 || dlg.open) return;
+    if (ev.button !== 0 || dlg.open || UI2.checking) return;
     const port = ev.target.closest('[data-x2-port]');
     const cardEl = ev.target.closest('[data-card]');
-    if (UI2.checking) { if (!ev.target.closest('.x2-canvas') || cardEl || port) return; }
-    if (port) {
+    if (port && S2.part === 2) {
       ev.preventDefault();
       drag = { kind: 'link', from: port.dataset.x2Port, el: port, sx: ev.clientX, sy: ev.clientY, moved: false, prevSel: UI2.selected };
       root.setPointerCapture(ev.pointerId); return;
     }
     if (cardEl) {
       const r = cardEl.getBoundingClientRect();
-      drag = { kind: 'card', id: cardEl.dataset.card, el: cardEl, sx: ev.clientX, sy: ev.clientY, moved: false,
+      drag = { kind: S2.part === 2 ? 'click' : 'card', id: cardEl.dataset.card, el: cardEl, sx: ev.clientX, sy: ev.clientY, moved: false,
         ox: ev.clientX - r.left, oy: ev.clientY - r.top, w: cardEl.offsetWidth, h: cardEl.offsetHeight, zone: undefined, index: undefined };
-      root.setPointerCapture(ev.pointerId); return;
-    }
-    if (ev.target.closest('button, a, input, select, details, .canvas-controls, .canvas-hint')) return;
-    if (ev.target.closest('.x2-canvas')) {
-      drag = { kind: 'pan', sx: ev.clientX, sy: ev.clientY, ox: UI2.view.x, oy: UI2.view.y, moved: false };
-      X2.canvas.classList.add('is-panning');
       root.setPointerCapture(ev.pointerId);
     }
   });
@@ -3349,28 +3445,27 @@ function x2Bind() {
     if (!drag) return;
     const dx = ev.clientX - drag.sx, dy = ev.clientY - drag.sy;
     if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
+    if (drag.kind === 'click') { drag.moved = true; return; }   // Part 2: cards cannot be moved
     if (!drag.moved) {
       drag.moved = true;
       if (drag.kind === 'card') {
         const g = drag.el.cloneNode(true);
-        g.classList.add('x2-ghost'); g.classList.remove('is-selected', 'is-compatible', 'is-dim', 'is-linked', 'just-dropped');
+        g.classList.add('x2-ghost'); g.classList.remove('just-dropped');
         g.removeAttribute('data-card'); g.removeAttribute('data-key'); g.removeAttribute('tabindex');
-        $$('.x2-port', g).forEach(e => e.remove());
+        const col = drag.el.closest('.x2-col');
+        if (col) g.classList.add('x2-ghost--' + col.dataset.col);
         g.style.width = drag.w + 'px';
         document.body.appendChild(g);
         drag.ghost = g;
-        drag.ox = Math.min(drag.ox / (drag.el.closest('.x2-canvas') ? UI2.view.z : 1), drag.w - 10);
-        drag.oy = Math.min(drag.oy / (drag.el.closest('.x2-canvas') ? UI2.view.z : 1), drag.h - 6);
         drag.el.classList.add('is-drag-source');
       } else if (drag.kind === 'link') {
         UI2.selected = drag.from; x2RenderCols(); x2DrawRels();
         drag.el = $('[data-x2-port="' + drag.from + '"]', X2.cols);
         if (drag.el) drag.el.classList.add('is-active');
-        drag.tip = document.createElement('div'); drag.tip.className = 'link-tip'; X2.canvas.appendChild(drag.tip);
-        X2.canvas.classList.add('is-linking');
+        drag.tip = document.createElement('div'); drag.tip.className = 'link-tip'; X2.board.appendChild(drag.tip);
+        X2.board.classList.add('is-linking');
       }
     }
-    if (drag.kind === 'pan') { UI2.autoFit = false; x2ApplyView({ z: UI2.view.z, x: drag.ox + dx, y: drag.oy + dy }); return; }
     if (drag.kind === 'card') {
       drag.ghost.style.left = (ev.clientX - drag.ox) + 'px';
       drag.ghost.style.top = (ev.clientY - drag.oy) + 'px';
@@ -3379,47 +3474,37 @@ function x2Bind() {
       return;
     }
     if (drag.kind === 'link') {
-      const p = x2ToWorld(ev), src = x2CardEl(drag.from);
-      const r = x2WorldRect(src), x1 = r.x + r.w + 10, y1 = r.y + r.h / 2;
+      const p = x2BoardPoint(ev), src = x2CardEl(drag.from);
+      const r = x2BoardRect(src), x1 = r.x + r.w + 10, y1 = r.y + r.h / 2;
       const t = linkTarget(ev, drag.from);
       if (drag.hover && drag.hover !== t.el) drag.hover.classList.remove('is-drop-ok', 'is-drop-bad');
       drag.hover = t.el;
-      let tip = 'Drop on a compatible item (highlighted in green)', cls = '';
+      let tip = 'Drop on a compatible item of the next column (highlighted in green)', cls = '';
       if (t.el && t.id !== drag.from) {
         t.el.classList.toggle('is-drop-ok', t.check.ok); t.el.classList.toggle('is-drop-bad', !t.check.ok);
         tip = t.check.ok ? 'Release to connect to ' + x2Label(t.id) : t.check.reason; cls = t.check.ok ? 'is-ok' : 'is-bad';
       }
       drag.tip.textContent = tip; drag.tip.className = 'link-tip ' + cls;
-      drag.tip.style.left = p.cx + 'px'; drag.tip.style.top = p.cy + 'px';
-      const ddx = Math.max(40, Math.abs(p.x - x1) / 2);
-      X2.link.innerHTML = '<path class="link-preview' + (cls === 'is-bad' ? ' is-bad' : '') + '" d="M' + x1 + ',' + y1 + ' C' + (x1 + ddx) + ',' + y1 + ' ' + (p.x - ddx) + ',' + p.y + ' ' + p.x + ',' + p.y + '" marker-end="url(#x2-arrow-link)"/>';
+      drag.tip.style.left = p.x + 'px'; drag.tip.style.top = p.y + 'px';
+      X2.link.innerHTML = '<path class="link-preview' + (cls === 'is-bad' ? ' is-bad' : '') + '" d="' + x2RelPath(x1, y1, p.x, p.y) + '" marker-end="url(#x2-arrow-link)"/>';
     }
   });
   const up = ev => {
     if (!drag) return;
     try { root.releasePointerCapture(ev.pointerId); } catch (e) { /* ignore */ }
     const cancel = ev.type === 'pointercancel';
-    if (drag.kind === 'pan') { X2.canvas.classList.remove('is-panning'); const moved = drag.moved; drag = null; if (!moved && UI2.selected) { UI2.selected = null; x2Render(); } return; }
+    if (drag.kind === 'click') { const id = drag.id, moved = drag.moved; drag = null; if (!moved) x2Activate(id); return; }
     if (drag.kind === 'card') {
-      if (!drag.moved) { const id = drag.id; drag = null; x2Activate(id); return; }
+      if (!drag.moved) { drag = null; return; }
       endCardDrag(!cancel); return;
     }
     if (drag.kind === 'link') {
-      X2.canvas.classList.remove('is-linking');
       if (!drag.moved) { const id = drag.from; drag = null; x2Activate(id); return; }
       endLink(cancel ? null : ev);
     }
   };
   root.addEventListener('pointerup', up);
   root.addEventListener('pointercancel', up);
-
-  X2.canvas.addEventListener('wheel', ev => {
-    ev.preventDefault();
-    const r = X2.canvas.getBoundingClientRect();
-    UI2.autoFit = false;
-    if (ev.ctrlKey || ev.metaKey) x2ZoomAt(Math.exp(-ev.deltaY * 0.0022), ev.clientX - r.left, ev.clientY - r.top);
-    else x2ApplyView({ z: UI2.view.z, x: UI2.view.x - ev.deltaX, y: UI2.view.y - ev.deltaY });
-  }, { passive: false });
 
   root.addEventListener('click', async ev => {
     const del = ev.target.closest('[data-rel-del]');
@@ -3431,32 +3516,29 @@ function x2Bind() {
     const b = ev.target.closest('[data-x2], [data-act]');
     if (!b || b.disabled) return;
     switch (b.dataset.x2 || b.dataset.act) {
-      case 'zoom-in': UI2.autoFit = false; x2ZoomAt(1.2); break;
-      case 'zoom-out': UI2.autoFit = false; x2ZoomAt(1 / 1.2); break;
-      case 'fit': UI2.autoFit = false; x2FitView(0.3); break;
-      case 'reset-view': UI2.autoFit = false; x2ResetView(); break;
+      case 'to-part2': case 'part2': x2SetPart(2); break;
+      case 'part1': x2SetPart(1); break;
       case 'arrange': if (!UI2.checking) x2Tidy(); break;
       case 'deselect': UI2.selected = null; x2Render(); break;
       case 'help': x2ShowHelp(); break;
-      case 'check': x2Check(); break;
+      case 'check': if (S2.part === 2) x2Check(); break;
       case 'reset': {
         const ok = await confirmDialog('Reset exercise', 'Are you sure you want to reset <strong>Exercise 2 – ' + esc(X2.sector.label) + '</strong>? Your classification and all the relationships you created will be deleted. This cannot be undone.', 'Reset exercise', 'danger');
         if (!ok) return;
         S2 = x2Initial(X2.sector); UI2.selected = null;
-        x2Save(); x2Render('tb:reset'); UI2.autoFit = true; x2FitView();
+        x2Save(); x2Render('tb:reset');
         toast('The exercise has been reset.');
         break;
       }
     }
   });
   // Show the × of an arrow when the pointer is close to its middle.
-  X2.canvas.addEventListener('pointermove', ev => {
-    if (drag || UI2.checking) return;
-    const p = x2ToWorld(ev);
+  X2.board.addEventListener('pointermove', ev => {
+    if (drag || UI2.checking || S2.part !== 2) return;
+    const p = x2BoardPoint(ev);
     $$('.x2-rel-del', X2.badges).forEach(bt => {
       const near = Math.abs(parseFloat(bt.style.left) - p.x) < 40 && Math.abs(parseFloat(bt.style.top) - p.y) < 22;
-      bt.classList.toggle('is-hover', near);
-      if (near) bt.style.opacity = 1; else bt.style.opacity = '';
+      bt.style.opacity = near ? 1 : '';
     });
   });
 
@@ -3465,43 +3547,49 @@ function x2Bind() {
     const cardEl = ev.target.closest && ev.target.closest('[data-card]');
     if (!cardEl || ev.target !== cardEl || UI2.checking) return;
     const id = cardEl.dataset.card, col = x2ColOf(id);
-    const keyCols = { '1': 'actor', '2': 'activity', '3': 'right', '0': 'tray' };
-    if (keyCols[ev.key] && !ev.altKey && !ev.ctrlKey && !ev.metaKey) {
-      ev.preventDefault();
-      if (keyCols[ev.key] !== col) {
-        x2Move(id, keyCols[ev.key]);
-        const k = x2Cats().find(c => c.id === keyCols[ev.key]);
-        toast('Moved to ' + (k ? k.short : 'the banner') + '.');
+    if (S2.part !== 2) {
+      const keyCols = { '1': 'actor', '2': 'activity', '3': 'right', '0': 'tray' };
+      if (keyCols[ev.key] && !ev.altKey && !ev.ctrlKey && !ev.metaKey) {
+        ev.preventDefault();
+        if (keyCols[ev.key] !== col) {
+          x2Move(id, keyCols[ev.key]);
+          const k = x2Cats().find(c => c.id === keyCols[ev.key]);
+          toast('Moved to ' + (k ? k.short : 'the banner') + '.');
+        }
+      } else if (ev.altKey && (ev.key === 'ArrowUp' || ev.key === 'ArrowDown')) {
+        ev.preventDefault();
+        const list = x2ListOf(col), i = list.indexOf(id), j = i + (ev.key === 'ArrowUp' ? -1 : 1);
+        if (j >= 0 && j < list.length) x2Move(id, col, j);
       }
-    } else if (ev.altKey && (ev.key === 'ArrowUp' || ev.key === 'ArrowDown')) {
-      ev.preventDefault();
-      const list = x2ListOf(col), i = list.indexOf(id), j = i + (ev.key === 'ArrowUp' ? -1 : 1);
-      if (j >= 0 && j < list.length) x2Move(id, col, j);
     } else if (ev.key === 'Enter' || ev.key === ' ') {
       ev.preventDefault(); x2Activate(id);
     }
   });
+  X2.board.addEventListener('scroll', () => { /* arrows live in the scrolled content: nothing to redraw */ });
 }
 function x2ShowHelp() {
+  const p2 = S2.part === 2;
   openDialog({
-    title: 'How it works', icon: 'lightbulb', size: 'lg',
-    body: '<ul class="x2-help-list">' +
-      '<li><strong>Classify:</strong> drag each item from the top banner into one of the three categories. You can move it to another category, reorder it, or drag it back to the banner.</li>' +
-      '<li><strong>Connect:</strong> drag the round handle on the right of an item onto a compatible item, or click an item and then click one of the items highlighted in green.</li>' +
-      '<li>Allowed relationships: <strong>Actor → Activity</strong> and <strong>Activity → Fine-grained right</strong>. An item can have several relationships.</li>' +
-      '<li><strong>Remove a relationship:</strong> select one of its items (or hover the arrow) and click the red ×.</li>' +
-      '<li><strong>Check answer</strong> needs at least ' + EX2.minChains + ' complete chains Actor → Activity → Fine-grained right. Correct connections are kept, incorrect ones are removed; you can check as many times as you like.</li>' +
-      '<li><strong>View:</strong> zoom in and out, <strong>Focus</strong> to see everything, <strong>Reset view</strong> to go back to 100 %, <strong>Tidy up</strong> to reorder the items and limit crossing arrows.</li>' +
-      '<li>Keyboard: <kbd>Tab</kbd> to an item, <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to place it in a category, <kbd>0</kbd> to send it back to the banner, <kbd>Alt</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd> to reorder, <kbd>Enter</kbd> to select / connect, <kbd>Esc</kbd> to cancel.</li>' +
+    title: p2 ? 'Part 2 — Create the relationships' : 'Part 1 — Classify the items', icon: 'lightbulb', size: 'lg',
+    body: '<ul class="x2-help-list">' + (p2
+      ? '<li><strong>Create a relationship:</strong> grab the round handle on the right of an item, hold and drag it, then drop it on an item of the next column. You can also click an item, then click one of the items highlighted in green.</li>' +
+        '<li>Direction: <strong>Who → Activity</strong>, then <strong>Activity → Fine-grained right</strong>. A Who item cannot be connected directly to a right.</li>' +
+        '<li>One item can be connected to <strong>several items of the next column</strong> (1:1 or 1:N), but an item can receive only <strong>one connection</strong> from the previous column.</li>' +
+        '<li><strong>Remove a relationship:</strong> select one of its items (or hover the middle of the arrow) and click the red ×.</li>' +
+        '<li><strong>Check answer</strong> needs at least ' + EX2.minChains + ' complete Who → Activity → Fine-grained right relationships. Correct connections are kept, incorrect ones are removed; you can check as many times as you like.</li>' +
+        '<li>To change the classification, go <strong>Back to Part 1</strong>. Keyboard: <kbd>Tab</kbd> to an item, <kbd>Enter</kbd> to select / connect, <kbd>Esc</kbd> to cancel.</li>'
+      : '<li><strong>Drag and drop</strong> each item from the banner into the appropriate column: <em>Who performs this activity in my organization</em>, <em>Activities in my organization</em> or <em>Fine-grained rights</em>.</li>' +
+        '<li>You can move an item to another column, reorder it, or drag it back to the banner.</li>' +
+        '<li>Classify at least <strong>3 items in each column</strong> to unlock <strong>Continue to Part 2</strong>, where you will connect the items.</li>' +
+        '<li>Keyboard: <kbd>Tab</kbd> to an item, <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> to place it in a column, <kbd>0</kbd> to send it back to the banner, <kbd>Alt</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd> to reorder.</li>') +
       '</ul>',
     actions: [{ label: 'Got it', variant: 'primary', submit: true }]
   });
 }
-/** Click / Enter on a card: select it, or connect it to the selected card. */
+/** Click / Enter on a card (Part 2): select it, or connect it to the selected card. */
 function x2Activate(id) {
-  if (UI2.checking) return;
-  const col = x2ColOf(id);
-  if (col === 'tray') { toast('Drag this item into one of the three categories first (or focus it and press 1, 2 or 3).'); return; }
+  if (UI2.checking || S2.part !== 2) return;
+  if (x2ColOf(id) === 'tray') return;
   const sel = UI2.selected;
   if (!sel || sel === id) { UI2.selected = sel === id ? null : id; x2Render('card:' + id); return; }
   const c = x2CanRelate(sel, id);
@@ -3511,6 +3599,7 @@ function x2Activate(id) {
     toast('Relationship added: ' + x2Label(c.from) + ' → ' + x2Label(c.to) + '.', 'success');
     return;
   }
+  if (S2.rels.every(r => !(r.from === sel && r.to === id) && !(r.to === sel && r.from === id)) && x2ColOf(sel) !== x2ColOf(id)) toast(c.reason, 'error');
   UI2.selected = id; x2Render('card:' + id);
 }
 
@@ -3530,7 +3619,7 @@ function fitWorkspace() {
     cmpBodies.forEach(b => { b.style.height = h; });
     return false;
   }
-  const canvas = $('#canvas') || $('#x2-canvas');
+  const canvas = $('#canvas') || $('#x2-board');
   if (!canvas || !canvas.isConnected) return false;
   // side panel first (Exercise 1): it must not push the page down
   const panel = $('#panel');
@@ -3552,17 +3641,17 @@ function fitWorkspace() {
 /* Recompute when something above the canvas changes height (notice, long
    instruction, wrapped toolbar…). The view itself is only re-fitted on a
    window resize, so the content does not jump when a notice appears. */
-const wsObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => requestAnimationFrame(fitWorkspace)) : null;
+const wsObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => requestAnimationFrame(() => { fitWorkspace(); if (X2 && X2.root && X2.root.isConnected) x2DrawRels(); })) : null;
 function watchWorkspace() {
   if (!wsObserver) return;
   wsObserver.disconnect();
-  ['.instruction', '#toolbar', '#notices', '#x2-tray', '#panel', '#cmp-summary'].forEach(sel => { const el = $(sel); if (el) wsObserver.observe(el); });
+  ['.instruction', '#toolbar', '#notices', '#x2-tray', '#panel', '#cmp-summary', '#x2-cols'].forEach(sel => { const el = $(sel); if (el) wsObserver.observe(el); });
 }
 window.addEventListener('resize', () => {
   fitWorkspace();
   if (inExercise() && UI.mode === 'compare') { renderCompare(); return; }
   if (inExercise() && canvasEl && canvasEl.isConnected) { if (UI.autoFit) fitView(undefined, 0.4); else applyView(); }
-  if (X2 && X2.root && X2.root.isConnected) { if (UI2.autoFit) x2FitView(); else x2ApplyView(); x2DrawRels(); }
+  if (X2 && X2.root && X2.root.isConnected) x2DrawRels();
 });
 
 /* =====================================================================
