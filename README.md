@@ -186,6 +186,13 @@ dans le workflow).
 
 ## 5. Accessibilité et ergonomie
 
+- **Feuille de travail délimitée (exercice 1) :** le workflow se construit sur une feuille blanche
+  quadrillée posée sur un fond gris, au lieu d'un espace infini. La feuille s'adapte au workflow
+  (boîte englobante des étapes + marge de 140 px, au minimum 900 × 640 px) et s'agrandit quand le
+  workflow grandit. La vue ne peut pas sortir de la feuille (déplacement et molette bornés), le
+  zoom va de « feuille entière visible » à 160 %, et une étape ne peut pas être éloignée de plus de
+  360 px du reste du workflow. Réglages : `SHEET_PAD`, `SHEET_MIN`, `SHEET_REACH`, `ZOOM_MAX`.
+
 - **Zone de travail ajustée à l'écran :** dans l'exercice 1 (deux parties) et l'exercice 2, la zone de
   travail prend toute la largeur et la hauteur restante sous la partie haute (en-tête, consigne, barre
   d'actions, messages, bandeau d'étiquettes), contrôles de zoom compris, sans défilement de la page.
